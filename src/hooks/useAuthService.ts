@@ -71,7 +71,7 @@ export const useAuthService = () => {
         const updatedUser = await updateUser(userInfo);
         changeAuthState({ user: updatedUser });
       }
-      navigate('/');
+      // navigate('/');
     } catch (error) {
       console.error('An unexpected error occurred:', error);
     }

@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { wave } from '../assets';
 import { useAuthService } from '../hooks';
 
 const OAuthCallbackPage: React.FC = () => {
@@ -29,7 +30,19 @@ const OAuthCallbackPage: React.FC = () => {
     handleSignIn();
   }, [handleGoogleSignInCallback]);
 
-  return <div>Authenticating...</div>;
+  return (
+    <div className='min-h-screen flex flex-col items-center justify-center w-full gap-8'>
+      <div className='flex flex-row items-center gap-1.5'>
+        <div className='rounded-full bg-primary p-1'>
+          <img src={wave} className='w-6 h-6' alt='Wave' />
+        </div>
+        <div className='font-sans font-bold'>BabelBeats</div>
+      </div>
+
+      <div className='text-4xl'>Authenticating</div>
+      <div className='loader mt-4'></div>
+    </div>
+  );
 };
 
 export default OAuthCallbackPage;
