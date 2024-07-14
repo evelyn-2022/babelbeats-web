@@ -1,0 +1,42 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --custom-black: 0deg 0% 8%;
+    --custom-black-light: 0deg 0% 15%;
+    --custom-black-dark: 0deg 0% 1%;
+    --custom-white: 0deg 0% 99%;
+    --color-primary: 160deg 95% 80%;
+    --color-primary-dark: 150deg 85% 35%;
+    --color-secondary: 111 114 185;
+
+    body {
+      @apply text-customBlack-light;
+      @apply bg-customWhite;
+    }
+  }
+
+  .dark {
+    --color-primary: 160deg 90% 65%;
+    --color-primary-dark: 160deg 85% 35%;
+    --color-secondary: 111 114 185;
+
+    body {
+      @apply text-customWhite;
+      @apply bg-customBlack;
+    }
+  }
+}
+
+@layer components {
+  .dark .glowing-outline:hover {
+    box-shadow: 0 0 8px -4px hsl(var(--color-primary)),
+      0 0 16px -4px hsl(var(--color-primary));
+  }
+
+  .link {
+    @apply underline decoration-customBlack-light hover:decoration-primary-dark dark:decoration-customWhite dark:hover:decoration-primary cursor-pointer;
+  }
+}
