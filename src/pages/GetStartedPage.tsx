@@ -9,7 +9,7 @@ const GetStartedPage: React.FC = () => {
         <div className='rounded-full bg-primary p-1'>
           <img src={wave} className='w-6 h-6' alt='Wave' />
         </div>
-        <div className='font-sans font-bold'>BabelBeats</div>
+        <div className='font-sans font-bold text-lg'>BabelBeats</div>
       </div>
 
       <div className='flex flex-col gap-2 text-3xl font-bold items-center'>

@@ -121,7 +121,6 @@ export const exchangeCodeForTokens = async (
 
     if (response.status === 200) {
       console.log('Token exchange successful:', response.data);
-      console.log(accessKeyId, secretAccessKey);
       return response.data as Token;
     } else {
       console.error('Failed to exchange code for tokens:', response.status);

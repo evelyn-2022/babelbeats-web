@@ -26,7 +26,7 @@ const ErrorBoundary: React.FC = () => {
         <div className='rounded-full bg-primary p-1'>
           <img src={wave} className='w-6 h-6' alt='Wave' />
         </div>
-        <div className='font-sans font-bold'>BabelBeats</div>
+        <div className='font-sans font-bold text-lg'>BabelBeats</div>
       </div>
       <h1 className='text-4xl font-bold'>{errorStatus}</h1>
       <p className='text-sm text-gray-600 dark:text-gray-300'>{errorText}</p>

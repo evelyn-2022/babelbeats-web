@@ -8,7 +8,7 @@ export default {
         primary: {
           light: 'hsl(var(--color-primary) / 0.4)',
           DEFAULT: 'hsl(var(--color-primary) / 1)',
-          dark: 'hsl(var(--color-primary-dark) / 0.5)',
+          dark: 'hsl(var(--color-primary-dark) / 0.8)',
         },
         customBlack: {
           light: 'hsl(var(--custom-black-light))',
