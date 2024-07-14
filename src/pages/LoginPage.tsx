@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import { wave } from '../assets';
 import {
   Button,
@@ -35,7 +34,7 @@ const LoginPage: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    handleSignIn(email, password);
+    handleSignIn(email, password, rememberMe);
     setIsSubmitDisabled(true);
     setTimeout(() => {
       setIsSubmitDisabled(false);
@@ -71,7 +70,7 @@ const LoginPage: React.FC = () => {
     <div className='min-h-screen w-full flex flex-col items-center justify-center gap-8'>
       <div className='flex flex-row items-center gap-1.5'>
         <div className='rounded-full bg-primary p-1'>
-          <img src={wave} className='h-6' alt='Wave' />
+          <img src={wave} className='w-6 h-6' alt='Wave' />
         </div>
         <div className='font-sans font-bold'>BabelBeats</div>
       </div>

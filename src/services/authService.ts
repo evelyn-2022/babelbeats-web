@@ -5,12 +5,26 @@ import {
   CognitoUserPool,
   CognitoUserSession,
 } from 'amazon-cognito-identity-js';
-import axios from 'axios';
+import {
+  CognitoIdentityProviderClient,
+  AdminUpdateUserAttributesCommand,
+} from '@aws-sdk/client-cognito-identity-provider';
+import axios, { AxiosResponse } from 'axios';
 import config from '../config';
+import { Token } from '../types';
 
 const userPool = new CognitoUserPool({
   UserPoolId: config.userPoolId,
   ClientId: config.userPoolWebClientId,
+});
+
+const { accessKeyId, secretAccessKey } = config.credentials;
+const cognitoClient = new CognitoIdentityProviderClient({
+  region: config.region,
+  credentials: {
+    accessKeyId,
+    secretAccessKey,
+  },
 });
 
 const {
@@ -88,7 +102,9 @@ export const googleSignIn = () => {
   window.location.assign(url);
 };
 
-export const exchangeCodeForTokens = async (authorizationCode: string) => {
+export const exchangeCodeForTokens = async (
+  authorizationCode: string
+): Promise<Token | null> => {
   const tokenEndpoint = `https://${domain}/oauth2/token`;
   const params = new URLSearchParams();
   params.append('grant_type', 'authorization_code');
@@ -97,19 +113,23 @@ export const exchangeCodeForTokens = async (authorizationCode: string) => {
   params.append('redirect_uri', redirectSignIn);
 
   try {
-    const response = await axios.post(tokenEndpoint, params, {
+    const response: AxiosResponse = await axios.post(tokenEndpoint, params, {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
     });
 
     if (response.status === 200) {
-      return response.data;
+      console.log('Token exchange successful:', response.data);
+      console.log(accessKeyId, secretAccessKey);
+      return response.data as Token;
     } else {
-      return response;
+      console.error('Failed to exchange code for tokens:', response.status);
+      return null;
     }
   } catch (error) {
-    return error;
+    console.error('Failed to exchange code for tokens:', error);
+    return null;
   }
 };
 
@@ -212,4 +232,34 @@ export const resetPassword = async (
       },
     });
   });
+};
+
+export const updateCognitoUserIdAttribute = async (
+  username: string,
+  customId: string
+) => {
+  try {
+    const params = {
+      UserPoolId: config.userPoolId,
+      Username: username,
+      UserAttributes: [
+        {
+          Name: 'custom:id',
+          Value: customId.toString(),
+        },
+      ],
+    };
+
+    console.log(accessKeyId, secretAccessKey);
+    const command = new AdminUpdateUserAttributesCommand(params);
+    const response = await cognitoClient.send(command);
+    console.log('Successfully updated custom:id attribute:', response);
+  } catch (error) {
+    console.error(
+      'Error updating custom:id attribute:',
+      error,
+      accessKeyId,
+      secretAccessKey
+    );
+  }
 };

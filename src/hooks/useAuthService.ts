@@ -6,7 +6,7 @@ import {
   signIn,
   googleSignIn,
   exchangeCodeForTokens,
-  createUser,
+  updateUser,
 } from '../services';
 import { storeTokens, removeTokens, extractUserInfo } from '../utils';
 
@@ -17,7 +17,6 @@ export const useAuthService = () => {
   const handleSignUp = async (
     email: string,
     password: string,
-
     username: string
   ) => {
     changeAuthState({ loading: true });
@@ -26,10 +25,8 @@ export const useAuthService = () => {
       await signUp(email, password, username);
       changeAuthState({ loading: false });
       alert('Sign up successful! Please verify your email.');
-      const res = await createUser(username, email);
-      console.log(res);
       sessionStorage.setItem('emailForConfirmation', email);
-      // navigate('/signup-confirm');
+      navigate('/signup-confirm');
     } catch (error) {
       changeAuthState({
         loading: false,
@@ -65,26 +62,34 @@ export const useAuthService = () => {
   const processSignIn = async (idToken: string) => {
     try {
       const userInfo = await extractUserInfo(idToken);
-      console.log(userInfo);
       changeAuthState({
         user: { ...userInfo },
         loading: false,
         isAuthenticated: true,
       });
+      if (!userInfo.id) {
+        const updatedUser = await updateUser(userInfo);
+        changeAuthState({ user: updatedUser });
+      }
       navigate('/');
     } catch (error) {
       console.error('An unexpected error occurred:', error);
     }
   };
 
-  const handleSignIn = async (email: string, password: string) => {
+  const handleSignIn = async (
+    email: string,
+    password: string,
+    rememberMe: boolean
+  ) => {
     changeAuthState({ loading: true });
     try {
       const result = await signIn(email, password);
       await storeTokens(
         result.getIdToken().getJwtToken(),
         result.getAccessToken().getJwtToken(),
-        result.getRefreshToken().getToken()
+        result.getRefreshToken().getToken(),
+        rememberMe
       );
       await processSignIn(result.getIdToken().getJwtToken());
     } catch (error) {
@@ -96,12 +101,13 @@ export const useAuthService = () => {
     changeAuthState({ loading: true });
     try {
       const tokens = await exchangeCodeForTokens(authorizationCode);
+      console.log('tokens', tokens);
       if (tokens) {
-        console.log(tokens);
         await storeTokens(
           tokens.id_token,
           tokens.access_token,
-          tokens.refresh_token
+          tokens.refresh_token,
+          true
         );
         await processSignIn(tokens.id_token);
       } else {

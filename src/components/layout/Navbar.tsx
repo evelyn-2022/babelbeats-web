@@ -42,7 +42,7 @@ const Navbar: React.FC = () => {
       <a href='/' className='cursor-pointer'>
         <div className='flex flex-row items-center gap-1.5'>
           <div className='rounded-full bg-primary p-1'>
-            <img src={wave} className='h-6' alt='Wave' />
+            <img src={wave} className='w-6 h-6' alt='Wave' />
           </div>
           <div className='font-sans font-bold'>BabelBeats</div>
         </div>
@@ -55,7 +55,7 @@ const Navbar: React.FC = () => {
             className='flex flex-row items-center gap-1 cursor-pointer'
             onClick={handleProfileClick}
           >
-            {authState.user && authState.user.profilePic ? (
+            {authState.user.profilePic ? (
               <>
                 <img
                   src={authState.user.profilePic}

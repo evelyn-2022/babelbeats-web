@@ -1,29 +1,44 @@
+import Cookies from 'js-cookie';
 import { User } from '../types';
 
 export const storeTokens = (
   idToken: string,
   accessToken: string,
-  refreshToken: string
+  refreshToken: string,
+  rememberMe: boolean
 ) => {
-  return Promise.all([
-    localStorage.setItem('idToken', idToken),
-    localStorage.setItem('accessToken', accessToken),
-    localStorage.setItem('refreshToken', refreshToken),
-  ]);
+  if (rememberMe) {
+    return Promise.all([
+      Cookies.set('idToken', idToken),
+      Cookies.set('accessToken', accessToken),
+      Cookies.set('refreshToken', refreshToken),
+    ]);
+  } else {
+    return Promise.all([
+      sessionStorage.setItem('idToken', idToken),
+      sessionStorage.setItem('accessToken', accessToken),
+    ]);
+  }
 };
 
 export const getTokens = () => {
   return {
-    idToken: localStorage.getItem('idToken'),
-    accessToken: localStorage.getItem('accessToken'),
-    refreshToken: localStorage.getItem('refreshToken'),
+    idToken: Cookies.get('idToken') || sessionStorage.getItem('idToken'),
+    accessToken:
+      Cookies.get('accessToken') || sessionStorage.getItem('accessToken'),
+    refreshToken:
+      Cookies.get('refreshToken') || sessionStorage.getItem('refreshToken'),
   };
 };
 
 export const removeTokens = () => {
-  localStorage.removeItem('idToken');
-  localStorage.removeItem('accessToken');
-  localStorage.removeItem('refreshToken');
+  Cookies.remove('idToken');
+  Cookies.remove('accessToken');
+  Cookies.remove('refreshToken');
+
+  sessionStorage.removeItem('idToken');
+  sessionStorage.removeItem('accessToken');
+  sessionStorage.removeItem('refreshToken');
 };
 
 export const parseJwt = (token: string) => {
@@ -50,9 +65,10 @@ export const extractUserInfo = async (idToken: string): Promise<User> => {
     return {
       id: decoded?.['custom:id'] || '',
       cognitoSub: decoded?.sub || '',
-      email: decoded?.email || '',
       name: decoded?.name || '',
+      email: decoded?.email || '',
       profilePic: decoded?.['custom:profilePic'] || '',
+      providerId: decoded?.['cognito:username'] || '',
     };
   } catch (error) {
     throw new Error('Invalid token or failed to parse JWT');

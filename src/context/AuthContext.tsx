@@ -51,7 +51,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 
       if (!idToken || !accessToken || !refreshToken) return;
 
-      if (isTokenExpired(idToken) || isTokenExpired(accessToken)) {
+      if (
+        isTokenExpired(idToken) ||
+        (isTokenExpired(accessToken) && refreshToken)
+      ) {
         const newTokens = await refreshTokens(refreshToken);
         if (!newTokens) {
           throw new Error('Failed to refresh tokens');
@@ -60,7 +63,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         await storeTokens(
           newTokens.idToken,
           newTokens.accessToken,
-          refreshToken
+          refreshToken,
+          true
         );
         await updateUserInfo(newTokens.idToken);
       } else {

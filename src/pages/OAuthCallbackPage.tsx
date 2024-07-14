@@ -1,24 +1,33 @@
-import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useRef } from 'react';
 import { useAuthService } from '../hooks';
 
 const OAuthCallbackPage: React.FC = () => {
   const { handleGoogleSignInCallback } = useAuthService();
-  const navigate = useNavigate();
+  const hasRun = useRef(false);
 
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const authorizationCode = urlParams.get('code');
-
-    if (authorizationCode) {
-      handleGoogleSignInCallback(authorizationCode).catch(error => {
-        console.error('Error handling Google sign-in callback', error);
-      });
-    } else {
-      console.error('Authorization code not found in URL');
-      navigate('/');
+    if (hasRun.current) {
+      return;
     }
-  }, []);
+    hasRun.current = true;
+
+    const handleSignIn = async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const authorizationCode = urlParams.get('code');
+
+      if (authorizationCode) {
+        try {
+          await handleGoogleSignInCallback(authorizationCode);
+        } catch (error) {
+          console.error('Failed to sign in:', error);
+        }
+      } else {
+        console.error('Authorization code not found in URL');
+      }
+    };
+
+    handleSignIn();
+  }, [handleGoogleSignInCallback]);
 
   return <div>Authenticating...</div>;
 };
