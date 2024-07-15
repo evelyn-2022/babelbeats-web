@@ -7,6 +7,7 @@ import { useAuthService } from '../hooks';
 
 const SignupConfirmPage: React.FC = () => {
   const { authState } = useAuth();
+
   const { handleConfirmSignUp } = useAuthService();
 
   const handleVerificationSubmit = (code: string) => {
@@ -23,8 +24,8 @@ const SignupConfirmPage: React.FC = () => {
       </div>
       <div className='flex flex-col items-center justify-center gap-2'>
         <h1 className='text-4xl font-bold'>You are almost there!</h1>
-        <p className='text-sm text-gray-600 dark:text-gray-300'>
-          Please enter the verification code in your mailbox
+        <p className='text-sm text-gray-600 dark:text-customWhite/70'>
+          Enter the verification code in your mailbox
         </p>
       </div>
 

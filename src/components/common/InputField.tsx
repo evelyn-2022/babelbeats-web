@@ -1,5 +1,6 @@
-import React, { useState, ChangeEvent } from 'react';
+import React, { useState, useEffect } from 'react';
 import { IoEyeOutline, IoEyeOffOutline } from 'react-icons/io5';
+import { PiWarningCircle, PiCircle, PiCheckCircleFill } from 'react-icons/pi';
 
 interface InputFieldProps {
   id?: string;
@@ -8,10 +9,11 @@ interface InputFieldProps {
   value: string;
   width?: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  displayCriteria?: boolean;
   validationMessage?: string;
-  onBlur?: () => void;
-  showPasswordCriteria?: boolean;
-  touched?: boolean; // Add touched prop
+  handleOnBlur?: () => void;
+  touched?: boolean;
+  resetPasswordVisibility?: boolean;
 }
 
 const InputField: React.FC<InputFieldProps> = ({
@@ -21,10 +23,11 @@ const InputField: React.FC<InputFieldProps> = ({
   value,
   width,
   onChange,
+  displayCriteria,
   validationMessage,
-  onBlur,
-  showPasswordCriteria = false,
-  touched = false, // Default to false
+  handleOnBlur,
+  touched,
+  resetPasswordVisibility,
 }) => {
   const [focused, setFocused] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -42,8 +45,14 @@ const InputField: React.FC<InputFieldProps> = ({
     { label: 'Minimum 8 characters', valid: value.length >= 8 },
   ];
 
+  useEffect(() => {
+    if (resetPasswordVisibility) {
+      setShowPassword(false);
+    }
+  }, [resetPasswordVisibility]);
+
   return (
-    <>
+    <div className='flex flex-col gap-1'>
       <div className={`relative ${width ? width : 'w-96'}`}>
         {label && (
           <label
@@ -69,8 +78,8 @@ const InputField: React.FC<InputFieldProps> = ({
           onFocus={() => setFocused(true)}
           onBlur={() => {
             setFocused(false);
-            if (onBlur) {
-              onBlur();
+            if (handleOnBlur) {
+              handleOnBlur();
             }
           }}
           required
@@ -87,38 +96,43 @@ const InputField: React.FC<InputFieldProps> = ({
           </div>
         )}
       </div>
-      <div>
-        {!focused && validationMessage && (
-          <div className='text-red-500 text-sm mt-1'>{validationMessage}</div>
-        )}
 
-        {type === 'password' && showPasswordCriteria && (
-          <div className='mt-2'>
-            {passwordCriteria.map((criteria, index) => (
-              <div key={index} className='flex items-center mt-1'>
-                <input
-                  type='radio'
-                  className={`form-radio h-4 w-4 ${
-                    criteria.valid ? 'text-green-500' : 'text-red-500'
-                  }`}
-                  checked={criteria.valid}
-                  readOnly
-                />
-                <span
-                  className={`ml-2 text-sm ${
-                    !focused && touched && !criteria.valid
-                      ? 'text-red-500'
-                      : 'text-black'
-                  }`}
-                >
-                  {criteria.label}
-                </span>
-              </div>
-            ))}
-          </div>
-        )}
+      <div
+        className={`text-red-500 text-sm flex flex-row items-center gap-0.5 ${
+          !validationMessage && 'hidden'
+        }`}
+      >
+        <PiWarningCircle />
+        {validationMessage}
       </div>
-    </>
+
+      {label?.toLowerCase() === 'password' && displayCriteria && (
+        <div className='mt-2'>
+          {passwordCriteria.map((criteria, index) => (
+            <div key={index} className='flex items-center mt-1'>
+              {criteria.valid ? (
+                <span className='text-primary-dark/80 dark:text-primary'>
+                  <PiCheckCircleFill />
+                </span>
+              ) : (
+                <span className='text-customBlack/50 dark:text-customWhite/50'>
+                  <PiCircle />
+                </span>
+              )}
+              <span
+                className={`ml-2 text-sm ${
+                  !focused && touched && !criteria.valid
+                    ? 'text-red-500'
+                    : 'text-customBlack dark:text-customWhite'
+                }`}
+              >
+                {criteria.label}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
   );
 };
 

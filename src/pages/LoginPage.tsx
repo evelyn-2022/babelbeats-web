@@ -48,7 +48,7 @@ const LoginPage: React.FC = () => {
   const fields = [
     {
       label: 'Email',
-      type: 'email',
+      type: 'text',
       value: email,
       onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
         setEmail(e.target.value);

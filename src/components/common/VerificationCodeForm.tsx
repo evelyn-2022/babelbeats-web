@@ -14,7 +14,7 @@ const VerificationCodeForm: React.FC<VerificationCodeFormProps> = ({
 }) => {
   const [code, setCode] = useState<string[]>(Array(6).fill(''));
   const inputsRef = useRef<HTMLInputElement[]>([]);
-  const pasteTimeouts = useRef<number[]>([]); // Changed to number[]
+  const pasteTimeouts = useRef<number[]>([]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -43,7 +43,10 @@ const VerificationCodeForm: React.FC<VerificationCodeFormProps> = ({
     index: number
   ) => {
     e.preventDefault();
-    const paste = e.clipboardData.getData('text').slice(0, 6 - index);
+    const paste = e.clipboardData
+      .getData('text')
+      .trim()
+      .slice(0, 6 - index);
     const pasteArray = paste.split('');
 
     pasteArray.forEach((char, i) => {
@@ -59,7 +62,7 @@ const VerificationCodeForm: React.FC<VerificationCodeFormProps> = ({
             }
             return newCode;
           });
-        }, i * 50)
+        }, i * 50) as unknown as number
       );
     });
   };
@@ -90,7 +93,7 @@ const VerificationCodeForm: React.FC<VerificationCodeFormProps> = ({
             onKeyDown={e => handleKeyDown(e, index)}
             onPaste={e => handlePaste(e, index)}
             ref={el => (inputsRef.current[index] = el!)}
-            className='w-12 h-12 text-center text-xl border p-3 text-gray-700 focus:outline-none rounded-lg focus:border-primary dark:border-primary-light dark:bg-customBlack dark:text-white dark:focus:border-primary-dark'
+            className='w-12 h-12 text-center text-xl border p-3 focus:outline-none rounded-lg border-customBlack-light/10 bg-customWhite text-customBlack-light dark:border-customWhite/70 dark:bg-customBlack dark:text-white focus:border-primary-dark dark:focus:border-primary'
             required
           />
         ))}

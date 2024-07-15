@@ -24,13 +24,12 @@ export const useAuthService = () => {
     try {
       await signUp(email, password, username);
       changeAuthState({ loading: false });
-      alert('Sign up successful! Please verify your email.');
       sessionStorage.setItem('emailForConfirmation', email);
       navigate('/signup-confirm');
     } catch (error) {
       changeAuthState({
         loading: false,
-        error: { message: 'An unknow error occurred' } as Error,
+        error: error as Error,
       });
     }
   };
