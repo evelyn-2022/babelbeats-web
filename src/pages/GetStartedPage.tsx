@@ -1,10 +1,14 @@
 import React from 'react';
+import { Helmet } from 'react-helmet-async';
 import wave from '../assets/images/wave.svg';
 import { Button, SocialSignInGroup } from '../components';
 
 const GetStartedPage: React.FC = () => {
   return (
     <div className='min-h-screen w-full flex flex-col items-center justify-center gap-8'>
+      <Helmet>
+        <title>BabelBeats | Get Started</title>
+      </Helmet>
       <div className='flex flex-row items-center gap-1.5'>
         <div className='rounded-full bg-primary p-1'>
           <img src={wave} className='w-6 h-6' alt='Wave' />

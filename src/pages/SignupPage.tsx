@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { ToastContainer, toast } from 'react-toastify';
 import { BsChevronLeft } from 'react-icons/bs';
 import { wave } from '../assets';
@@ -106,6 +107,9 @@ const SignupPage: React.FC = () => {
 
   return (
     <div className='min-h-screen w-full flex flex-col items-center gap-8 pt-36'>
+      <Helmet>
+        <title>BabelBeats | Sign Up</title>
+      </Helmet>
       <div className='flex flex-row items-center gap-1.5'>
         <div className='rounded-full bg-primary p-1'>
           <img src={wave} className='w-6 h-6' alt='Wave' />

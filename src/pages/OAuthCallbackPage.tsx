@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { wave } from '../assets';
 import { useAuthService } from '../hooks';
 
@@ -32,6 +33,9 @@ const OAuthCallbackPage: React.FC = () => {
 
   return (
     <div className='min-h-screen flex flex-col items-center justify-center w-full gap-8'>
+      <Helmet>
+        <title>BabelBeats | Authenticating</title>
+      </Helmet>
       <div className='flex flex-row items-center gap-1.5'>
         <div className='rounded-full bg-primary p-1'>
           <img src={wave} className='w-6 h-6' alt='Wave' />

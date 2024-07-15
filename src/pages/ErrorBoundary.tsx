@@ -1,6 +1,6 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { useRouteError, isRouteErrorResponse } from 'react-router-dom';
+import { Link, useRouteError, isRouteErrorResponse } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { wave } from '../assets';
 
 const ErrorBoundary: React.FC = () => {
@@ -22,6 +22,9 @@ const ErrorBoundary: React.FC = () => {
 
   return (
     <div className='flex flex-col items-center justify-center w-screen h-screen gap-8'>
+      <Helmet>
+        <title>BabelBeats | Error</title>
+      </Helmet>
       <div className='flex flex-row items-center gap-1.5'>
         <div className='rounded-full bg-primary p-1'>
           <img src={wave} className='w-6 h-6' alt='Wave' />
