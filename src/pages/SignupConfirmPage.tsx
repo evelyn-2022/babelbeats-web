@@ -1,19 +1,67 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { ToastContainer, toast } from 'react-toastify';
 import { wave } from '../assets';
-import { useAuth } from '../context';
-import { resendConfirmationCode } from '../services';
+import { useAuth, useTheme } from '../context';
 import { VerificationCodeForm } from '../components';
+import { resendConfirmationCode } from '../services';
 import { useAuthService } from '../hooks';
 
 const SignupConfirmPage: React.FC = () => {
-  const { authState } = useAuth();
-
+  const { authState, changeAuthState } = useAuth();
+  const { theme } = useTheme();
   const { handleConfirmSignUp } = useAuthService();
 
   const handleVerificationSubmit = (code: string) => {
     handleConfirmSignUp(code);
   };
+
+  const handleResendConfirmationCode = async () => {
+    const email = sessionStorage.getItem('emailForConfirmation');
+    if (!email) {
+      changeAuthState({
+        loading: false,
+        error: {
+          message: 'Email not found',
+        } as Error,
+      });
+      return;
+    }
+    try {
+      await resendConfirmationCode(email);
+      toast.success(
+        "We've sent you a new verification code. Please check your inbox",
+        {
+          position: 'top-center',
+          theme: theme === 'dark' ? 'dark' : 'light',
+          closeOnClick: true,
+          draggable: true,
+        }
+      );
+    } catch (error) {
+      const errorMessage = (error as Error).message;
+      changeAuthState({ error: error as Error });
+      toast.error(errorMessage, {
+        position: 'top-center',
+        theme: theme === 'dark' ? 'dark' : 'light',
+        closeOnClick: true,
+        draggable: true,
+      });
+      changeAuthState({ error: null });
+    }
+  };
+
+  useEffect(() => {
+    if (authState.error?.message) {
+      toast.error(authState.error.message, {
+        position: 'top-center',
+        theme: theme === 'dark' ? 'dark' : 'light',
+        closeOnClick: true,
+        draggable: true,
+      });
+      changeAuthState({ error: null });
+    }
+  }, [authState.error]);
 
   return (
     <div className='min-h-screen w-full flex flex-col items-center justify-center gap-8'>
@@ -28,7 +76,7 @@ const SignupConfirmPage: React.FC = () => {
       </div>
       <div className='flex flex-col items-center justify-center gap-2'>
         <h1 className='text-4xl font-bold'>You are almost there!</h1>
-        <p className='text-sm text-gray-600 dark:text-customWhite/70'>
+        <p className='text-sm text-customBlack-light/70 dark:text-customWhite/70'>
           Enter the verification code in your mailbox
         </p>
       </div>
@@ -41,10 +89,12 @@ const SignupConfirmPage: React.FC = () => {
 
       <div>
         Didn't receive it?{' '}
-        <button className='link' onClick={resendConfirmationCode}>
+        <button className='link' onClick={handleResendConfirmationCode}>
           Send a new code
         </button>
       </div>
+
+      <ToastContainer />
     </div>
   );
 };

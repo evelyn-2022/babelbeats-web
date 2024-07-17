@@ -8,6 +8,9 @@ import {
   SignupPage,
   SignupConfirmPage,
   OAuthCallbackPage,
+  ForgotPasswordPage,
+  VerifyPasswordResetPage,
+  ResetPasswordPage,
   ErrorBoundary,
 } from './pages';
 
@@ -26,6 +29,9 @@ const router = createBrowserRouter([
       { path: '/login', element: <LoginPage /> },
       { path: '/signup', element: <SignupPage /> },
       { path: '/signup-confirm', element: <SignupConfirmPage /> },
+      { path: '/forgot-password', element: <ForgotPasswordPage /> },
+      { path: '/verify-password-reset', element: <VerifyPasswordResetPage /> },
+      { path: '/reset-password', element: <ResetPasswordPage /> },
       { path: '/oauth2/callback', element: <OAuthCallbackPage /> },
     ],
   },

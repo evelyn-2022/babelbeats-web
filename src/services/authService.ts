@@ -8,6 +8,7 @@ import {
 import {
   CognitoIdentityProviderClient,
   AdminUpdateUserAttributesCommand,
+  AdminGetUserCommand,
 } from '@aws-sdk/client-cognito-identity-provider';
 import axios, { AxiosResponse } from 'axios';
 import config from '../config';
@@ -161,10 +162,7 @@ export const refreshTokens = async (refreshToken: string) => {
   }
 };
 
-export const resendConfirmationCode = async () => {
-  const email = sessionStorage.getItem('emailForConfirmation');
-  if (!email) return;
-
+export const resendConfirmationCode = async (email: string): Promise<void> => {
   const userData = {
     Username: email,
     Pool: userPool,
@@ -172,12 +170,16 @@ export const resendConfirmationCode = async () => {
 
   const cognitoUser = new CognitoUser(userData);
 
-  cognitoUser.resendConfirmationCode(err => {
-    if (err) {
-      alert(`Error resending confirmation code: ${err.message || err}`);
-    } else {
-      alert('Resent confirmation code, please check your email');
-    }
+  return new Promise((resolve, reject) => {
+    cognitoUser.resendConfirmationCode(err => {
+      if (err) {
+        reject(
+          new Error('Error resending confirmation code. Please try again later')
+        );
+      } else {
+        resolve();
+      }
+    });
   });
 };
 
@@ -190,17 +192,35 @@ export const forgotPassword = async (email: string): Promise<void> => {
   const cognitoUser = new CognitoUser(userData);
 
   return new Promise((resolve, reject) => {
-    cognitoUser.forgotPassword({
-      onSuccess: () => {
-        alert('Email sent successfully');
-        sessionStorage.setItem('email-reseting', email);
-        resolve();
-      },
-      onFailure: err => {
-        alert('Error sending email');
-        reject(err);
-      },
-    });
+    // First, check if the user exists
+    const params = {
+      UserPoolId: config.userPoolId,
+      Username: email,
+    };
+
+    const command = new AdminGetUserCommand(params);
+
+    cognitoClient
+      .send(command)
+      .then(() => {
+        // If user exists, proceed with forgot password
+        cognitoUser.forgotPassword({
+          onSuccess: () => {
+            sessionStorage.setItem('email-reseting', email);
+            resolve();
+          },
+          onFailure: err => {
+            reject(err);
+          },
+        });
+      })
+      .catch(err => {
+        if (err.name === 'UserNotFoundException') {
+          reject(new Error('Email not registered'));
+        } else {
+          reject(err);
+        }
+      });
   });
 };
 
@@ -249,7 +269,6 @@ export const updateCognitoUserIdAttribute = async (
       ],
     };
 
-    console.log(accessKeyId, secretAccessKey);
     const command = new AdminUpdateUserAttributesCommand(params);
     const response = await cognitoClient.send(command);
     console.log('Successfully updated custom:id attribute:', response);

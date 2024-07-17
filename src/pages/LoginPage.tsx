@@ -78,10 +78,7 @@ const LoginPage: React.FC = () => {
         </div>
         <div className='font-sans font-bold text-lg'>BabelBeats</div>
       </div>
-      <div className='flex flex-col items-center justify-center gap-2'>
-        <h1 className='text-4xl font-bold'>Welcome back!</h1>
-      </div>
-
+      <h1 className='text-4xl font-bold'>Welcome back!</h1>
       <form onSubmit={handleSubmit} className='flex flex-col gap-6'>
         {fields.map(field => (
           <InputField
