@@ -50,7 +50,7 @@ const ForgotPasswordPage: React.FC = () => {
       </div>
       <div className='flex flex-col items-center justify-center gap-4'>
         <h1 className='text-4xl font-bold'>Forgot your password?</h1>
-        <p className='text-sm  text-customBlack-light/70 dark:text-customWhite/70'>
+        <p className='text-sm text-customBlack-light/70 dark:text-customWhite/70'>
           We'll send you a verification code to reset your password
         </p>
       </div>

@@ -32,7 +32,9 @@ const ErrorBoundary: React.FC = () => {
         <div className='font-sans font-bold text-lg'>BabelBeats</div>
       </div>
       <h1 className='text-4xl font-bold'>{errorStatus}</h1>
-      <p className='text-sm text-gray-600 dark:text-gray-300'>{errorText}</p>
+      <p className='text-sm text-customBlack-light/70 dark:text-customWhite/70'>
+        {errorText}
+      </p>
 
       <Link to='/' className='link'>
         Go to Home

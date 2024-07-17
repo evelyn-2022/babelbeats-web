@@ -14,24 +14,26 @@ import axios, { AxiosResponse } from 'axios';
 import config from '../config';
 import { Token } from '../types';
 
+const {
+  region,
+  userPoolId,
+  userPoolWebClientId: clientId,
+  oauth: { domain, redirectSignIn },
+  credentials: { accessKeyId, secretAccessKey },
+} = config;
+
 const userPool = new CognitoUserPool({
-  UserPoolId: config.userPoolId,
-  ClientId: config.userPoolWebClientId,
+  UserPoolId: userPoolId,
+  ClientId: clientId,
 });
 
-const { accessKeyId, secretAccessKey } = config.credentials;
 const cognitoClient = new CognitoIdentityProviderClient({
-  region: config.region,
+  region,
   credentials: {
     accessKeyId,
     secretAccessKey,
   },
 });
-
-const {
-  oauth: { domain, redirectSignIn },
-  userPoolWebClientId: clientId,
-} = config;
 
 export const signUp = (email: string, password: string, username: string) => {
   const attributeList = [
@@ -259,7 +261,7 @@ export const updateCognitoUserIdAttribute = async (
 ) => {
   try {
     const params = {
-      UserPoolId: config.userPoolId,
+      UserPoolId: userPoolId,
       Username: username,
       UserAttributes: [
         {
