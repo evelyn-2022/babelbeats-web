@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { ToastContainer, toast } from 'react-toastify';
 import { BsChevronLeft } from 'react-icons/bs';
-import { wave } from '../assets';
-import { Card } from '../components';
-import { useAuth, useTheme } from '../context';
-import { useAuthService } from '../hooks';
-import { SignupField } from '../types';
+import { wave } from '../../assets';
+import Card from './Card';
+import { SignupField } from './signupField';
+import { useAuth, useTheme } from '../../context';
+import { useAuthService } from '../../hooks';
 
 const SignupPage: React.FC = () => {
   const { authState, changeAuthState } = useAuth();

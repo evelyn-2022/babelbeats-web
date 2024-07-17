@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import validator from 'validator';
-import { SignupField } from '../../types';
-import { InputField, Button, SocialSignInGroup } from '../common';
+import { SignupField } from './signupField';
+import { InputField, Button, SocialSignInGroup } from '../../components/common';
 
 interface CardProps {
   step: number;
