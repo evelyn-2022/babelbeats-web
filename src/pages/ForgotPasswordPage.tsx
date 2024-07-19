@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { ToastContainer, toast } from 'react-toastify';
 import { wave } from '../assets';
-import { InputField, Button } from '../components';
+import { InputField, Button, Toast, showToast } from '../components';
 import { forgotPassword } from '../services';
 import { useAuth, useTheme } from '../context';
 
@@ -27,12 +26,11 @@ const ForgotPasswordPage: React.FC = () => {
 
   useEffect(() => {
     if (authState.error?.message) {
-      toast.error(authState.error.message, {
-        position: 'top-center',
-        theme: theme === 'dark' ? 'dark' : 'light',
-        closeOnClick: true,
-        draggable: true,
-      });
+      showToast(
+        authState.error.message,
+        'error',
+        theme === 'dark' ? 'dark' : 'light'
+      );
       changeAuthState({ error: null });
     }
   }, [authState.error]);
@@ -72,7 +70,7 @@ const ForgotPasswordPage: React.FC = () => {
         </Button>
       </form>
 
-      <ToastContainer />
+      <Toast />
     </div>
   );
 };

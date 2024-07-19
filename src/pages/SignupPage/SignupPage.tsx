@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { ToastContainer, toast } from 'react-toastify';
 import { BsChevronLeft } from 'react-icons/bs';
 import { wave } from '../../assets';
 import Card from './Card';
 import { SignupField } from './signupField';
 import { useAuth, useTheme } from '../../context';
 import { useAuthService } from '../../hooks';
+import { Toast, showToast } from '../../components';
 
 const SignupPage: React.FC = () => {
   const { authState, changeAuthState } = useAuth();
@@ -65,12 +65,12 @@ const SignupPage: React.FC = () => {
 
   useEffect(() => {
     if (authState.error?.message) {
-      toast.error(authState.error.message, {
-        position: 'top-center',
-        theme: theme === 'dark' ? 'dark' : 'light',
-        closeOnClick: true,
-        draggable: true,
-      });
+      showToast(
+        authState.error.message,
+        'error',
+        theme === 'dark' ? 'dark' : 'light'
+      );
+
       changeAuthState({ error: null });
     }
   }, [authState.error]);
@@ -155,7 +155,7 @@ const SignupPage: React.FC = () => {
         Already have an account? <span className='link'>Log in</span>
       </a>
 
-      <ToastContainer />
+      <Toast />
     </div>
   );
 };

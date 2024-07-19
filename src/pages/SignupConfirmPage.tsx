@@ -1,9 +1,8 @@
 import React, { useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { ToastContainer, toast } from 'react-toastify';
 import { wave } from '../assets';
 import { useAuth, useTheme } from '../context';
-import { VerificationCodeForm } from '../components';
+import { VerificationCodeForm, Toast, showToast } from '../components';
 import { resendConfirmationCode } from '../services';
 import { useAuthService } from '../hooks';
 
@@ -29,36 +28,26 @@ const SignupConfirmPage: React.FC = () => {
     }
     try {
       await resendConfirmationCode(email);
-      toast.success(
-        "We've sent you a new verification code. Please check your inbox",
-        {
-          position: 'top-center',
-          theme: theme === 'dark' ? 'dark' : 'light',
-          closeOnClick: true,
-          draggable: true,
-        }
+      showToast(
+        'We have sent you a new verification code. Please check your inbox',
+        'success',
+        theme === 'dark' ? 'dark' : 'light'
       );
     } catch (error) {
       const errorMessage = (error as Error).message;
       changeAuthState({ error: error as Error });
-      toast.error(errorMessage, {
-        position: 'top-center',
-        theme: theme === 'dark' ? 'dark' : 'light',
-        closeOnClick: true,
-        draggable: true,
-      });
+      showToast(errorMessage, 'error', theme === 'dark' ? 'dark' : 'light');
       changeAuthState({ error: null });
     }
   };
 
   useEffect(() => {
     if (authState.error?.message) {
-      toast.error(authState.error.message, {
-        position: 'top-center',
-        theme: theme === 'dark' ? 'dark' : 'light',
-        closeOnClick: true,
-        draggable: true,
-      });
+      showToast(
+        authState.error.message,
+        'error',
+        theme === 'dark' ? 'dark' : 'light'
+      );
       changeAuthState({ error: null });
     }
   }, [authState.error]);
@@ -94,7 +83,7 @@ const SignupConfirmPage: React.FC = () => {
         </button>
       </div>
 
-      <ToastContainer />
+      <Toast />
     </div>
   );
 };

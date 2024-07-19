@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { ToastContainer, toast } from 'react-toastify';
+import { Toast, showToast } from '../components';
 import { wave } from '../assets';
 import {
   Button,
@@ -23,12 +23,11 @@ const LoginPage: React.FC = () => {
 
   useEffect(() => {
     if (authState.error?.message) {
-      toast.error(authState.error.message, {
-        position: 'top-center',
-        theme: theme === 'dark' ? 'dark' : 'light',
-        closeOnClick: true,
-        draggable: true,
-      });
+      showToast(
+        authState.error.message,
+        'error',
+        theme === 'dark' ? 'dark' : 'light'
+      );
       changeAuthState({ error: null });
     }
   }, [authState.error]);
@@ -122,7 +121,7 @@ const LoginPage: React.FC = () => {
         Not a member? <span className='link'>Sign up</span>
       </a>
 
-      <ToastContainer />
+      <Toast />
     </div>
   );
 };

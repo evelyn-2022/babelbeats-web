@@ -6,3 +6,4 @@ export { default as ToggleSwitch } from './ToggleSwitch';
 export { default as ThemeSwitcher } from './ThemeSwitcher';
 export { default as Dropdown } from './Dropdown';
 export { default as VerificationCodeForm } from './VerificationCodeForm';
+export * from './Toast';
