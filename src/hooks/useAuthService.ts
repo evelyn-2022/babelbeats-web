@@ -11,7 +11,7 @@ import {
 import { storeTokens, removeTokens, extractUserInfo } from '../utils';
 
 export const useAuthService = () => {
-  const { setAuthState, changeAuthState } = useAuth();
+  const { authRequest, authSuccess, authFailure, setLoadingFalse } = useAuth();
   const navigate = useNavigate();
   const { addError } = useError();
 
@@ -20,11 +20,11 @@ export const useAuthService = () => {
     password: string,
     username: string
   ) => {
-    changeAuthState({ loading: true });
+    authRequest();
 
     try {
       await signUp(email, password, username);
-      changeAuthState({ loading: false });
+      setLoadingFalse();
       sessionStorage.setItem('emailForConfirmation', email);
       navigate('/signup-confirm');
     } catch (error) {
@@ -39,25 +39,20 @@ export const useAuthService = () => {
         displayType: 'toast',
         category: 'auth',
       });
-      changeAuthState({
-        loading: false,
-      });
+      authFailure();
     }
   };
 
   const handleConfirmSignUp = async (code: string) => {
-    changeAuthState({ loading: true });
-
+    authRequest();
     const email = sessionStorage.getItem('emailForConfirmation');
     if (!email) {
-      changeAuthState({
-        loading: false,
-      });
+      authFailure();
       return;
     }
     try {
       await confirmSignUp(email, code);
-      changeAuthState({ loading: false });
+      setLoadingFalse();
       sessionStorage.removeItem('emailForConfirmation');
       navigate('/login');
     } catch (error) {
@@ -72,22 +67,22 @@ export const useAuthService = () => {
         displayType: 'toast',
         category: 'auth',
       });
-      changeAuthState({ loading: false });
+      authFailure();
     }
   };
 
   const processSignIn = async (idToken: string) => {
     try {
       const userInfo = await extractUserInfo(idToken);
-      changeAuthState({
-        user: { ...userInfo },
-        loading: false,
-        isAuthenticated: true,
-      });
+      authSuccess(userInfo);
       // If user info is not in the database, update it
       if (!userInfo.id) {
         const updatedUser = await updateUser(userInfo);
-        changeAuthState({ user: updatedUser });
+        if (updatedUser) {
+          authSuccess(updatedUser);
+        } else {
+          throw new Error('Failed to update user info in database');
+        }
       }
       navigate('/');
     } catch (error) {
@@ -106,7 +101,8 @@ export const useAuthService = () => {
     password: string,
     rememberMe: boolean
   ) => {
-    changeAuthState({ loading: true });
+    authRequest();
+
     try {
       const result = await signIn(email, password);
       await storeTokens(
@@ -128,12 +124,12 @@ export const useAuthService = () => {
         displayType: 'toast',
         category: 'auth',
       });
-      changeAuthState({ loading: false });
+      authFailure();
     }
   };
 
   const handleGoogleSignInCallback = async (authorizationCode: string) => {
-    changeAuthState({ loading: true });
+    authRequest();
     try {
       const tokens = await exchangeCodeForTokens(authorizationCode);
       if (tokens) {
@@ -158,18 +154,13 @@ export const useAuthService = () => {
         displayType: 'toast',
         category: 'auth',
       });
-      changeAuthState({ loading: false });
+      authFailure();
     }
   };
 
   const handleSignOut = () => {
     removeTokens();
-    sessionStorage.removeItem('authState');
-    setAuthState({
-      user: null,
-      isAuthenticated: false,
-      loading: false,
-    });
+    authFailure();
     navigate('/');
   };
 

@@ -2,7 +2,7 @@ import React from 'react';
 import { Outlet } from 'react-router-dom';
 import { Layout } from '../components';
 import { ThemeProvider } from './ThemeProvider';
-import { AuthProvider } from './AuthContext';
+import { AuthProvider } from './AuthProvider';
 import { ErrorProvider } from './ErrorProvider';
 import { HelmetProvider } from 'react-helmet-async';
 

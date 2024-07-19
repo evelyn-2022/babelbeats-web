@@ -8,7 +8,7 @@ import { useAuthService } from '../hooks';
 import { showToast } from '../utils';
 
 const SignupConfirmPage: React.FC = () => {
-  const { authState, changeAuthState } = useAuth();
+  const { authState, setLoadingFalse } = useAuth();
   const { addError } = useError();
   const { theme } = useTheme();
   const { handleConfirmSignUp } = useAuthService();
@@ -20,9 +20,7 @@ const SignupConfirmPage: React.FC = () => {
   const handleResendConfirmationCode = async () => {
     const email = sessionStorage.getItem('emailForConfirmation');
     if (!email) {
-      changeAuthState({
-        loading: false,
-      });
+      setLoadingFalse();
       addError({
         message: 'Email for confirmation not found',
         displayType: 'toast',

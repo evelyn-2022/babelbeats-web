@@ -18,3 +18,18 @@ export interface AuthState {
   isAuthenticated: boolean;
   loading: boolean;
 }
+
+export interface AuthAction {
+  type: 'AUTH_REQUEST' | 'AUTH_SUCCESS' | 'AUTH_FAILURE' | 'LOGOUT';
+  payload?: User;
+}
+
+export interface AuthContextType {
+  authState: AuthState;
+  dispatch: React.Dispatch<AuthAction>;
+  authRequest: () => void;
+  authSuccess: (user: User) => void;
+  authFailure: () => void;
+  setLoadingFalse: () => void;
+  logout: () => void;
+}
