@@ -31,23 +31,19 @@ const SignupConfirmPage: React.FC = () => {
       showToast(
         'We have sent you a new verification code. Please check your inbox',
         'success',
-        theme === 'dark' ? 'dark' : 'light'
+        theme
       );
     } catch (error) {
       const errorMessage = (error as Error).message;
       changeAuthState({ error: error as Error });
-      showToast(errorMessage, 'error', theme === 'dark' ? 'dark' : 'light');
+      showToast(errorMessage, 'error', theme);
       changeAuthState({ error: null });
     }
   };
 
   useEffect(() => {
     if (authState.error?.message) {
-      showToast(
-        authState.error.message,
-        'error',
-        theme === 'dark' ? 'dark' : 'light'
-      );
+      showToast(authState.error.message, 'error', theme);
       changeAuthState({ error: null });
     }
   }, [authState.error]);

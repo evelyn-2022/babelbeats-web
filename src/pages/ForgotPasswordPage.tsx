@@ -26,11 +26,7 @@ const ForgotPasswordPage: React.FC = () => {
 
   useEffect(() => {
     if (authState.error?.message) {
-      showToast(
-        authState.error.message,
-        'error',
-        theme === 'dark' ? 'dark' : 'light'
-      );
+      showToast(authState.error.message, 'error', theme);
       changeAuthState({ error: null });
     }
   }, [authState.error]);
