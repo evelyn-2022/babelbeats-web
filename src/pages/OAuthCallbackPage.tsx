@@ -1,9 +1,13 @@
 import React, { useEffect, useRef } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { wave } from '../assets';
+import { useTheme, useError } from '../context';
 import { useAuthService } from '../hooks';
+import { showToast } from '../utils';
 
 const OAuthCallbackPage: React.FC = () => {
+  const { theme } = useTheme();
+  const { addError } = useError();
   const { handleGoogleSignInCallback } = useAuthService();
   const hasRun = useRef(false);
 
@@ -17,19 +21,30 @@ const OAuthCallbackPage: React.FC = () => {
       const urlParams = new URLSearchParams(window.location.search);
       const authorizationCode = urlParams.get('code');
 
-      if (authorizationCode) {
-        try {
-          await handleGoogleSignInCallback(authorizationCode);
-        } catch (error) {
-          console.error('Failed to sign in:', error);
+      if (!authorizationCode) {
+        showToast('No authorization code found', 'error', theme);
+        return;
+      }
+
+      try {
+        await handleGoogleSignInCallback(authorizationCode);
+      } catch (error) {
+        let errorMessage;
+        if (error instanceof Error) {
+          errorMessage = error.message;
+        } else {
+          errorMessage = 'An unknown error occurred while signing in';
         }
-      } else {
-        console.error('Authorization code not found in URL');
+        addError({
+          message: errorMessage,
+          displayType: 'toast',
+          category: 'auth',
+        });
       }
     };
 
     handleSignIn();
-  }, [handleGoogleSignInCallback]);
+  }, [handleGoogleSignInCallback, addError, theme]);
 
   return (
     <div className='min-h-screen flex flex-col items-center justify-center w-full gap-8'>

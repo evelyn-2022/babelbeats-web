@@ -1,18 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { ToastContainer } from 'react-toastify';
 import { wave } from '../assets';
 import { InputField, Button } from '../components';
 import { forgotPassword } from '../services';
-import { useAuth, useTheme } from '../context';
-import { showToast } from '../utils';
+import { useError } from '../context';
 
 const ForgotPasswordPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const navigate = useNavigate();
-  const { authState, changeAuthState } = useAuth();
-  const { theme } = useTheme();
+
+  const { addError } = useError();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -21,17 +19,20 @@ const ForgotPasswordPage: React.FC = () => {
       await forgotPassword(email);
       navigate('/verify-password-reset');
     } catch (error) {
-      changeAuthState({ error: error as Error });
-      console.error('Failed to send email:', error);
+      let errorMessage;
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else {
+        errorMessage =
+          'An unknown error occurred while sending the reset email';
+      }
+      addError({
+        message: errorMessage,
+        displayType: 'toast',
+        category: 'auth',
+      });
     }
   };
-
-  useEffect(() => {
-    if (authState.error?.message) {
-      showToast(authState.error.message, 'error', theme);
-      changeAuthState({ error: null });
-    }
-  }, [authState.error]);
 
   return (
     <div className='min-h-screen w-full flex flex-col items-center justify-center gap-8'>
@@ -67,8 +68,6 @@ const ForgotPasswordPage: React.FC = () => {
           Send email
         </Button>
       </form>
-
-      <ToastContainer />
     </div>
   );
 };

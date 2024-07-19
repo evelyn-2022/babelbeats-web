@@ -4,25 +4,39 @@ import { Helmet } from 'react-helmet-async';
 import { wave } from '../assets';
 import { InputField, Button } from '../components';
 import { resetPassword } from '../services';
+import { useError } from '../context';
 
 const ResetPasswordPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { state } = location;
+  const { errorState, addError, clearError } = useError();
   const { code } = state || {};
   const [password, setPassword] = useState('');
   const [passwordTouched, setPasswordTouched] = useState(false);
-  const [error, setError] = useState('');
 
   const handlePasswordSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const isValid = validateField();
-    if (!isValid || error) return;
+
+    if (errorState.error) return;
     try {
       await resetPassword(code, password);
       navigate('/login');
     } catch (error) {
-      console.error(error);
+      let errorMessage;
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else {
+        errorMessage = 'An unknown error occurred while resetting the password';
+      }
+      addError({
+        message: errorMessage,
+        displayType: 'toast',
+        category: 'auth',
+      });
+      setTimeout(() => {
+        navigate('/verify-password-reset');
+      }, 3000);
     }
   };
 
@@ -32,12 +46,13 @@ const ResetPasswordPage: React.FC = () => {
       /\d/.test(password),
       /[a-z]/.test(password),
     ];
-    if (criteria.every(Boolean)) {
-      setError('');
-      return true;
+    if (!criteria.every(Boolean)) {
+      addError({
+        message: 'Password does not meet all criteria.',
+        displayType: 'inline',
+        category: 'validation',
+      });
     }
-    setError('Password does not meet all criteria.');
-    return false;
   };
 
   return (
@@ -65,10 +80,9 @@ const ResetPasswordPage: React.FC = () => {
           onChange={e => {
             setPassword(e.target.value);
             setPasswordTouched(true);
-            setError('');
+            clearError();
           }}
           displayCriteria={true}
-          validationMessage={error}
           handleOnBlur={validateField}
           touched={passwordTouched}
         />

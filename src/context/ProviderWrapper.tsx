@@ -1,7 +1,9 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
+import { Layout } from '../components';
 import { ThemeProvider } from './ThemeProvider';
 import { AuthProvider } from './AuthContext';
+import { ErrorProvider } from './ErrorProvider';
 import { HelmetProvider } from 'react-helmet-async';
 
 export const ProviderWrapper: React.FC<{ children?: React.ReactNode }> = ({
@@ -9,9 +11,13 @@ export const ProviderWrapper: React.FC<{ children?: React.ReactNode }> = ({
 }) => {
   return (
     <HelmetProvider>
-      <ThemeProvider>
-        <AuthProvider>{children || <Outlet />}</AuthProvider>
-      </ThemeProvider>
+      <ErrorProvider>
+        <ThemeProvider>
+          <AuthProvider>
+            <Layout>{children || <Outlet />}</Layout>
+          </AuthProvider>
+        </ThemeProvider>
+      </ErrorProvider>
     </HelmetProvider>
   );
 };

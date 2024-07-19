@@ -27,6 +27,10 @@ const VerificationCodeForm: React.FC<VerificationCodeFormProps> = ({
     if (e.target.value !== '' && index < 5) {
       inputsRef.current[index + 1].focus();
     }
+
+    if (newCode.every(char => char !== '')) {
+      onCodeSubmit(newCode.join(''));
+    }
   };
 
   const handleKeyDown = (
@@ -58,6 +62,9 @@ const VerificationCodeForm: React.FC<VerificationCodeFormProps> = ({
               newCode[index + i] = char;
               if (index + i < 5) {
                 inputsRef.current[index + i + 1].focus();
+              }
+              if (newCode.every(char => char !== '')) {
+                onCodeSubmit(newCode.join(''));
               }
             }
             return newCode;

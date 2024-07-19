@@ -1,5 +1,4 @@
 export interface CustomError {
-  type: string;
   message: string;
   displayType: 'inline' | 'toast';
   category: 'auth' | 'validation' | 'general';

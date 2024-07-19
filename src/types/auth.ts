@@ -16,6 +16,5 @@ export interface Token {
 export interface AuthState {
   user: User | null;
   isAuthenticated: boolean;
-  error: Error | null;
   loading: boolean;
 }

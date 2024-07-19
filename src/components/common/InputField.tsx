@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { IoEyeOutline, IoEyeOffOutline } from 'react-icons/io5';
 import { PiWarningCircle, PiCircle, PiCheckCircleFill } from 'react-icons/pi';
+import { useError } from '../../context';
 
 interface InputFieldProps {
   id?: string;
@@ -24,11 +25,11 @@ const InputField: React.FC<InputFieldProps> = ({
   width,
   onChange,
   displayCriteria,
-  validationMessage,
   handleOnBlur,
   touched,
   resetPasswordVisibility,
 }) => {
+  const { errorState } = useError();
   const [focused, setFocused] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -99,11 +100,11 @@ const InputField: React.FC<InputFieldProps> = ({
 
       <div
         className={`text-red-500 text-sm flex flex-row items-center gap-0.5 ${
-          !validationMessage && 'hidden'
+          !errorState.error && 'hidden'
         }`}
       >
         <PiWarningCircle />
-        {validationMessage}
+        {errorState.error?.displayType === 'inline' && errorState.error.message}
       </div>
 
       {label?.toLowerCase() === 'password' && displayCriteria && (

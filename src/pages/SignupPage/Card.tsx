@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
 import validator from 'validator';
-import { SignupField } from './signupField';
-import { InputField, Button, SocialSignInGroup } from '../../components/common';
+import { SignupField } from './SignupField';
+import { InputField, Button, SocialSignInGroup } from '../../components';
+import { useError } from '../../context';
 
 interface CardProps {
   step: number;
   total: number;
   field: SignupField;
   values: UserSignupInfo;
-  error: string;
-  setError: (error: string) => void;
   handleSubmit: (e: React.FormEvent) => void;
   resetPasswordVisibility: boolean;
 }
@@ -26,17 +25,15 @@ const Card: React.FC<CardProps> = ({
   total,
   field,
   values,
-  error,
-  setError,
   handleSubmit,
   resetPasswordVisibility,
 }) => {
   const [passwordTouched, setPasswordTouched] = useState(false);
+  const { errorState, addError, clearError } = useError();
 
   const handleNext = (e: React.FormEvent) => {
     e.preventDefault();
-    const isValid = validateField();
-    if (!isValid || error) return;
+    if (errorState.error) return;
     handleSubmit(e);
   };
 
@@ -45,11 +42,13 @@ const Card: React.FC<CardProps> = ({
       case 'email': {
         const value = values.email;
         if (!validator.isEmail(value)) {
-          setError('Please enter a valid email address.');
-          return false;
+          addError({
+            message: 'Invalid email address.',
+            displayType: 'inline',
+            category: 'validation',
+          });
         }
-        setError('');
-        return true;
+        break;
       }
       case 'password': {
         const value = values.password;
@@ -59,33 +58,38 @@ const Card: React.FC<CardProps> = ({
           /\d/.test(value),
           /[a-z]/.test(value),
         ];
-        if (criteria.every(Boolean)) {
-          setError('');
-          return true;
+        if (!criteria.every(Boolean)) {
+          addError({
+            message: 'Password does not meet criteria.',
+            displayType: 'inline',
+            category: 'validation',
+          });
         }
-        setError('Password does not meet all criteria.');
-        return false;
+        break;
       }
       case 'confirm password': {
         const { password, passwordConfirm } = values;
         if (password !== passwordConfirm) {
-          setError('Passwords do not match.');
-          return false;
+          addError({
+            message: 'Passwords do not match.',
+            displayType: 'inline',
+            category: 'validation',
+          });
         }
-        setError('');
-        return true;
+        break;
       }
       case 'username': {
         if (values.name.trim() === '') {
-          setError('Username cannot be empty.');
-          return false;
+          addError({
+            message: 'Username cannot be empty.',
+            displayType: 'inline',
+            category: 'validation',
+          });
         }
-        setError('');
-        return true;
+        break;
       }
       default:
-        setError('');
-        return true;
+        clearError();
     }
   };
 
@@ -103,7 +107,6 @@ const Card: React.FC<CardProps> = ({
           }
         }}
         displayCriteria={true}
-        validationMessage={error}
         handleOnBlur={validateField}
         touched={passwordTouched}
         resetPasswordVisibility={resetPasswordVisibility}

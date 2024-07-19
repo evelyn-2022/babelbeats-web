@@ -1,24 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { ToastContainer } from 'react-toastify';
 import { BsChevronLeft } from 'react-icons/bs';
 import { wave } from '../../assets';
 import Card from './Card';
-import { SignupField } from './signupField';
-import { useAuth, useTheme } from '../../context';
+import { SignupField } from './SignupField';
+import { useError } from '../../context';
 import { useAuthService } from '../../hooks';
-import { showToast } from '../../utils';
 
 const SignupPage: React.FC = () => {
-  const { authState, changeAuthState } = useAuth();
-  const { theme } = useTheme();
+  const { clearError } = useError();
   const { handleSignUp } = useAuthService();
   const [step, setStep] = useState(0);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
   const [name, setName] = useState('');
-  const [error, setError] = useState('');
   const [resetPasswordVisibility, setResetPasswordVisibility] = useState(false);
 
   const fields: SignupField[] = [
@@ -28,7 +24,7 @@ const SignupPage: React.FC = () => {
       value: email,
       onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
         setEmail(e.target.value);
-        setError('');
+        clearError();
       },
       description: 'Enter your email address',
     },
@@ -38,7 +34,7 @@ const SignupPage: React.FC = () => {
       value: password,
       onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
         setPassword(e.target.value);
-        setError('');
+        clearError();
       },
       description: 'Create a password',
     },
@@ -48,7 +44,7 @@ const SignupPage: React.FC = () => {
       value: passwordConfirm,
       onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
         setPasswordConfirm(e.target.value);
-        setError('');
+        clearError();
       },
       description: 'Confirm your password',
     },
@@ -58,18 +54,11 @@ const SignupPage: React.FC = () => {
       value: name,
       onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
         setName(e.target.value);
-        setError('');
+        clearError();
       },
       description: 'Create a username',
     },
   ];
-
-  useEffect(() => {
-    if (authState.error?.message) {
-      showToast(authState.error.message, 'error', theme);
-      changeAuthState({ error: null });
-    }
-  }, [authState.error]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -90,7 +79,7 @@ const SignupPage: React.FC = () => {
       setStep(prev => prev - 1);
     }
     setResetPasswordVisibility(true);
-    setError('');
+    clearError();
   };
 
   useEffect(() => {
@@ -142,16 +131,12 @@ const SignupPage: React.FC = () => {
         total={fields.length}
         field={fields[step]}
         values={{ email, password, passwordConfirm, name }}
-        error={error}
-        setError={setError}
         handleSubmit={handleSubmit}
         resetPasswordVisibility={resetPasswordVisibility}
       />
       <a href='/login'>
         Already have an account? <span className='link'>Log in</span>
       </a>
-
-      <ToastContainer />
     </div>
   );
 };

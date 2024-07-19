@@ -5,7 +5,7 @@ export const storeTokens = (
   idToken: string,
   accessToken: string,
   refreshToken: string,
-  rememberMe: boolean
+  rememberMe: boolean = true
 ) => {
   if (rememberMe) {
     return Promise.all([

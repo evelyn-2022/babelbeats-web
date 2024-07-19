@@ -1,5 +1,4 @@
 import { createBrowserRouter } from 'react-router-dom';
-
 import { ProviderWrapper } from './context';
 import {
   HomePage,

@@ -17,7 +17,6 @@ import { refreshTokens } from '../services';
 const initialAuthState: AuthState = {
   user: null,
   isAuthenticated: false,
-  error: null,
   loading: false,
 };
 
@@ -63,8 +62,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         await storeTokens(
           newTokens.idToken,
           newTokens.accessToken,
-          refreshToken,
-          true
+          refreshToken
         );
         await updateUserInfo(newTokens.idToken);
       } else {

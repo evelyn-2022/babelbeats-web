@@ -63,9 +63,7 @@ export const confirmSignUp = (
 
   return new Promise((resolve, reject) => {
     cognitoUser.confirmRegistration(code, true, (err, result) => {
-      if (err) {
-        return reject(err);
-      }
+      if (err) return reject(err);
       resolve(result);
     });
   });
@@ -107,7 +105,7 @@ export const googleSignIn = () => {
 
 export const exchangeCodeForTokens = async (
   authorizationCode: string
-): Promise<Token | null> => {
+): Promise<Token> => {
   const tokenEndpoint = `https://${domain}/oauth2/token`;
   const params = new URLSearchParams();
   params.append('grant_type', 'authorization_code');
@@ -123,19 +121,18 @@ export const exchangeCodeForTokens = async (
     });
 
     if (response.status === 200) {
-      console.log('Token exchange successful:', response.data);
       return response.data as Token;
     } else {
-      console.error('Failed to exchange code for tokens:', response.status);
-      return null;
+      throw new Error(`Failed to exchange code for tokens: ${response.status}`);
     }
   } catch (error) {
-    console.error('Failed to exchange code for tokens:', error);
-    return null;
+    throw new Error('Unknow error occurred while exchanging code for tokens');
   }
 };
 
-export const refreshTokens = async (refreshToken: string) => {
+export const refreshTokens = async (
+  refreshToken: string
+): Promise<{ idToken: string; accessToken: string }> => {
   const tokenEndpoint = `https://${domain}/oauth2/token`;
   const params = new URLSearchParams();
   params.append('grant_type', 'refresh_token');
@@ -159,8 +156,7 @@ export const refreshTokens = async (refreshToken: string) => {
       accessToken: data.access_token,
     };
   } catch (error) {
-    console.error('Failed to refresh tokens:', error);
-    return null;
+    throw new Error('Failed to refresh tokens');
   }
 };
 
@@ -243,14 +239,8 @@ export const resetPassword = async (
 
   return new Promise((resolve, reject) => {
     cognitoUser.confirmPassword(verificationCode, newPassword, {
-      onSuccess: () => {
-        alert('Password reset successfully');
-        resolve();
-      },
-      onFailure: err => {
-        alert('Error resetting password');
-        reject(err);
-      },
+      onSuccess: () => resolve(),
+      onFailure: err => reject(err),
     });
   });
 };
@@ -272,14 +262,8 @@ export const updateCognitoUserIdAttribute = async (
     };
 
     const command = new AdminUpdateUserAttributesCommand(params);
-    const response = await cognitoClient.send(command);
-    console.log('Successfully updated custom:id attribute:', response);
+    await cognitoClient.send(command);
   } catch (error) {
-    console.error(
-      'Error updating custom:id attribute:',
-      error,
-      accessKeyId,
-      secretAccessKey
-    );
+    console.error('Error updating custom:id attribute');
   }
 };

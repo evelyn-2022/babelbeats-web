@@ -1,8 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { ToastContainer } from 'react-toastify';
-import { showToast } from '../utils';
 import { wave } from '../assets';
 import {
   Button,
@@ -10,24 +8,17 @@ import {
   SocialSignInGroup,
   ToggleSwitch,
 } from '../components';
-import { useAuth, useTheme } from '../context';
+import { useAuth, useError } from '../context';
 import { useAuthService } from '../hooks';
 
 const LoginPage: React.FC = () => {
-  const { theme } = useTheme();
-  const { authState, changeAuthState } = useAuth();
+  const { authState } = useAuth();
   const { handleSignIn } = useAuthService();
+  const { clearError } = useError();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isSubmitDisabled, setIsSubmitDisabled] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
-
-  useEffect(() => {
-    if (authState.error?.message) {
-      showToast(authState.error.message, 'error', theme);
-      changeAuthState({ error: null });
-    }
-  }, [authState.error]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,7 +40,7 @@ const LoginPage: React.FC = () => {
       value: email,
       onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
         setEmail(e.target.value);
-        changeAuthState({ error: null });
+        clearError();
       },
     },
     {
@@ -58,7 +49,7 @@ const LoginPage: React.FC = () => {
       value: password,
       onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
         setPassword(e.target.value);
-        changeAuthState({ error: null });
+        clearError();
       },
     },
   ];
@@ -117,8 +108,6 @@ const LoginPage: React.FC = () => {
       <a href='/signup'>
         Not a member? <span className='link'>Sign up</span>
       </a>
-
-      <ToastContainer />
     </div>
   );
 };

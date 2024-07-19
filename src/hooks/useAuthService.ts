@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context';
+import { useAuth, useError } from '../context';
 import {
   signUp,
   confirmSignUp,
@@ -13,6 +13,7 @@ import { storeTokens, removeTokens, extractUserInfo } from '../utils';
 export const useAuthService = () => {
   const { setAuthState, changeAuthState } = useAuth();
   const navigate = useNavigate();
+  const { addError } = useError();
 
   const handleSignUp = async (
     email: string,
@@ -27,9 +28,19 @@ export const useAuthService = () => {
       sessionStorage.setItem('emailForConfirmation', email);
       navigate('/signup-confirm');
     } catch (error) {
+      let errorMessage;
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else {
+        errorMessage = 'An unknown error occurred while signing up';
+      }
+      addError({
+        message: errorMessage,
+        displayType: 'toast',
+        category: 'auth',
+      });
       changeAuthState({
         loading: false,
-        error: error as Error,
       });
     }
   };
@@ -41,20 +52,27 @@ export const useAuthService = () => {
     if (!email) {
       changeAuthState({
         loading: false,
-        error: {
-          message: 'Email not found',
-        } as Error,
       });
       return;
     }
     try {
       await confirmSignUp(email, code);
-
       changeAuthState({ loading: false });
       sessionStorage.removeItem('emailForConfirmation');
       navigate('/login');
     } catch (error) {
-      changeAuthState({ loading: false, error: error as Error });
+      let errorMessage;
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else {
+        errorMessage = 'An unknown error occurred while confirming sign up';
+      }
+      addError({
+        message: errorMessage,
+        displayType: 'toast',
+        category: 'auth',
+      });
+      changeAuthState({ loading: false });
     }
   };
 
@@ -66,13 +84,20 @@ export const useAuthService = () => {
         loading: false,
         isAuthenticated: true,
       });
+      // If user info is not in the database, update it
       if (!userInfo.id) {
         const updatedUser = await updateUser(userInfo);
         changeAuthState({ user: updatedUser });
       }
       navigate('/');
     } catch (error) {
-      console.error('An unexpected error occurred:', error);
+      let errorMessage;
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else {
+        errorMessage = 'An unknown error occurred while signing in';
+      }
+      throw new Error(errorMessage);
     }
   };
 
@@ -92,7 +117,18 @@ export const useAuthService = () => {
       );
       await processSignIn(result.getIdToken().getJwtToken());
     } catch (error) {
-      changeAuthState({ loading: false, error: error as Error });
+      let errorMessage;
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else {
+        errorMessage = 'An unknown error occurred while signing in';
+      }
+      addError({
+        message: errorMessage,
+        displayType: 'toast',
+        category: 'auth',
+      });
+      changeAuthState({ loading: false });
     }
   };
 
@@ -100,25 +136,29 @@ export const useAuthService = () => {
     changeAuthState({ loading: true });
     try {
       const tokens = await exchangeCodeForTokens(authorizationCode);
-      console.log('tokens', tokens);
       if (tokens) {
         await storeTokens(
           tokens.id_token,
           tokens.access_token,
-          tokens.refresh_token,
-          true
+          tokens.refresh_token
         );
         await processSignIn(tokens.id_token);
       } else {
         throw new Error('Failed to exchange code for tokens');
       }
     } catch (error) {
-      changeAuthState({
-        loading: false,
-        error: {
-          message: 'An unexpected error occurred when signing in with Google',
-        } as Error,
+      let errorMessage;
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else {
+        errorMessage = 'An unknown error occurred while signing in';
+      }
+      addError({
+        message: errorMessage,
+        displayType: 'toast',
+        category: 'auth',
       });
+      changeAuthState({ loading: false });
     }
   };
 
@@ -128,7 +168,6 @@ export const useAuthService = () => {
     setAuthState({
       user: null,
       isAuthenticated: false,
-      error: null,
       loading: false,
     });
     navigate('/');

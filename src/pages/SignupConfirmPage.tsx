@@ -1,8 +1,7 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Helmet } from 'react-helmet-async';
-import { ToastContainer } from 'react-toastify';
 import { wave } from '../assets';
-import { useAuth, useTheme } from '../context';
+import { useAuth, useTheme, useError } from '../context';
 import { VerificationCodeForm } from '../components';
 import { resendConfirmationCode } from '../services';
 import { useAuthService } from '../hooks';
@@ -10,6 +9,7 @@ import { showToast } from '../utils';
 
 const SignupConfirmPage: React.FC = () => {
   const { authState, changeAuthState } = useAuth();
+  const { addError } = useError();
   const { theme } = useTheme();
   const { handleConfirmSignUp } = useAuthService();
 
@@ -22,12 +22,15 @@ const SignupConfirmPage: React.FC = () => {
     if (!email) {
       changeAuthState({
         loading: false,
-        error: {
-          message: 'Email not found',
-        } as Error,
+      });
+      addError({
+        message: 'Email for confirmation not found',
+        displayType: 'toast',
+        category: 'auth',
       });
       return;
     }
+
     try {
       await resendConfirmationCode(email);
       showToast(
@@ -36,19 +39,19 @@ const SignupConfirmPage: React.FC = () => {
         theme
       );
     } catch (error) {
-      const errorMessage = (error as Error).message;
-      changeAuthState({ error: error as Error });
-      showToast(errorMessage, 'error', theme);
-      changeAuthState({ error: null });
+      let errorMessage;
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else {
+        errorMessage = 'An error occurred while resending the code';
+      }
+      addError({
+        message: errorMessage,
+        displayType: 'toast',
+        category: 'auth',
+      });
     }
   };
-
-  useEffect(() => {
-    if (authState.error?.message) {
-      showToast(authState.error.message, 'error', theme);
-      changeAuthState({ error: null });
-    }
-  }, [authState.error]);
 
   return (
     <div className='min-h-screen w-full flex flex-col items-center justify-center gap-8'>
@@ -80,8 +83,6 @@ const SignupConfirmPage: React.FC = () => {
           Send a new code
         </button>
       </div>
-
-      <ToastContainer />
     </div>
   );
 };
