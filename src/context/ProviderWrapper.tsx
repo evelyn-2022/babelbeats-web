@@ -1,6 +1,6 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
-import { ThemeProvider } from './ThemeContext';
+import { ThemeProvider } from './ThemeProvider';
 import { AuthProvider } from './AuthContext';
 import { HelmetProvider } from 'react-helmet-async';
 
