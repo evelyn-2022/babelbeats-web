@@ -1,10 +1,12 @@
 import React, { useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { ToastContainer } from 'react-toastify';
 import { wave } from '../assets';
 import { useAuth, useTheme } from '../context';
-import { VerificationCodeForm, Toast, showToast } from '../components';
+import { VerificationCodeForm } from '../components';
 import { resendConfirmationCode } from '../services';
 import { useAuthService } from '../hooks';
+import { showToast } from '../utils';
 
 const SignupConfirmPage: React.FC = () => {
   const { authState, changeAuthState } = useAuth();
@@ -79,7 +81,7 @@ const SignupConfirmPage: React.FC = () => {
         </button>
       </div>
 
-      <Toast />
+      <ToastContainer />
     </div>
   );
 };

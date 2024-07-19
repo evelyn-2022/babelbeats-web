@@ -1,5 +1,4 @@
-import React from 'react';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 
 export const showToast = (
   message: string,
@@ -13,8 +12,4 @@ export const showToast = (
     closeOnClick: true,
     draggable: true,
   });
-};
-
-export const Toast: React.FC = () => {
-  return <ToastContainer />;
 };

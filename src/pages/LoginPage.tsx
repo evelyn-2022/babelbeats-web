@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { Toast, showToast } from '../components';
+import { ToastContainer } from 'react-toastify';
+import { showToast } from '../utils';
 import { wave } from '../assets';
 import {
   Button,
@@ -117,7 +118,7 @@ const LoginPage: React.FC = () => {
         Not a member? <span className='link'>Sign up</span>
       </a>
 
-      <Toast />
+      <ToastContainer />
     </div>
   );
 };

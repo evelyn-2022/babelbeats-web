@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
+import { ToastContainer } from 'react-toastify';
 import { wave } from '../assets';
-import { InputField, Button, Toast, showToast } from '../components';
+import { InputField, Button } from '../components';
 import { forgotPassword } from '../services';
 import { useAuth, useTheme } from '../context';
+import { showToast } from '../utils';
 
 const ForgotPasswordPage: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -66,7 +68,7 @@ const ForgotPasswordPage: React.FC = () => {
         </Button>
       </form>
 
-      <Toast />
+      <ToastContainer />
     </div>
   );
 };

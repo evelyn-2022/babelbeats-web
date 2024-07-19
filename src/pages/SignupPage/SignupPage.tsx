@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { ToastContainer } from 'react-toastify';
 import { BsChevronLeft } from 'react-icons/bs';
 import { wave } from '../../assets';
 import Card from './Card';
 import { SignupField } from './signupField';
 import { useAuth, useTheme } from '../../context';
 import { useAuthService } from '../../hooks';
-import { Toast, showToast } from '../../components';
+import { showToast } from '../../utils';
 
 const SignupPage: React.FC = () => {
   const { authState, changeAuthState } = useAuth();
@@ -150,7 +151,7 @@ const SignupPage: React.FC = () => {
         Already have an account? <span className='link'>Log in</span>
       </a>
 
-      <Toast />
+      <ToastContainer />
     </div>
   );
 };
