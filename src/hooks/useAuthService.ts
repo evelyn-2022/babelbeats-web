@@ -6,12 +6,13 @@ import {
   signIn,
   googleSignIn,
   exchangeCodeForTokens,
-  updateUser,
 } from '../services';
+import { useApiService } from './useApiService';
 import { storeTokens, removeTokens, extractUserInfo } from '../utils';
 
 export const useAuthService = () => {
   const { authRequest, authSuccess, authFailure, setLoadingFalse } = useAuth();
+  const { updateUser } = useApiService();
   const navigate = useNavigate();
   const { addError } = useError();
 
@@ -73,17 +74,17 @@ export const useAuthService = () => {
 
   const processSignIn = async (idToken: string) => {
     try {
-      const userInfo = await extractUserInfo(idToken);
-      authSuccess(userInfo);
+      let userInfo = await extractUserInfo(idToken);
       // If user info is not in the database, update it
       if (!userInfo.id) {
-        const updatedUser = await updateUser(userInfo);
-        if (updatedUser) {
-          authSuccess(updatedUser);
+        const updatedUserInfo = await updateUser(userInfo);
+        if (updatedUserInfo) {
+          userInfo = updatedUserInfo;
         } else {
           throw new Error('Failed to update user info in database');
         }
       }
+      authSuccess(userInfo);
       navigate('/');
     } catch (error) {
       let errorMessage;

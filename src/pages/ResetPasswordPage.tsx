@@ -14,11 +14,14 @@ const ResetPasswordPage: React.FC = () => {
   const { code } = state || {};
   const [password, setPassword] = useState('');
   const [passwordTouched, setPasswordTouched] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handlePasswordSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (errorState.error) return;
+    if (errorState.error || isSubmitting) return;
+    setIsSubmitting(true);
+
     try {
       await resetPassword(code, password);
       navigate('/login');
@@ -36,6 +39,10 @@ const ResetPasswordPage: React.FC = () => {
       });
       setTimeout(() => {
         navigate('/verify-password-reset');
+      }, 3000);
+    } finally {
+      setTimeout(() => {
+        setIsSubmitting(false); // Re-enable the submit button after a delay
       }, 3000);
     }
   };
