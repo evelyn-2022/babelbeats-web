@@ -10,7 +10,12 @@ import {
   ForgotPasswordPage,
   VerifyPasswordResetPage,
   ResetPasswordPage,
+  AccountSidebar,
+  ProfilePage,
+  SettingsPage,
+  LanguagePage,
   ErrorBoundary,
+  ProtectedRoute,
 } from './pages';
 
 const router = createBrowserRouter([
@@ -32,6 +37,20 @@ const router = createBrowserRouter([
       { path: '/verify-password-reset', element: <VerifyPasswordResetPage /> },
       { path: '/reset-password', element: <ResetPasswordPage /> },
       { path: '/oauth2/callback', element: <OAuthCallbackPage /> },
+      {
+        element: <ProtectedRoute />,
+        children: [
+          {
+            path: '/account',
+            element: <AccountSidebar />,
+            children: [
+              { path: 'profile', element: <ProfilePage /> },
+              { path: 'language', element: <LanguagePage /> },
+              { path: 'settings', element: <SettingsPage /> },
+            ],
+          },
+        ],
+      },
     ],
   },
 ]);
