@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Modal, InputField, Button } from '../../components';
-import { useError, useAuth } from '../../context';
-import { validateField } from '../../utils';
+import { useError, useAuth, useTheme } from '../../context';
+import { showToast, validateField } from '../../utils';
 import { checkEmailRegistered, updateCognitoUserEmail } from '../../services';
 
 interface NewEmailModalProps {
@@ -22,12 +22,15 @@ const NewEmailModal: React.FC<NewEmailModalProps> = ({
   setNewEmail,
 }) => {
   const { authState } = useAuth();
+  const { theme } = useTheme();
   const [isLoading, setIsLoading] = useState(false);
   const { errorState, addError, clearError } = useError();
   const inputRef = useRef<HTMLInputElement | null>(null);
 
-  const handleEmailChange = async () => {
+  const handleEmailSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     setIsLoading(true);
+
     if (!authState.user?.cognitoSub) {
       addError({
         message: 'Cannot find authorized user',
@@ -88,6 +91,11 @@ const NewEmailModal: React.FC<NewEmailModalProps> = ({
       await updateCognitoUserEmail(authState.user?.cognitoSub, newEmail);
       setNewEmailModalOpen(false);
       setVerificationModalOpen(true);
+      showToast(
+        'Please check your inbox for verification code',
+        'success',
+        theme
+      );
     } catch (error) {
       addError({
         message: 'An error occurred while updating email',
@@ -106,7 +114,7 @@ const NewEmailModal: React.FC<NewEmailModalProps> = ({
 
   return (
     <Modal isOpen={isNewEmailModalOpen} onClose={handleNewEmailModalClose}>
-      <div className='flex flex-col gap-8'>
+      <form className='flex flex-col gap-8' onSubmit={handleEmailSubmit}>
         <div className='text-center text-xl font-bold'>Enter New Email</div>
         <InputField
           id='email'
@@ -121,7 +129,7 @@ const NewEmailModal: React.FC<NewEmailModalProps> = ({
           width='w-30'
           ref={inputRef}
         />
-        <Button onClick={handleEmailChange} variant='filled'>
+        <Button variant='filled' type='submit'>
           {isLoading ? (
             <>
               <div className='w-4 h-4 border-2 border-white border-solid border-t-transparent rounded-full animate-spin mr-2'></div>
@@ -131,7 +139,7 @@ const NewEmailModal: React.FC<NewEmailModalProps> = ({
             'Continue'
           )}
         </Button>
-      </div>
+      </form>
     </Modal>
   );
 };

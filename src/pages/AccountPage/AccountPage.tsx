@@ -3,16 +3,30 @@ import { useAuth } from '../../context';
 import { Button } from '../../components';
 import NewEmailModal from './NewEmailModal';
 import VerificationModal from './VerificationModal';
+import OldPasswordModal from './OldPasswordModal';
+import NewPasswordModal from './NewPasswordModal';
 
 const AccountPage: React.FC = () => {
   const { authState } = useAuth();
   const [isNewEmailModalOpen, setNewEmailModalOpen] = useState(false);
   const [isVerificationModalOpen, setVerificationModalOpen] = useState(false);
+  const [isOldPasswordModalOpen, setOldPasswordModalOpen] = useState(false);
+  const [isNewPasswordModalOpen, setNewPasswordModalOpen] = useState(false);
   const [newEmail, setNewEmail] = useState('');
+  const [oldPassword, setOldPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
 
   const handleNewEmailModalClose = () => {
     setNewEmailModalOpen(false);
     setVerificationModalOpen(false);
+    setNewEmail('');
+  };
+
+  const handleOldPasswordModalClose = () => {
+    setOldPasswordModalOpen(false);
+    setNewPasswordModalOpen(false);
+    setOldPassword('');
+    setNewPassword('');
   };
 
   return (
@@ -52,6 +66,23 @@ const AccountPage: React.FC = () => {
               handleNewEmailModalClose={handleNewEmailModalClose}
             />
 
+            <OldPasswordModal
+              isOldPasswordModalOpen={isOldPasswordModalOpen}
+              setOldPasswordModalOpen={setOldPasswordModalOpen}
+              setNewPasswordModalOpen={setNewPasswordModalOpen}
+              handleOldPasswordModalClose={handleOldPasswordModalClose}
+              oldPassword={oldPassword}
+              setOldPassword={setOldPassword}
+            />
+
+            <NewPasswordModal
+              isNewPasswordModalOpen={isNewPasswordModalOpen}
+              handleOldPasswordModalClose={handleOldPasswordModalClose}
+              newPassword={newPassword}
+              oldPassword={oldPassword}
+              setNewPassword={setNewPassword}
+            />
+
             <div className='flex flex-row items-center justify-between'>
               <div>
                 <div className='font-semibold'>Password</div>
@@ -59,7 +90,11 @@ const AccountPage: React.FC = () => {
                   Use the password to log into your account
                 </div>
               </div>
-              <Button width='w-40' variant='outlined'>
+              <Button
+                width='w-40'
+                variant='outlined'
+                onClick={() => setOldPasswordModalOpen(true)}
+              >
                 Change password
               </Button>
             </div>

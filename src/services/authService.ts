@@ -11,6 +11,7 @@ import {
   AdminGetUserCommand,
   VerifyUserAttributeCommand,
   ListUsersCommand,
+  ChangePasswordCommand,
 } from '@aws-sdk/client-cognito-identity-provider';
 import axios, { AxiosResponse } from 'axios';
 import config from '../config';
@@ -365,17 +366,20 @@ export const verifyOldPassword = (
   });
 };
 
-export const updateNewPassword = (
-  cognitoUser: CognitoUser,
+export const changePassword = async (
   oldPassword: string,
-  newPassword: string
+  newPassword: string,
+  accessToken: string
 ): Promise<void> => {
-  return new Promise((resolve, reject) => {
-    cognitoUser.changePassword(oldPassword, newPassword, err => {
-      if (err) {
-        return reject(err);
-      }
-      resolve();
-    });
+  const command = new ChangePasswordCommand({
+    AccessToken: accessToken,
+    PreviousPassword: oldPassword,
+    ProposedPassword: newPassword,
   });
+
+  try {
+    await cognitoClient.send(command);
+  } catch (error) {
+    throw new Error('Failed to change password');
+  }
 };

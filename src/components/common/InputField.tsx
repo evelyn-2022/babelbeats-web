@@ -125,32 +125,33 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
             errorState.error.message}
         </div>
 
-        {label?.toLowerCase() === 'password' && requireValidation && (
-          <div className='mt-2'>
-            {passwordCriteria.map((criteria, index) => (
-              <div key={index} className='flex items-center mt-1'>
-                {criteria.valid ? (
-                  <span className='text-primary-dark/80 dark:text-primary'>
-                    <PiCheckCircleFill />
+        {(label?.toLowerCase() === 'password' || id === 'password') &&
+          requireValidation && (
+            <div className='mt-2'>
+              {passwordCriteria.map((criteria, index) => (
+                <div key={index} className='flex items-center mt-1'>
+                  {criteria.valid ? (
+                    <span className='text-primary-dark/80 dark:text-primary'>
+                      <PiCheckCircleFill />
+                    </span>
+                  ) : (
+                    <span className='text-customBlack/50 dark:text-customWhite/50'>
+                      <PiCircle />
+                    </span>
+                  )}
+                  <span
+                    className={`ml-2 text-sm ${
+                      !focused && touched && !criteria.valid
+                        ? 'text-red-500'
+                        : 'text-customBlack dark:text-customWhite'
+                    }`}
+                  >
+                    {criteria.label}
                   </span>
-                ) : (
-                  <span className='text-customBlack/50 dark:text-customWhite/50'>
-                    <PiCircle />
-                  </span>
-                )}
-                <span
-                  className={`ml-2 text-sm ${
-                    !focused && touched && !criteria.valid
-                      ? 'text-red-500'
-                      : 'text-customBlack dark:text-customWhite'
-                  }`}
-                >
-                  {criteria.label}
-                </span>
-              </div>
-            ))}
-          </div>
-        )}
+                </div>
+              ))}
+            </div>
+          )}
       </div>
     );
   }
