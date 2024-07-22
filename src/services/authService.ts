@@ -9,6 +9,8 @@ import {
   CognitoIdentityProviderClient,
   AdminUpdateUserAttributesCommand,
   AdminGetUserCommand,
+  VerifyUserAttributeCommand,
+  ListUsersCommand,
 } from '@aws-sdk/client-cognito-identity-provider';
 import axios, { AxiosResponse } from 'axios';
 import config from '../config';
@@ -63,7 +65,10 @@ export const confirmSignUp = (
 
   return new Promise((resolve, reject) => {
     cognitoUser.confirmRegistration(code, true, (err, result) => {
-      if (err) return reject(err);
+      if (err) {
+        console.error('Error in confirmRegistration:', err);
+        return reject(err);
+      }
       resolve(result);
     });
   });
@@ -264,7 +269,26 @@ export const updateCognitoUserIdAttribute = async (
     const command = new AdminUpdateUserAttributesCommand(params);
     await cognitoClient.send(command);
   } catch (error) {
-    console.error('Error updating custom:id attribute');
+    throw new Error('Error updating custom:id attribute');
+  }
+};
+
+export const checkEmailRegistered = async (email: string): Promise<boolean> => {
+  try {
+    const command = new ListUsersCommand({
+      UserPoolId: userPoolId,
+      Filter: `email = "${email}"`,
+    });
+
+    const response = await cognitoClient.send(command);
+
+    if (response.Users && response.Users.length > 0) {
+      return true;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    throw new Error('Failed to check if email is registered');
   }
 };
 
@@ -290,8 +314,25 @@ export const updateCognitoUserEmail = async (
 
     const command = new AdminUpdateUserAttributesCommand(params);
     await cognitoClient.send(command);
-    console.log('Email update initiated. Verification code sent to new email.');
   } catch (error) {
-    console.error('Error updating email attribute:', error);
+    throw new Error('Failed to update email');
+  }
+};
+
+export const verifyNewEmail = async (
+  accessToken: string,
+  verificationCode: string
+) => {
+  try {
+    const params = {
+      AccessToken: accessToken,
+      AttributeName: 'email',
+      Code: verificationCode,
+    };
+
+    const command = new VerifyUserAttributeCommand(params);
+    await cognitoClient.send(command);
+  } catch (error) {
+    throw new Error('Failed to verify new email');
   }
 };

@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import Button from './Button';
 
 interface VerificationCodeFormProps {
-  onCodeSubmit: (code: string) => void;
+  onCodeSubmit: (verificationCode: string) => void;
   isLoading: boolean;
   buttonText: string;
   spacing?: string;
@@ -67,9 +67,9 @@ const VerificationCodeForm: React.FC<VerificationCodeFormProps> = ({
               if (index + i < 5) {
                 inputsRef.current[index + i + 1].focus();
               }
-              if (newCode.every(char => char !== '')) {
-                onCodeSubmit(newCode.join(''));
-              }
+              // if (newCode.every(char => char !== '')) {
+              //   onCodeSubmit(newCode.join(''));
+              // }
             }
             return newCode;
           });

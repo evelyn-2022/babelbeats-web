@@ -16,7 +16,7 @@ export const checkRegistrationApi = async (
   return response.data;
 };
 
-export const updateUserApi = async (user: User): Promise<User> => {
+export const updateUserIdApi = async (user: User): Promise<User> => {
   let updatedUser: User;
   let res: User | null = null;
 
