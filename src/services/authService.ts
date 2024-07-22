@@ -336,3 +336,46 @@ export const verifyNewEmail = async (
     throw new Error('Failed to verify new email');
   }
 };
+
+export const verifyOldPassword = (
+  email: string,
+  oldPassword: string
+): Promise<CognitoUser> => {
+  const authDetails = new AuthenticationDetails({
+    Username: email,
+    Password: oldPassword,
+  });
+
+  const userData = {
+    Username: email,
+    Pool: userPool,
+  };
+
+  const cognitoUser = new CognitoUser(userData);
+
+  return new Promise((resolve, reject) => {
+    cognitoUser.authenticateUser(authDetails, {
+      onSuccess: () => {
+        resolve(cognitoUser);
+      },
+      onFailure: (err: Error) => {
+        reject(err);
+      },
+    });
+  });
+};
+
+export const updateNewPassword = (
+  cognitoUser: CognitoUser,
+  oldPassword: string,
+  newPassword: string
+): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    cognitoUser.changePassword(oldPassword, newPassword, err => {
+      if (err) {
+        return reject(err);
+      }
+      resolve();
+    });
+  });
+};
