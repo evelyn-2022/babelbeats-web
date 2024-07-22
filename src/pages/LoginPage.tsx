@@ -10,6 +10,7 @@ import {
 } from '../components';
 import { useAuth, useError } from '../context';
 import { useAuthService } from '../hooks';
+import { ValidatedFields } from '../types';
 
 const LoginPage: React.FC = () => {
   const { authState } = useAuth();
@@ -35,8 +36,17 @@ const LoginPage: React.FC = () => {
     setRememberMe(prevState => !prevState);
   };
 
-  const fields = [
+  interface Field {
+    id: keyof ValidatedFields;
+    label: string;
+    type: string;
+    value: string;
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  }
+
+  const fields: Field[] = [
     {
+      id: 'email',
       label: 'Email',
       type: 'text',
       value: email,
@@ -46,6 +56,7 @@ const LoginPage: React.FC = () => {
       },
     },
     {
+      id: 'password',
       label: 'Password',
       type: 'password',
       value: password,
@@ -77,8 +88,8 @@ const LoginPage: React.FC = () => {
       <form onSubmit={handleSubmit} className='flex flex-col gap-6'>
         {fields.map((field, i) => (
           <InputField
-            key={field.label.toLowerCase()}
-            id={field.label.toLowerCase()}
+            key={field.id}
+            id={field.id}
             label={field.label}
             type={field.type}
             value={field.value}
