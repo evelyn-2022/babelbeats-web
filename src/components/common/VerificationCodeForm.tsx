@@ -84,6 +84,10 @@ const VerificationCodeForm: React.FC<VerificationCodeFormProps> = ({
   };
 
   useEffect(() => {
+    inputsRef.current[0]?.focus();
+  }, []);
+
+  useEffect(() => {
     inputsRef.current = inputsRef.current.slice(0, 6);
     const timeouts = pasteTimeouts.current;
     return () => {

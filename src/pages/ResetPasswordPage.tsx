@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { wave } from '../assets';
@@ -15,6 +15,7 @@ const ResetPasswordPage: React.FC = () => {
   const [password, setPassword] = useState('');
   const [passwordTouched, setPasswordTouched] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
   const handlePasswordSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,6 +63,12 @@ const ResetPasswordPage: React.FC = () => {
     }
   };
 
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, []);
+
   return (
     <div className='min-h-screen w-full flex flex-col items-center justify-center gap-8'>
       <Helmet>
@@ -92,6 +99,7 @@ const ResetPasswordPage: React.FC = () => {
           displayCriteria={true}
           handleOnBlur={validateField}
           touched={passwordTouched}
+          ref={inputRef}
         />
         <Button width='w-96' type='submit' variant='filled'>
           Submit

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { wave } from '../assets';
@@ -9,7 +9,7 @@ import { useError } from '../context';
 const ForgotPasswordPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const navigate = useNavigate();
-
+  const inputRef = useRef<HTMLInputElement | null>(null);
   const { addError } = useError();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -33,6 +33,12 @@ const ForgotPasswordPage: React.FC = () => {
       });
     }
   };
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, []);
 
   return (
     <div className='min-h-screen w-full flex flex-col items-center justify-center gap-8'>
@@ -62,6 +68,7 @@ const ForgotPasswordPage: React.FC = () => {
           onChange={e => {
             setEmail(e.target.value);
           }}
+          ref={inputRef}
         />
 
         <Button width='w-96' type='submit' variant='filled'>
