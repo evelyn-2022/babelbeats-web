@@ -5,12 +5,16 @@ interface VerificationCodeFormProps {
   onCodeSubmit: (code: string) => void;
   isLoading: boolean;
   buttonText: string;
+  spacing?: string;
+  btnWidth?: string;
 }
 
 const VerificationCodeForm: React.FC<VerificationCodeFormProps> = ({
   onCodeSubmit,
   isLoading,
   buttonText,
+  spacing,
+  btnWidth,
 }) => {
   const [code, setCode] = useState<string[]>(Array(6).fill(''));
   const inputsRef = useRef<HTMLInputElement[]>([]);
@@ -89,7 +93,7 @@ const VerificationCodeForm: React.FC<VerificationCodeFormProps> = ({
 
   return (
     <form className='flex flex-col gap-8 items-center' onSubmit={handleSubmit}>
-      <div className='flex space-x-4'>
+      <div className={`flex ${spacing ? spacing : 'space-x-4'}`}>
         {code.map((digit, index) => (
           <input
             key={index}
@@ -105,8 +109,12 @@ const VerificationCodeForm: React.FC<VerificationCodeFormProps> = ({
           />
         ))}
       </div>
-      <div className='flex flex-col items-center justify-between'>
-        <Button width='w-96' type='submit' variant='filled'>
+      <div className='flex flex-col items-center justify-between w-full'>
+        <Button
+          width={btnWidth ? btnWidth : 'w-96'}
+          type='submit'
+          variant='filled'
+        >
           {isLoading ? (
             <>
               <div className='w-4 h-4 border-2 border-white border-solid border-t-transparent rounded-full animate-spin mr-2'></div>

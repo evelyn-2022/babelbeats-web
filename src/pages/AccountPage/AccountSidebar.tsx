@@ -12,7 +12,7 @@ const AccountPage: React.FC = () => {
   const { handleSignOut } = useAuthService();
 
   const navLinks = [
-    { to: 'profile', label: 'Profile', icon: <GoPerson className='text-xl' /> },
+    { to: 'account', label: 'Account', icon: <GoPerson className='text-xl' /> },
     {
       to: 'language',
       label: 'Language',
@@ -35,13 +35,15 @@ const AccountPage: React.FC = () => {
     <div className='min-h-screen flex flex-col w-full'>
       <div className='flex flex-grow'>
         {/* Left Column */}
-        <div className='w-1/6 px-6 py-8 flex flex-col flex-grow gap-8'>
-          <Button width='w-36' variant='filled'>
-            <Link className='flex flex-row gap-2 items-center' to='/'>
-              <PiArrowLeftBold className='text-lg' />
-              Go back
-            </Link>
-          </Button>
+        <div className='w-3/12 pl-14 pr-6 py-8 flex flex-col flex-grow gap-8'>
+          <Link to='/'>
+            <Button width='w-36' variant='filled'>
+              <div className='flex flex-row gap-2 items-center'>
+                <PiArrowLeftBold className='text-lg' />
+                Go back
+              </div>
+            </Button>
+          </Link>
 
           <ul className='flex flex-col flex-grow justify-between'>
             <div className='flex flex-col'>
@@ -74,7 +76,7 @@ const AccountPage: React.FC = () => {
         </div>
 
         {/* Right Column */}
-        <div className='w-5/6 px-6 py-8 flex-grow bg-customBlack-light/[.03] dark:bg-customBlack-light/95'>
+        <div className='w-9/12 pl-6 pr-14 py-8 flex-grow bg-customBlack-light/[.03] dark:bg-customBlack-light/95'>
           <Outlet />
         </div>
       </div>

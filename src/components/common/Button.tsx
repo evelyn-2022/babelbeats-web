@@ -4,7 +4,7 @@ interface ButtonProps {
   onClick?: () => void;
   disabled?: boolean;
   variant?: 'outlined' | 'filled';
-  width: string;
+  width?: string;
   padding?: string;
   type?: 'submit' | 'reset' | undefined;
   children: React.ReactNode;
@@ -19,14 +19,14 @@ const Button: React.FC<ButtonProps> = ({
   type,
   children,
 }) => {
-  let className = ` border-2 cursor-pointer text-center font-bold flex justify-center items-center rounded-full button-hover-animation transition duration-500 ${width} ${
-    padding ? padding : 'p-2.5'
-  }`;
+  let className = ` border-2 cursor-pointer text-center font-bold flex justify-center items-center rounded-full button-hover-animation transition duration-500 ${
+    width && width
+  } ${padding ? padding : 'p-2.5'}`;
 
   switch (variant) {
     case 'outlined':
       className +=
-        ' border-customBlack-light hover:bg-customBlack hover:border-customBlack hover:text-white active:border-customBlack-dark active:bg-customBlack-dark';
+        ' border-customBlack-light hover:bg-customBlack hover:border-customBlack hover:text-white active:border-customBlack-dark active:bg-customBlack-dark dark:border-primary dark:text-primary dark:hover:bg-primary dark:hover:text-customBlack';
       break;
     case 'filled':
       className +=

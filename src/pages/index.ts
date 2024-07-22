@@ -9,6 +9,7 @@ export { default as VerifyPasswordResetPage } from './VerifyPasswordResetPage';
 export { default as ResetPasswordPage } from './ResetPasswordPage';
 export { default as AccountSidebar } from './AccountPage/AccountSidebar';
 export { default as ProfilePage } from './AccountPage/ProfilePage';
+export { default as AccountPage } from './AccountPage/AccountPage';
 export { default as SettingsPage } from './AccountPage/SettingsPage';
 export { default as LanguagePage } from './AccountPage/LanguagePage';
 export { default as ErrorBoundary } from './ErrorBoundary';

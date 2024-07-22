@@ -267,3 +267,31 @@ export const updateCognitoUserIdAttribute = async (
     console.error('Error updating custom:id attribute');
   }
 };
+
+export const updateCognitoUserEmail = async (
+  username: string,
+  newEmail: string
+) => {
+  try {
+    const params = {
+      UserPoolId: userPoolId,
+      Username: username,
+      UserAttributes: [
+        {
+          Name: 'email',
+          Value: newEmail,
+        },
+        {
+          Name: 'email_verified',
+          Value: 'false',
+        },
+      ],
+    };
+
+    const command = new AdminUpdateUserAttributesCommand(params);
+    await cognitoClient.send(command);
+    console.log('Email update initiated. Verification code sent to new email.');
+  } catch (error) {
+    console.error('Error updating email attribute:', error);
+  }
+};

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { wave } from '../assets';
@@ -19,6 +19,7 @@ const LoginPage: React.FC = () => {
   const [password, setPassword] = useState('');
   const [isSubmitDisabled, setIsSubmitDisabled] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,6 +56,12 @@ const LoginPage: React.FC = () => {
     },
   ];
 
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, []);
+
   return (
     <div className='min-h-screen w-full flex flex-col items-center justify-center gap-8'>
       <Helmet>
@@ -68,7 +75,7 @@ const LoginPage: React.FC = () => {
       </div>
       <h1 className='text-4xl font-bold'>Welcome back!</h1>
       <form onSubmit={handleSubmit} className='flex flex-col gap-6'>
-        {fields.map(field => (
+        {fields.map((field, i) => (
           <InputField
             key={field.label.toLowerCase()}
             id={field.label.toLowerCase()}
@@ -76,6 +83,7 @@ const LoginPage: React.FC = () => {
             type={field.type}
             value={field.value}
             onChange={field.onChange}
+            ref={i === 0 ? inputRef : undefined}
           />
         ))}
 

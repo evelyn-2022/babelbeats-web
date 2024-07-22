@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import validator from 'validator';
 import { SignupField } from './SignupField';
 import { InputField, Button, SocialSignInGroup } from '../../components';
@@ -30,14 +30,23 @@ const Card: React.FC<CardProps> = ({
 }) => {
   const [passwordTouched, setPasswordTouched] = useState(false);
   const { errorState, addError, clearError } = useError();
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
   const handleNext = (e: React.FormEvent) => {
     e.preventDefault();
-    if (errorState.error) return;
+    if (!validateField() || errorState.error) return;
     handleSubmit(e);
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleNext(e as unknown as React.FormEvent);
+    }
+  };
+
   const validateField = () => {
+    clearError();
     switch (field.label.toLowerCase()) {
       case 'email': {
         const value = values.email;
@@ -47,6 +56,7 @@ const Card: React.FC<CardProps> = ({
             displayType: 'inline',
             category: 'validation',
           });
+          return false;
         }
         break;
       }
@@ -64,6 +74,7 @@ const Card: React.FC<CardProps> = ({
             displayType: 'inline',
             category: 'validation',
           });
+          return false;
         }
         break;
       }
@@ -75,6 +86,7 @@ const Card: React.FC<CardProps> = ({
             displayType: 'inline',
             category: 'validation',
           });
+          return false;
         }
         break;
       }
@@ -85,16 +97,28 @@ const Card: React.FC<CardProps> = ({
             displayType: 'inline',
             category: 'validation',
           });
+          return false;
         }
         break;
       }
       default:
         clearError();
     }
+    return true;
   };
 
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [step]);
+
   return (
-    <form className='flex flex-col gap-6' onSubmit={handleNext}>
+    <form
+      className='flex flex-col gap-6'
+      onSubmit={handleNext}
+      onKeyDown={handleKeyDown}
+    >
       <InputField
         id={field.label.toLowerCase()}
         label={field.label}
@@ -110,6 +134,7 @@ const Card: React.FC<CardProps> = ({
         handleOnBlur={validateField}
         touched={passwordTouched}
         resetPasswordVisibility={resetPasswordVisibility}
+        ref={inputRef}
       />
 
       <Button type='submit' variant='filled' width='w-96' padding='p-2.5'>

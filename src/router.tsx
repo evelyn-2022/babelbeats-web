@@ -12,6 +12,7 @@ import {
   ResetPasswordPage,
   AccountSidebar,
   ProfilePage,
+  AccountPage,
   SettingsPage,
   LanguagePage,
   ErrorBoundary,
@@ -40,11 +41,12 @@ const router = createBrowserRouter([
       {
         element: <ProtectedRoute />,
         children: [
+          { path: '/me', element: <ProfilePage /> },
           {
             path: '/account',
             element: <AccountSidebar />,
             children: [
-              { path: 'profile', element: <ProfilePage /> },
+              { path: 'account', element: <AccountPage /> },
               { path: 'language', element: <LanguagePage /> },
               { path: 'settings', element: <SettingsPage /> },
             ],
