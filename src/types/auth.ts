@@ -33,3 +33,10 @@ export interface AuthContextType {
   setLoadingFalse: () => void;
   logout: () => void;
 }
+
+export interface ValidatedFields {
+  email?: string;
+  password?: string;
+  passwordConfirm?: string;
+  name?: string;
+}

@@ -19,6 +19,7 @@ const SignupPage: React.FC = () => {
 
   const fields: SignupField[] = [
     {
+      id: 'email',
       label: 'Email',
       type: 'text',
       value: email,
@@ -29,6 +30,7 @@ const SignupPage: React.FC = () => {
       description: 'Enter your email address',
     },
     {
+      id: 'password',
       label: 'Password',
       type: 'password',
       value: password,
@@ -39,6 +41,7 @@ const SignupPage: React.FC = () => {
       description: 'Create a password',
     },
     {
+      id: 'passwordConfirm',
       label: 'Confirm Password',
       type: 'password',
       value: passwordConfirm,
@@ -49,6 +52,7 @@ const SignupPage: React.FC = () => {
       description: 'Confirm your password',
     },
     {
+      id: 'name',
       label: 'Username',
       type: 'text',
       value: name,

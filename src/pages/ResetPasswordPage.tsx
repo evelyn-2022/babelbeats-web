@@ -5,6 +5,7 @@ import { wave } from '../assets';
 import { InputField, Button } from '../components';
 import { resetPassword } from '../services';
 import { useError } from '../context';
+import { validateField } from '../utils';
 
 const ResetPasswordPage: React.FC = () => {
   const navigate = useNavigate();
@@ -13,14 +14,18 @@ const ResetPasswordPage: React.FC = () => {
   const { errorState, addError, clearError } = useError();
   const { code } = state || {};
   const [password, setPassword] = useState('');
-  const [passwordTouched, setPasswordTouched] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const handlePasswordSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (errorState.error || isSubmitting) return;
+    const isValid = validateField({
+      id: 'password',
+      values: { password },
+      addError,
+      clearError,
+    });
+    if (!isValid || errorState.error || isSubmitting) return;
     setIsSubmitting(true);
 
     try {
@@ -48,21 +53,6 @@ const ResetPasswordPage: React.FC = () => {
     }
   };
 
-  const validateField = () => {
-    const criteria = [
-      password.length >= 8,
-      /\d/.test(password),
-      /[a-z]/.test(password),
-    ];
-    if (!criteria.every(Boolean)) {
-      addError({
-        message: 'Password does not meet all criteria.',
-        displayType: 'inline',
-        category: 'validation',
-      });
-    }
-  };
-
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.focus();
@@ -86,19 +76,16 @@ const ResetPasswordPage: React.FC = () => {
 
       <form className='flex flex-col gap-8' onSubmit={handlePasswordSubmit}>
         <InputField
-          key='password'
           id='password'
           label='Password'
           type='password'
           value={password}
+          values={{ password }}
           onChange={e => {
             setPassword(e.target.value);
-            setPasswordTouched(true);
             clearError();
           }}
-          displayCriteria={true}
-          handleOnBlur={validateField}
-          touched={passwordTouched}
+          requireValidation={true}
           ref={inputRef}
         />
         <Button width='w-96' type='submit' variant='filled'>

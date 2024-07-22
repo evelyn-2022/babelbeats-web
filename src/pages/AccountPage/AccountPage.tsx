@@ -21,14 +21,21 @@ const AccountPage: React.FC = () => {
     setSecondModalOpen(false);
   };
 
-  const handleEmailChange = () => {
-    setModalOpen(false);
-    setSecondModalOpen(true);
+  const handleEmailChange = async () => {
+    try {
+      //   await updateCognitoUserEmail('username', newEmail);
+      setModalOpen(false);
+      setSecondModalOpen(true);
+    } catch (error) {
+      console.error(error);
+      // Handle error
+    }
   };
 
   const handleConfirm = async () => {
-    await updateCognitoUserEmail('username', newEmail); // Replace 'username' with actual username
+    // Replace 'username' with actual username
     setSecondModalOpen(false);
+    setNewEmail('');
   };
 
   useEffect(() => {

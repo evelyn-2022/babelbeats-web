@@ -2,18 +2,19 @@ import React, { useState, useEffect, forwardRef } from 'react';
 import { IoEyeOutline, IoEyeOffOutline } from 'react-icons/io5';
 import { PiWarningCircle, PiCircle, PiCheckCircleFill } from 'react-icons/pi';
 import { useError } from '../../context';
+import { validateField } from '../../utils';
+import { ValidatedFields } from '../../types';
 
 interface InputFieldProps {
-  id?: string;
+  id?: keyof ValidatedFields;
   label?: string;
   type: string;
   value: string;
+  values?: ValidatedFields;
   width?: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  displayCriteria?: boolean;
+  requireValidation?: boolean;
   validationMessage?: string;
-  handleOnBlur?: () => void;
-  touched?: boolean;
   resetPasswordVisibility?: boolean;
 }
 
@@ -24,18 +25,18 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
       label,
       type,
       value,
+      values,
       width,
       onChange,
-      displayCriteria,
-      handleOnBlur,
-      touched,
+      requireValidation,
       resetPasswordVisibility,
     },
     ref
   ) => {
-    const { errorState } = useError();
+    const { errorState, addError, clearError } = useError();
     const [focused, setFocused] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const [touched, setTouched] = useState(false);
 
     const togglePasswordVisibility = () => {
       setShowPassword(prevShowPassword => !prevShowPassword);
@@ -55,6 +56,10 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
         setShowPassword(false);
       }
     }, [resetPasswordVisibility]);
+
+    useEffect(() => {
+      setTouched(false);
+    }, [label]);
 
     return (
       <div className='flex flex-col gap-1'>
@@ -80,15 +85,22 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
             type={type === 'password' && showPassword ? 'text' : type}
             className={`border rounded-lg p-3 border-customBlack-light/10 bg-customWhite text-customBlack-light dark:border-customWhite/70 dark:bg-customBlack dark:text-white focus:outline-none focus:border-primary-dark dark:focus:border-primary w-full`}
             value={value}
-            onChange={onChange}
+            onChange={e => {
+              onChange(e);
+              setTouched(true);
+            }}
             onFocus={() => setFocused(true)}
             onBlur={() => {
               setFocused(false);
-              if (handleOnBlur) {
-                handleOnBlur();
+              if (touched && requireValidation && id && values) {
+                validateField({
+                  id,
+                  values,
+                  addError,
+                  clearError,
+                });
               }
             }}
-            required
           />
 
           {type === 'password' && (
@@ -105,7 +117,7 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
 
         <div
           className={`text-red-500 text-sm flex flex-row items-center gap-0.5 ${
-            !errorState.error && 'hidden'
+            (!errorState.error || !touched) && 'hidden'
           }`}
         >
           <PiWarningCircle />
@@ -113,7 +125,7 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
             errorState.error.message}
         </div>
 
-        {label?.toLowerCase() === 'password' && displayCriteria && (
+        {label?.toLowerCase() === 'password' && requireValidation && (
           <div className='mt-2'>
             {passwordCriteria.map((criteria, index) => (
               <div key={index} className='flex items-center mt-1'>
