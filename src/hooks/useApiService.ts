@@ -1,7 +1,11 @@
 import axios from 'axios';
 import { useError } from '../context';
 import { CustomError, User } from '../types';
-import { checkRegistrationApi, updateUserIdApi } from '../services';
+import {
+  checkRegistrationApi,
+  updateUserIdApi,
+  deleteDBUserApi,
+} from '../services';
 
 export const useApiService = () => {
   const { addError } = useError();
@@ -51,5 +55,9 @@ export const useApiService = () => {
     return callApi(() => updateUserIdApi(user));
   };
 
-  return { checkRegistration, updateUser };
+  const deleteDBUser = async (userId: string): Promise<void | null> => {
+    return callApi(() => deleteDBUserApi(userId));
+  };
+
+  return { checkRegistration, updateUser, deleteDBUser };
 };

@@ -12,6 +12,7 @@ import {
   VerifyUserAttributeCommand,
   ListUsersCommand,
   ChangePasswordCommand,
+  DeleteUserCommand,
 } from '@aws-sdk/client-cognito-identity-provider';
 import axios, { AxiosResponse } from 'axios';
 import config from '../config';
@@ -381,5 +382,17 @@ export const changePassword = async (
     await cognitoClient.send(command);
   } catch (error) {
     throw new Error('Failed to change password');
+  }
+};
+
+export const deleteCognitoUser = async (accessToken: string): Promise<void> => {
+  const deleteUserCommand = new DeleteUserCommand({
+    AccessToken: accessToken,
+  });
+
+  try {
+    await cognitoClient.send(deleteUserCommand);
+  } catch (error) {
+    throw new Error('Failed to delete user:' + error);
   }
 };

@@ -5,6 +5,7 @@ import NewEmailModal from './NewEmailModal';
 import VerificationModal from './VerificationModal';
 import OldPasswordModal from './OldPasswordModal';
 import NewPasswordModal from './NewPasswordModal';
+import DeleteAccountModal from './DeleteAccountModal';
 
 const AccountPage: React.FC = () => {
   const { authState } = useAuth();
@@ -12,6 +13,7 @@ const AccountPage: React.FC = () => {
   const [isVerificationModalOpen, setVerificationModalOpen] = useState(false);
   const [isOldPasswordModalOpen, setOldPasswordModalOpen] = useState(false);
   const [isNewPasswordModalOpen, setNewPasswordModalOpen] = useState(false);
+  const [isDeleteAccountModalOpen, setDeleteAccountModalOpen] = useState(false);
   const [newEmail, setNewEmail] = useState('');
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -32,7 +34,7 @@ const AccountPage: React.FC = () => {
   return (
     <div className='flex flex-col gap-14 p-6'>
       {!authState.user?.providerId.startsWith('google') && (
-        <div>
+        <section>
           <h2 className='font-bold text-xl'>Account Security</h2>
           <div className='border-b border-white/20 my-4'></div>
           <div className='flex flex-col gap-8'>
@@ -101,14 +103,25 @@ const AccountPage: React.FC = () => {
               </Button>
             </div>
           </div>
-        </div>
+        </section>
       )}
 
-      <div>
+      <section>
         <h2 className='font-bold text-xl'>Support</h2>
         <div className='border-b border-white/20 my-4'></div>
-        <div className='text-red-500'>Delete my account</div>
-      </div>
+        <div
+          className='text-red-500 cursor-pointer'
+          onClick={() => {
+            setDeleteAccountModalOpen(true);
+          }}
+        >
+          Delete my account
+        </div>
+        <DeleteAccountModal
+          isDeleteAccountModalOpen={isDeleteAccountModalOpen}
+          setDeleteAccountModalOpen={setDeleteAccountModalOpen}
+        />
+      </section>
     </div>
   );
 };

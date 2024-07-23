@@ -3,7 +3,7 @@ import React from 'react';
 interface ButtonProps {
   onClick?: () => void;
   disabled?: boolean;
-  variant?: 'outlined' | 'filled';
+  variant?: 'outlined' | 'filled' | 'danger';
   width?: string;
   padding?: string;
   type?: 'submit' | 'reset' | undefined;
@@ -31,6 +31,10 @@ const Button: React.FC<ButtonProps> = ({
     case 'filled':
       className +=
         ' border-customBlack-light bg-customBlack-light text-white hover:bg-customBlack hover:border-customBlack active:border-customBlack-dark active:bg-customBlack-dark dark:bg-primary dark:border-primary dark:text-customBlack dark:hover:bg-primary dark:hover:border-primary glowing-outline';
+      break;
+    case 'danger':
+      className +=
+        ' border-red-500 text-red-500 hover:bg-red-500 hover:text-customWhite active:bg-red-700 active:border-red-700 dark:hover:text-customBlack';
       break;
     default:
       className += ' border-gray-100';

@@ -2,12 +2,22 @@ import axios, { AxiosResponse } from 'axios';
 import config from '../config';
 import { User } from '../types';
 import { updateCognitoUserIdAttribute } from './authService';
+import { getTokens } from '../utils';
 
 const API_URL = config.REACT_APP_API_URL;
 
 const apiClient = axios.create({
   baseURL: API_URL,
 });
+
+const createAuthConfig = () => {
+  const { accessToken } = getTokens();
+  return {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  };
+};
 
 export const checkRegistrationApi = async (
   providerId: string
@@ -30,11 +40,16 @@ export const updateUserIdApi = async (user: User): Promise<User> => {
   } else {
     const response: AxiosResponse<User> = await apiClient.post(
       'appusers',
-      user
+      user,
+      createAuthConfig()
     );
     updatedUser = response.data;
   }
 
   await updateCognitoUserIdAttribute(user.cognitoSub, updatedUser.id);
   return updatedUser;
+};
+
+export const deleteDBUserApi = async (userId: string): Promise<void> => {
+  await apiClient.delete(`appusers/${userId}`, createAuthConfig());
 };
