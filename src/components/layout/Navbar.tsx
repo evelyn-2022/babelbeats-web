@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { wave } from '../../assets';
-import { Button, ThemeSwitcher, Dropdown } from '../common';
+import { Button, Dropdown } from '../common';
 import { useAuth, useTheme } from '../../context';
 import { useAuthService } from '../../hooks';
 
@@ -47,7 +47,6 @@ const Navbar: React.FC = () => {
           <div className='font-sans font-bold text-lg'>BabelBeats</div>
         </div>
       </a>
-      <ThemeSwitcher />
 
       {authState.user ? (
         <div className='relative' ref={dropdownRef}>

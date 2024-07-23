@@ -1,5 +1,4 @@
 import React from 'react';
-
 import { useTheme } from '../../context';
 
 const ThemeSwitcher: React.FC = () => {
@@ -12,7 +11,7 @@ const ThemeSwitcher: React.FC = () => {
         onChange={e =>
           setThemePreference(e.target.value as 'light' | 'dark' | 'system')
         }
-        className='p-2 border rounded dark:bg-customBlack'
+        className='py-3 bg-transparent focus:outline-none'
       >
         <option value='system'>System</option>
         <option value='light'>Light</option>
