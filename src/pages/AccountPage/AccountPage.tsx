@@ -39,7 +39,9 @@ const AccountPage: React.FC = () => {
             <div className='flex flex-row justify-between'>
               <div>
                 <div className='font-semibold'>Email</div>
-                <div className='text-gray-500'>{authState.user?.email}</div>
+                <div className='text-customBlack/50 dark:text-white/60'>
+                  {authState.user?.email}
+                </div>
               </div>
               <Button
                 width='w-40'
@@ -86,7 +88,7 @@ const AccountPage: React.FC = () => {
             <div className='flex flex-row items-center justify-between'>
               <div>
                 <div className='font-semibold'>Password</div>
-                <div className='text-gray-500'>
+                <div className='text-customBlack/50 dark:text-white/60'>
                   Use the password to log into your account
                 </div>
               </div>
