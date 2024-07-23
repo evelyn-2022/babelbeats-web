@@ -1,3 +1,4 @@
+export { default as RootPage } from './RootPage';
 export { default as ProductLandingPage } from './ProductLandingPage';
 export { default as GetStartedPage } from './GetStartedPage';
 export { default as LoginPage } from './LoginPage';
@@ -8,9 +9,11 @@ export { default as ForgotPasswordPage } from './ForgotPasswordPage';
 export { default as VerifyPasswordResetPage } from './VerifyPasswordResetPage';
 export { default as ResetPasswordPage } from './ResetPasswordPage';
 export { default as AccountSidebar } from './AccountPage/AccountSidebar';
-export { default as ProfilePage } from './AccountPage/ProfilePage';
 export { default as AccountPage } from './AccountPage/AccountPage';
 export { default as SettingsPage } from './AccountPage/SettingsPage';
 export { default as LanguagePage } from './AccountPage/LanguagePage';
+export { default as HomeSidebar } from './HomePage/HomeSidebar';
+export { default as HomePage } from './HomePage/HomePage';
+export { default as ProfilePage } from './HomePage/ProfilePage';
 export { default as ErrorBoundary } from './ErrorBoundary';
 export { default as ProtectedRoute } from './ProtectedRoute';

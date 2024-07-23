@@ -8,7 +8,7 @@ const ProfilePage: React.FC = () => {
       <div>
         <h2 className='font-bold'>My profile</h2>
         <div className='border-b-[1px] border-customWhite/5 my-4'></div>
-        <div className='w-16 h-16'>
+        <div className='w-16 aspect-square'>
           {authState.user?.profilePic ? (
             <>
               <img
@@ -28,14 +28,14 @@ const ProfilePage: React.FC = () => {
                 }}
               />
               <div
-                className='flex items-center justify-center  bg-gray-500 text-white rounded-full text-xl font-bold'
+                className='flex items-center justify-center aspect-square bg-gray-500 text-white rounded-full text-xl font-bold'
                 style={{ display: 'none' }}
               >
                 {authState.user.name.charAt(0)}
               </div>
             </>
           ) : (
-            <div className='flex items-center justify-center bg-gray-500 text-white rounded-full text-xl font-bold'>
+            <div className='flex items-center justify-center aspect-square bg-gray-500 text-white rounded-full text-xl font-bold'>
               {authState.user?.name.charAt(0)}
             </div>
           )}

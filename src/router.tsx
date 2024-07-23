@@ -1,7 +1,7 @@
 import { createBrowserRouter } from 'react-router-dom';
 import { ProviderWrapper } from './context';
 import {
-  ProductLandingPage,
+  RootPage,
   GetStartedPage,
   LoginPage,
   SignupPage,
@@ -11,12 +11,14 @@ import {
   VerifyPasswordResetPage,
   ResetPasswordPage,
   AccountSidebar,
-  ProfilePage,
   AccountPage,
   SettingsPage,
   LanguagePage,
+  HomePage,
+  ProfilePage,
   ErrorBoundary,
   ProtectedRoute,
+  HomeSidebar,
 } from './pages';
 
 const router = createBrowserRouter([
@@ -29,7 +31,34 @@ const router = createBrowserRouter([
       </ProviderWrapper>
     ),
     children: [
-      { path: '/', element: <ProductLandingPage /> },
+      {
+        path: '/',
+        element: <RootPage />,
+        children: [
+          {
+            element: <ProtectedRoute />,
+            children: [
+              {
+                path: '/',
+                element: <HomeSidebar />,
+                children: [
+                  { path: '', element: <HomePage /> },
+                  { path: 'profile', element: <ProfilePage /> },
+                ],
+              },
+              {
+                path: '/account',
+                element: <AccountSidebar />,
+                children: [
+                  { path: 'account', element: <AccountPage /> },
+                  { path: 'language', element: <LanguagePage /> },
+                  { path: 'settings', element: <SettingsPage /> },
+                ],
+              },
+            ],
+          },
+        ],
+      },
       { path: '/get-started', element: <GetStartedPage /> },
       { path: '/login', element: <LoginPage /> },
       { path: '/signup', element: <SignupPage /> },
@@ -38,21 +67,6 @@ const router = createBrowserRouter([
       { path: '/verify-password-reset', element: <VerifyPasswordResetPage /> },
       { path: '/reset-password', element: <ResetPasswordPage /> },
       { path: '/oauth2/callback', element: <OAuthCallbackPage /> },
-      {
-        element: <ProtectedRoute />,
-        children: [
-          { path: '/me', element: <ProfilePage /> },
-          {
-            path: '/account',
-            element: <AccountSidebar />,
-            children: [
-              { path: 'account', element: <AccountPage /> },
-              { path: 'language', element: <LanguagePage /> },
-              { path: 'settings', element: <SettingsPage /> },
-            ],
-          },
-        ],
-      },
     ],
   },
 ]);
