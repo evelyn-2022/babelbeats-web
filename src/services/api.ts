@@ -32,7 +32,17 @@ export const updateUserIdApi = async (user: User): Promise<User> => {
 
   // If registered with Google, check if user exists in the database
   if (user.providerId?.startsWith('google')) {
-    res = await checkRegistrationApi(user.providerId);
+    try {
+      res = await checkRegistrationApi(user.providerId);
+    } catch (error) {
+      // If user is not found, continue with registration
+      if (axios.isAxiosError(error) && error.response?.status === 404) {
+        res = null;
+      } else {
+        // If an unexpected error occurs, throw it
+        throw error;
+      }
+    }
   }
 
   if (res) {
