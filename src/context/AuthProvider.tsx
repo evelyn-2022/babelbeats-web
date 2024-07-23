@@ -55,6 +55,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 
   const checkUserSignInState = useCallback(async () => {
     try {
+      const storedState = sessionStorage.getItem('authState');
+      if (storedState) {
+        const parsedState = JSON.parse(storedState);
+        if (parsedState.isAuthenticated) {
+          dispatch({ type: 'AUTH_SUCCESS', payload: parsedState.user });
+          return;
+        }
+      }
+
       dispatch({ type: 'AUTH_REQUEST' });
       let userInfo;
 
