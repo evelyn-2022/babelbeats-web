@@ -1,4 +1,4 @@
-export { default as HomePage } from './HomePage';
+export { default as ProductLandingPage } from './ProductLandingPage';
 export { default as GetStartedPage } from './GetStartedPage';
 export { default as LoginPage } from './LoginPage';
 export { default as SignupPage } from './SignupPage/SignupPage';

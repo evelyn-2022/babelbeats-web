@@ -1,7 +1,7 @@
 import { createBrowserRouter } from 'react-router-dom';
 import { ProviderWrapper } from './context';
 import {
-  HomePage,
+  ProductLandingPage,
   GetStartedPage,
   LoginPage,
   SignupPage,
@@ -29,7 +29,7 @@ const router = createBrowserRouter([
       </ProviderWrapper>
     ),
     children: [
-      { path: '/', element: <HomePage /> },
+      { path: '/', element: <ProductLandingPage /> },
       { path: '/get-started', element: <GetStartedPage /> },
       { path: '/login', element: <LoginPage /> },
       { path: '/signup', element: <SignupPage /> },

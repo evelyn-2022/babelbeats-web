@@ -2,7 +2,7 @@ import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import Navbar from '../components/layout/Navbar';
 
-const HomePage: React.FC = () => {
+const ProductLandingPage: React.FC = () => {
   return (
     <div className='min-h-screen flex flex-col items-center w-full'>
       <Helmet>
@@ -19,4 +19,4 @@ const HomePage: React.FC = () => {
   );
 };
 
-export default HomePage;
+export default ProductLandingPage;

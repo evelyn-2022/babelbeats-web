@@ -8,7 +8,7 @@ import { SlSettings } from 'react-icons/sl';
 import { Button } from '../../components';
 import { useAuthService } from '../../hooks';
 
-const AccountPage: React.FC = () => {
+const AccountSidebar: React.FC = () => {
   const { handleSignOut } = useAuthService();
 
   const navLinks = [
@@ -84,4 +84,4 @@ const AccountPage: React.FC = () => {
   );
 };
 
-export default AccountPage;
+export default AccountSidebar;
