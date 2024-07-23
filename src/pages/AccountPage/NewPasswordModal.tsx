@@ -4,7 +4,7 @@ import { useError, useAuth, useTheme } from '../../context';
 import { showToast, validateField, getTokens } from '../../utils';
 import { changePassword } from '../../services';
 
-interface NewEmailModalProps {
+interface NewPasswordModalProps {
   isNewPasswordModalOpen: boolean;
   handleOldPasswordModalClose: () => void;
   newPassword: string;
@@ -12,7 +12,7 @@ interface NewEmailModalProps {
   setNewPassword: (password: string) => void;
 }
 
-const NewPasswordModal: React.FC<NewEmailModalProps> = ({
+const NewPasswordModal: React.FC<NewPasswordModalProps> = ({
   isNewPasswordModalOpen,
   handleOldPasswordModalClose,
   newPassword,
