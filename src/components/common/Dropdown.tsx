@@ -12,7 +12,7 @@ const Dropdown: React.FC<DropdownProps> = ({
 }) => {
   const links = [
     { to: '/profile', label: 'Profile' },
-    { to: '/account/account', label: 'Account' },
+    { to: '/account', label: 'Account' },
     { to: '/settings', label: 'Settings' },
   ];
 

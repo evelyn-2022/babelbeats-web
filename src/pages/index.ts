@@ -8,7 +8,6 @@ export { default as OAuthCallbackPage } from './OAuthCallbackPage';
 export { default as ForgotPasswordPage } from './ForgotPasswordPage';
 export { default as VerifyPasswordResetPage } from './VerifyPasswordResetPage';
 export { default as ResetPasswordPage } from './ResetPasswordPage';
-export { default as AccountSidebar } from './AccountPage/AccountSidebar';
 export { default as AccountPage } from './AccountPage/AccountPage';
 export { default as HomeSidebar } from './HomePage/HomeSidebar';
 export { default as HomePage } from './HomePage/HomePage';

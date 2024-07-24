@@ -1,41 +1,50 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Outlet, NavLink } from 'react-router-dom';
 import { BiHomeAlt2 } from 'react-icons/bi';
-import { TbPlaylist } from 'react-icons/tb';
-import { RiPlayList2Line } from 'react-icons/ri';
 import { BsCollection } from 'react-icons/bs';
 import { FaCaretLeft, FaCaretRight } from 'react-icons/fa';
 import { LuSearch } from 'react-icons/lu';
+import { PiPlaylist } from 'react-icons/pi';
+import { BsThreeDotsVertical } from 'react-icons/bs';
+import { GoPerson } from 'react-icons/go';
+import { LuSettings } from 'react-icons/lu';
+import { IoIosLogOut } from 'react-icons/io';
 import { ProfilePic } from '../../components';
-import { SlSettings } from 'react-icons/sl';
+import { useAuth } from '../../context';
 
 const HomeSidebar: React.FC = () => {
+  const { authState } = useAuth();
   const [collapsed, setCollapsed] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
-  const handleMouseMove = e => {
-    const { clientX } = e;
-    const sidebarWidth = hidden
-      ? 0
-      : collapsed
-      ? window.innerWidth * 0.068
-      : window.innerWidth * 0.16667;
-    if (clientX >= sidebarWidth - 40 && clientX <= sidebarWidth + 40) {
-      setIsHovering(true);
-    } else {
-      setIsHovering(false);
-    }
-  };
+  const sidebarWidth = hidden
+    ? 0
+    : collapsed
+    ? window.innerWidth * 0.068
+    : window.innerWidth * 0.18;
+
+  const handleMouseMove = useCallback(
+    (e: MouseEvent) => {
+      const { clientX } = e;
+      if (clientX >= sidebarWidth - 40 && clientX <= sidebarWidth + 40) {
+        setIsHovering(true);
+      } else {
+        setIsHovering(false);
+      }
+    },
+    [sidebarWidth]
+  );
 
   useEffect(() => {
     document.addEventListener('mousemove', handleMouseMove);
     return () => {
       document.removeEventListener('mousemove', handleMouseMove);
     };
-  }, [collapsed, hidden]);
+  }, [collapsed, hidden, handleMouseMove]);
 
-  const navLinks = [
+  const navLinks: Link[] = [
     {
       to: '/',
       label: 'Home',
@@ -47,75 +56,88 @@ const HomeSidebar: React.FC = () => {
       icon: <LuSearch className='text-xl' />,
     },
     {
-      to: '/recent',
-      label: 'Recently played',
-      icon: <RiPlayList2Line className='text-xl' />,
-    },
-    {
-      to: '/playlists',
-      label: 'Playlists',
-      icon: <TbPlaylist className='text-2xl -mr-1' />,
-    },
-    {
       to: '/collections',
       label: 'Collections',
       icon: <BsCollection className='text-lg' />,
     },
+    {
+      to: '/playlists',
+      label: 'Playlists',
+      icon: <PiPlaylist className='text-2xl -mr-1' />,
+    },
   ];
 
-  const bottomLinks = [
+  const settingLinks: Link[] = [
+    {
+      to: '/account',
+      label: 'Account',
+      icon: <GoPerson className='text-xl' />,
+    },
     {
       to: '/settings',
       label: 'Settings',
-      icon: <SlSettings className='text-xl' />,
+      icon: <LuSettings className='text-xl' />,
     },
+  ];
+
+  const bottomLinks: Link[] = [
     {
       to: '/profile',
-      label: 'Profile',
+      label: authState.user?.name,
       icon: (
-        <div className={`${!collapsed && '-ml-2 -mr-1'}`}>
+        <div className={`${!collapsed && '-ml-3 -mr-1'} w-8`}>
           <ProfilePic width='8' />
         </div>
       ),
     },
   ];
 
-  const baseClasses =
-    'block p-3 rounded-full flex items-center justify-center mb-2';
+  interface Link {
+    to: string;
+    label: string | undefined;
+    icon: JSX.Element;
+  }
+
+  interface LinkItemProps {
+    link: Link;
+  }
+
+  const LinkItem: React.FC<LinkItemProps> = ({ link }) => {
+    return (
+      <div className='w-full'>
+        <div
+          className={`flex items-center w-full transition-all duration-300 delay-200 ease-in-out ${
+            collapsed ? 'justify-center' : 'pl-1.5'
+          }`}
+        >
+          <span className='flex items-center justify-center'>{link.icon}</span>
+          <span
+            className={`transition-opacity duration-300 ml-4 whitespace-nowrap overflow-hidden ${
+              collapsed ? 'opacity-0 w-0 hidden' : 'opacity-100 w-auto'
+            }`}
+          >
+            {link.label}
+          </span>
+        </div>
+      </div>
+    );
+  };
+
+  const baseClasses = `p-3 rounded-full flex items-center justify-center mb-2 h-12`;
   const activeClasses =
     'bg-customBlack-light/[.03] dark:text-primary dark:bg-customBlack-light/95';
   const inactiveClasses =
     'hover:bg-customBlack-light/5 dark:hover:bg-customBlack-light/50';
 
   return (
-    <div className='min-h-screen flex w-full'>
+    <div className='min-h-screen flex w-full relative'>
+      {/* Left column */}
       {!hidden && (
         <div
           className={`${
-            collapsed ? 'w-[6.8%]' : 'w-2/12'
-          } transition-all duration-300 px-6 py-8 flex flex-col relative justify-between `}
+            collapsed ? 'w-[6.8%]' : 'w-[18%]'
+          } transition-all duration-300 px-6 py-8 flex flex-col relative justify-between`}
         >
-          <div
-            className={`absolute flex flex-row mt-4 justify-center top-[358px] -right-1 ${
-              isHovering ? 'opacity-100' : 'opacity-0'
-            } transition-opacity duration-300`}
-          >
-            <div className='cursor-pointer text-xl text-customWhite/40 '>
-              {collapsed ? (
-                <FaCaretLeft
-                  onClick={() => {
-                    setHidden(true);
-                  }}
-                />
-              ) : (
-                <FaCaretLeft
-                  onClick={() => {
-                    setCollapsed(true);
-                  }}
-                />
-              )}
-            </div>
-          </div>
           <ul className='flex flex-col mt-8'>
             <div className='flex flex-col'>
               {navLinks.map(link => (
@@ -127,43 +149,30 @@ const HomeSidebar: React.FC = () => {
                         isActive ? activeClasses : inactiveClasses
                       }`;
                     }}
-                    style={{
-                      height: '50px',
-                      width: collapsed ? '50px' : 'auto',
-                    }}
                   >
-                    <div
-                      className={`flex items-center w-full transition-all duration-300 ease-in-out ${
-                        collapsed ? 'justify-center' : 'pl-3'
-                      }`}
-                    >
-                      <span className='flex items-center justify-center'>
-                        {link.icon}
-                      </span>
-                      <span
-                        className={`transition-opacity duration-300 ml-4 ${
-                          collapsed
-                            ? 'opacity-0 w-0 hidden'
-                            : 'opacity-100 w-auto'
-                        }`}
-                        style={{
-                          overflow: 'hidden',
-                          whiteSpace: 'nowrap',
-                          transition: 'width 0.3s',
-                        }}
-                      >
-                        {link.label}
-                      </span>
-                    </div>
+                    <LinkItem link={link} />
                   </NavLink>
                 </li>
               ))}
             </div>
           </ul>
-          <ul className='flex flex-col mt-auto'>
-            <div className='flex flex-col mb-6'>
-              {bottomLinks.map(link => (
-                <li key={link.to}>
+          <ul className='flex flex-col mt-auto relative'>
+            <div className={`flex flex-col mb-6`}>
+              {settingLinks.map((link, i) => (
+                <li
+                  key={link.to}
+                  style={{
+                    transform: `translateY(${
+                      isSettingsOpen
+                        ? '0'
+                        : `${(settingLinks.length + 1 - i) * 70}px`
+                    })`,
+                    opacity: isSettingsOpen ? 1 : 0,
+                    transition:
+                      'transform 300ms ease-in-out, opacity 300ms ease-in',
+                    pointerEvents: isSettingsOpen ? 'auto' : 'none',
+                  }}
+                >
                   <NavLink
                     to={link.to}
                     className={({ isActive }) => {
@@ -171,65 +180,85 @@ const HomeSidebar: React.FC = () => {
                         isActive ? activeClasses : inactiveClasses
                       }`;
                     }}
-                    style={{
-                      height: '50px',
-                      width: collapsed ? '50px' : 'auto',
-                    }}
                   >
-                    <div
-                      className={`flex items-center w-full transition-all duration-300 ease-in-out ${
-                        collapsed ? 'justify-center' : 'pl-3'
-                      }`}
-                    >
-                      <span className='flex items-center justify-center'>
-                        {link.icon}
-                      </span>
-                      <span
-                        className={`transition-opacity duration-300 ml-4 ${
-                          collapsed
-                            ? 'opacity-0 w-0 hidden'
-                            : 'opacity-100 w-auto'
-                        }`}
-                        style={{
-                          overflow: 'hidden',
-                          whiteSpace: 'nowrap',
-                          transition: 'width 0.3s',
-                        }}
-                      >
-                        {link.label}
-                      </span>
-                    </div>
+                    <LinkItem link={link} />
                   </NavLink>
                 </li>
               ))}
+              <li
+                className={`${baseClasses} ${inactiveClasses}`}
+                style={{
+                  transform: `translateY(${isSettingsOpen ? '0' : `70px`})`,
+                  opacity: isSettingsOpen ? 1 : 0,
+                  transition:
+                    'transform 300ms ease-in-out, opacity 300ms ease-in',
+                  pointerEvents: isSettingsOpen ? 'auto' : 'none',
+                }}
+              >
+                <LinkItem
+                  link={{
+                    to: '/',
+                    label: 'Log out',
+                    icon: <IoIosLogOut className='text-xl' />,
+                  }}
+                />
+              </li>
+            </div>
+            <div className='flex flex-col z-10 group'>
+              <li key={'profile'}>
+                <NavLink
+                  to={'/profile'}
+                  className={({ isActive }) => {
+                    return `relative ${baseClasses} ${
+                      isActive ? activeClasses : inactiveClasses
+                    }`;
+                  }}
+                >
+                  <LinkItem link={bottomLinks[0]} />
+                  <div
+                    className={`${
+                      collapsed && 'absolute top-1/2 -translate-y-1/2 -right-5'
+                    }`}
+                  >
+                    <BsThreeDotsVertical
+                      className='opacity-0 group-hover:opacity-100 text-xl text-customBlack-light/30 dark:text-customWhite/40'
+                      onClick={() => setIsSettingsOpen(!isSettingsOpen)}
+                    />
+                  </div>
+                </NavLink>
+              </li>
             </div>
           </ul>
         </div>
       )}
 
+      {/* Right column */}
       <div className='px-6 py-8 flex-grow bg-customBlack-light/[.03] dark:bg-customBlack-light/95 relative'>
+        {/* Collapse/expand icons */}
         <div
-          className={`cursor-pointer text-customWhite/40 text-xl absolute -left-1 top-[374px] ${
+          className={`absolute top-1/2 -left-[18px] flex flex-row cursor-pointer text-customWhite/40 text-xl ${
             isHovering ? 'opacity-100' : 'opacity-0'
-          } transition-opacity duration-300`}
+          } transition-all duration-300`}
         >
-          {hidden ? (
-            <FaCaretRight
-              onClick={() => {
-                setHidden(false);
-              }}
-            />
-          ) : collapsed ? (
-            <FaCaretRight
-              onClick={() => {
-                setCollapsed(false);
-              }}
-            />
-          ) : (
-            ''
-          )}
+          <FaCaretLeft
+            onClick={
+              collapsed ? () => setHidden(true) : () => setCollapsed(true)
+            }
+            className='hover:-translate-x-0.5 transition-all duration-300'
+          />
+          <FaCaretRight
+            onClick={
+              hidden
+                ? () => setHidden(false)
+                : collapsed
+                ? () => setCollapsed(false)
+                : () => {}
+            }
+            className={`hover:translate-x-0.5 transition-all duration-300 -ml-1 ${
+              !collapsed && 'hidden'
+            }`}
+          />
         </div>
-
         <Outlet />
       </div>
     </div>
