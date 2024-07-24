@@ -7,3 +7,4 @@ export { default as ThemeSwitcher } from './ThemeSwitcher';
 export { default as Dropdown } from './Dropdown';
 export { default as Modal } from './Modal';
 export { default as VerificationCodeForm } from './VerificationCodeForm';
+export { default as ProfilePic } from './ProfilePic';

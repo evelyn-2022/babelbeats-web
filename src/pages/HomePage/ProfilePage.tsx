@@ -4,7 +4,7 @@ const ProfilePage: React.FC = () => {
   const { authState } = useAuth();
 
   return (
-    <div className='flex flex-col gap-12'>
+    <div className='flex flex-col px-6'>
       <div>
         <h2 className='font-bold'>My profile</h2>
         <div className='border-b-[1px] border-customWhite/5 my-4'></div>

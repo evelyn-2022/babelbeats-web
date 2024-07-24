@@ -3,8 +3,6 @@ import { NavLink, Outlet, Link } from 'react-router-dom';
 import { GoPerson } from 'react-icons/go';
 import { IoIosLogOut } from 'react-icons/io';
 import { PiArrowLeftBold } from 'react-icons/pi';
-import { GrLanguage } from 'react-icons/gr';
-import { SlSettings } from 'react-icons/sl';
 import { Button } from '../../components';
 import { useAuthService } from '../../hooks';
 
@@ -13,16 +11,6 @@ const AccountSidebar: React.FC = () => {
 
   const navLinks = [
     { to: 'account', label: 'Account', icon: <GoPerson className='text-xl' /> },
-    {
-      to: 'language',
-      label: 'Language',
-      icon: <GrLanguage className='text-lg' />,
-    },
-    {
-      to: 'settings',
-      label: 'Settings',
-      icon: <SlSettings className='text-xl' />,
-    },
   ];
 
   const baseClasses = 'block p-3 rounded-sm border-l-2';

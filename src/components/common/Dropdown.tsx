@@ -11,10 +11,9 @@ const Dropdown: React.FC<DropdownProps> = ({
   handleLogout,
 }) => {
   const links = [
-    { to: '/me', label: 'Profile' },
+    { to: '/profile', label: 'Profile' },
     { to: '/account/account', label: 'Account' },
-    { to: '/account/language', label: 'Language' },
-    { to: '/account/settings', label: 'Settings' },
+    { to: '/settings', label: 'Settings' },
   ];
 
   return (
