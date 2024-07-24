@@ -12,7 +12,6 @@ export { default as AccountPage } from './AccountPage/AccountPage';
 export { default as HomeSidebar } from './HomePage/HomeSidebar';
 export { default as HomePage } from './HomePage/HomePage';
 export { default as SearchPage } from './HomePage/SearchPage';
-export { default as RecentPlayPage } from './HomePage/RecentPlayPage';
 export { default as PlaylistsPage } from './HomePage/PlaylistsPage';
 export { default as CollectionsPage } from './HomePage/CollectionsPage';
 export { default as SettingsPage } from './HomePage/SettingsPage';
