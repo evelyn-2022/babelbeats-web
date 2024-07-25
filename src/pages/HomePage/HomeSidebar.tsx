@@ -14,18 +14,18 @@ import { useAuth } from '../../context';
 
 const HomeSidebar: React.FC = () => {
   const { authState } = useAuth();
-  const [collapsed, setCollapsed] = useState(true);
-  const [hidden, setHidden] = useState(false);
+  const [sidebarState, setSidebarState] = useState(1); // 0: hidden, 1: collapsed, 2: full
   const [isHovering, setIsHovering] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const settingsRef = useRef<HTMLUListElement>(null);
   const profileRef = useRef<HTMLLIElement>(null);
 
-  const sidebarWidth = hidden
-    ? 0
-    : collapsed
-    ? window.innerWidth * 0.068
-    : window.innerWidth * 0.14;
+  const sidebarWidth =
+    sidebarState === 0
+      ? 0
+      : sidebarState === 1
+      ? window.innerWidth * 0.068
+      : window.innerWidth * 0.14;
 
   const handleMouseMove = useCallback(
     (e: MouseEvent) => {
@@ -44,7 +44,7 @@ const HomeSidebar: React.FC = () => {
     return () => {
       document.removeEventListener('mousemove', handleMouseMove);
     };
-  }, [collapsed, hidden, handleMouseMove]);
+  }, [sidebarState, handleMouseMove]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -71,7 +71,7 @@ const HomeSidebar: React.FC = () => {
       icon: <BiHomeAlt2 className='text-2xl' />,
     },
     {
-      to: 'search',
+      to: '/search',
       label: 'Search',
       icon: <LuSearch className='text-xl' />,
     },
@@ -104,7 +104,7 @@ const HomeSidebar: React.FC = () => {
     to: '/profile',
     label: authState.user?.name.split(' ')[0],
     icon: (
-      <div className={`${!collapsed && '-ml-3 -mr-1'} w-8`}>
+      <div className={`${sidebarState !== 1 && '-ml-3 -mr-1'} w-8`}>
         <ProfilePic width='8' />
       </div>
     ),
@@ -125,13 +125,13 @@ const HomeSidebar: React.FC = () => {
       <div className='w-full'>
         <div
           className={`flex items-center w-full transition-all duration-300 ease-in-out ${
-            collapsed ? 'justify-center' : 'pl-1.5'
+            sidebarState === 1 ? 'justify-center' : 'pl-1.5'
           }`}
         >
           <span className='flex items-center justify-center'>{link.icon}</span>
           <span
             className={`ml-4 whitespace-nowrap overflow-hidden ${
-              collapsed ? 'opacity-0 w-0 hidden' : 'opacity-100 w-auto'
+              sidebarState === 1 ? 'opacity-0 w-0 hidden' : 'opacity-100 w-auto'
             }`}
           >
             {link.label}
@@ -150,10 +150,10 @@ const HomeSidebar: React.FC = () => {
   return (
     <div className='min-h-screen flex w-full relative'>
       {/* Left column */}
-      {!hidden && (
+      {sidebarState !== 0 && (
         <div
           className={`${
-            collapsed ? 'w-[6.8%]' : 'w-[14%]'
+            sidebarState === 1 ? 'w-[6.8%]' : 'w-[14%]'
           } transition-all duration-300 px-6 py-10 flex flex-col relative justify-between`}
         >
           {/* Basic links */}
@@ -233,7 +233,7 @@ const HomeSidebar: React.FC = () => {
               </NavLink>
               <div
                 className={`absolute top-3 right-2 cursor-pointer text-2xl text-customBlack-light/30 dark:text-customWhite/40 dark:hover:text-customWhite/60 ${
-                  collapsed && 'translate-x-7'
+                  sidebarState === 1 && 'translate-x-7'
                 }`}
               >
                 <BsThreeDotsVertical
@@ -256,20 +256,22 @@ const HomeSidebar: React.FC = () => {
         >
           <FaCaretLeft
             onClick={
-              collapsed ? () => setHidden(true) : () => setCollapsed(true)
+              sidebarState === 1
+                ? () => setSidebarState(0)
+                : () => setSidebarState(1)
             }
             className='hover:-translate-x-0.5 transition-all duration-300'
           />
           <FaCaretRight
             onClick={
-              hidden
-                ? () => setHidden(false)
-                : collapsed
-                ? () => setCollapsed(false)
+              sidebarState === 0
+                ? () => setSidebarState(1)
+                : sidebarState === 1
+                ? () => setSidebarState(2)
                 : () => {}
             }
             className={`hover:translate-x-0.5 transition-all duration-300 -ml-1 ${
-              !collapsed && 'hidden'
+              sidebarState === 2 && 'hidden'
             }`}
           />
         </div>
