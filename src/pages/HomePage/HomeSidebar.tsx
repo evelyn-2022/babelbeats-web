@@ -19,6 +19,8 @@ const HomeSidebar: React.FC = () => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const settingsRef = useRef<HTMLUListElement>(null);
   const profileRef = useRef<HTMLLIElement>(null);
+  const startPosition = useRef(0); // To store the initial mouse down position
+  const threshold = 50; // px
 
   const sidebarWidth =
     sidebarState === 0
@@ -26,6 +28,12 @@ const HomeSidebar: React.FC = () => {
       : sidebarState === 1
       ? window.innerWidth * 0.068
       : window.innerWidth * 0.14;
+
+  const handleMouseDown = (event: React.MouseEvent) => {
+    startPosition.current = event.clientX;
+    document.addEventListener('mousemove', handleMouseDrag);
+    document.addEventListener('mouseup', handleMouseUp);
+  };
 
   const handleMouseMove = useCallback(
     (e: MouseEvent) => {
@@ -38,6 +46,28 @@ const HomeSidebar: React.FC = () => {
     },
     [sidebarWidth]
   );
+
+  const handleMouseDrag = (e: MouseEvent) => {
+    const currentMousePosition = e.clientX;
+    const distanceMoved = currentMousePosition - startPosition.current;
+
+    if (Math.abs(distanceMoved) >= threshold) {
+      if (distanceMoved > 0) {
+        // Mouse moved to the right
+        setSidebarState(prev => (prev < 2 ? prev + 1 : 2));
+      } else if (distanceMoved < 0) {
+        // Mouse moved to the left
+        setSidebarState(prev => (prev > 0 ? prev - 1 : 0));
+      }
+      startPosition.current = currentMousePosition; // Reset start position after state change
+    }
+  };
+
+  const handleMouseUp = () => {
+    document.removeEventListener('mousemove', handleMouseMove);
+    document.removeEventListener('mousemove', handleMouseDrag);
+    document.removeEventListener('mouseup', handleMouseUp);
+  };
 
   useEffect(() => {
     document.addEventListener('mousemove', handleMouseMove);
@@ -246,11 +276,17 @@ const HomeSidebar: React.FC = () => {
         </div>
       )}
 
+      {/* Divider */}
+      <div
+        className={`w-2 cursor-col-resize bg-customBlack-light/[.03] dark:bg-customBlack-light/95`}
+        onMouseDown={handleMouseDown}
+      />
+
       {/* Right column */}
       <div className='px-6 py-10 flex-grow bg-customBlack-light/[.03] dark:bg-customBlack-light/95 relative'>
         {/* Collapse/expand icons */}
         <div
-          className={`absolute top-1/2 -left-[18px] flex flex-row cursor-pointer text-customWhite/40 text-xl ${
+          className={`absolute top-1/2 -left-[26px] flex flex-row cursor-pointer text-customWhite/40 text-xl ${
             isHovering ? 'opacity-100' : 'opacity-0'
           } transition-all duration-300`}
         >
