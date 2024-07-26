@@ -23,4 +23,11 @@ dist-ssr
 *.sln
 *.sw?
 
+# Environment variables
 .env
+
+# Certificates
+certs/*
+*.pem
+*.crt
+*.key
