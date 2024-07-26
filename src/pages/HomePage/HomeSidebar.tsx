@@ -1,15 +1,14 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Outlet, NavLink } from 'react-router-dom';
 import { BiHomeAlt2 } from 'react-icons/bi';
-import { BsCollection } from 'react-icons/bs';
+import { BsCollection, BsThreeDotsVertical } from 'react-icons/bs';
 import { FaCaretLeft, FaCaretRight } from 'react-icons/fa';
 import { LuSearch } from 'react-icons/lu';
 import { PiPlaylist } from 'react-icons/pi';
-import { BsThreeDotsVertical } from 'react-icons/bs';
 import { GoPerson } from 'react-icons/go';
 import { LuSettings } from 'react-icons/lu';
 import { IoIosLogOut } from 'react-icons/io';
-import { ProfilePic } from '../../components';
+import { ProfilePic, Tooltip } from '../../components';
 import { useAuth } from '../../context';
 
 const HomeSidebar: React.FC = () => {
@@ -134,7 +133,7 @@ const HomeSidebar: React.FC = () => {
     to: '/profile',
     label: authState.user?.name.split(' ')[0],
     icon: (
-      <div className={`${sidebarState !== 1 && '-ml-3 -mr-1'} w-8`}>
+      <div className={`${sidebarState !== 1 && '-ml-2 -mr-1'} w-8`}>
         <ProfilePic width='8' />
       </div>
     ),
@@ -148,11 +147,12 @@ const HomeSidebar: React.FC = () => {
 
   interface LinkItemProps {
     link: Link;
+    position?: 'left' | 'right' | 'top' | 'bottom' | 'right-tight';
   }
 
-  const LinkItem: React.FC<LinkItemProps> = ({ link }) => {
+  const LinkItem: React.FC<LinkItemProps> = ({ link, position }) => {
     return (
-      <div className='w-full'>
+      <div className='w-full relative'>
         <div
           className={`flex items-center w-full transition-all duration-300 ease-in-out ${
             sidebarState === 1 ? 'justify-center' : 'pl-1.5'
@@ -167,15 +167,18 @@ const HomeSidebar: React.FC = () => {
             {link.label}
           </span>
         </div>
+        {sidebarState === 1 && (
+          <Tooltip label={link.label || ''} position={position} />
+        )}
       </div>
     );
   };
 
-  const baseClasses = `p-3 rounded-full flex items-center justify-center mb-2 h-12`;
+  const baseClasses = `p-3 rounded-full flex items-center justify-center mb-2 h-12 relative`;
   const activeClasses =
-    'bg-customBlack-light/[.03] dark:text-primary dark:bg-customBlack-light/95';
+    'bg-customBlack-light/[.03] dark:text-primary dark:bg-customBlack-lighter';
   const inactiveClasses =
-    'hover:bg-customBlack-light/5 dark:hover:bg-customBlack-light/50';
+    'hover:bg-customBlack-light/5 dark:hover:bg-customBlack-light';
 
   return (
     <div className='min-h-screen flex w-full relative'>
@@ -189,7 +192,7 @@ const HomeSidebar: React.FC = () => {
           {/* Basic links */}
           <ul>
             {basicLinks.map(link => (
-              <li key={link.to}>
+              <li key={link.to} className='group '>
                 <NavLink
                   to={link.to}
                   className={({ isActive }) => {
@@ -198,17 +201,17 @@ const HomeSidebar: React.FC = () => {
                     }`;
                   }}
                 >
-                  <LinkItem link={link} />
+                  <LinkItem link={link} position='right' />
                 </NavLink>
               </li>
             ))}
           </ul>
 
           {/* Setting links */}
-          <ul className='relative' ref={settingsRef}>
+          <ul className='relative z-10' ref={settingsRef}>
             {settingLinks.map((link, i) => (
               <li
-                className={`transition-all duration-300 ease-in-out ${
+                className={`transition-all duration-300 ease-in-out group ${
                   isSettingsOpen
                     ? 'opacity-100'
                     : 'opacity-0 pointer-events-none'
@@ -230,12 +233,12 @@ const HomeSidebar: React.FC = () => {
                     }`;
                   }}
                 >
-                  <LinkItem link={link} />
+                  <LinkItem link={link} position='right' />
                 </NavLink>
               </li>
             ))}
             <li
-              className={`transition-all duration-300 ease-in-out ${baseClasses} ${inactiveClasses} ${
+              className={`transition-all duration-300 ease-in-out group ${baseClasses} ${inactiveClasses} ${
                 isSettingsOpen
                   ? 'opacity-100'
                   : 'translate-y-[56px] opacity-0 pointer-events-none'
@@ -247,29 +250,35 @@ const HomeSidebar: React.FC = () => {
                   label: 'Log out',
                   icon: <IoIosLogOut className='text-xl' />,
                 }}
+                position='right'
               />
             </li>
 
-            <li key='profile' className='relative group' ref={profileRef}>
+            <li
+              key='profile'
+              className='relative group/profile'
+              ref={profileRef}
+            >
               <NavLink
                 to={profileLink.to}
                 className={({ isActive }) => {
-                  return `${baseClasses} ${
+                  return `group ${baseClasses} ${
                     isActive ? activeClasses : inactiveClasses
                   }`;
                 }}
               >
-                <LinkItem link={profileLink} />
+                <LinkItem link={profileLink} position='bottom' />
               </NavLink>
               <div
-                className={`absolute top-3 right-2 cursor-pointer text-2xl text-customBlack-light/30 dark:text-customWhite/40 dark:hover:text-customWhite/60 ${
+                className={`absolute group top-3 right-2 cursor-pointer text-2xl text-customBlack-light/30 dark:text-customWhite/40 dark:hover:text-customWhite/60 ${
                   sidebarState === 1 && 'translate-x-7'
                 }`}
               >
                 <BsThreeDotsVertical
-                  className='opacity-0 group-hover:opacity-100 transition-all duration-300'
+                  className='opacity-0 group-hover/profile:opacity-100 transition-all duration-300'
                   onClick={() => setIsSettingsOpen(!isSettingsOpen)}
                 />
+                <Tooltip label='More settings' position='right-tight' />
               </div>
             </li>
           </ul>
@@ -290,26 +299,51 @@ const HomeSidebar: React.FC = () => {
             isHovering ? 'opacity-100' : 'opacity-0'
           } transition-all duration-300`}
         >
-          <FaCaretLeft
-            onClick={
-              sidebarState === 1
-                ? () => setSidebarState(0)
-                : () => setSidebarState(1)
-            }
-            className='hover:-translate-x-0.5 transition-all duration-300'
-          />
-          <FaCaretRight
-            onClick={
-              sidebarState === 0
-                ? () => setSidebarState(1)
-                : sidebarState === 1
-                ? () => setSidebarState(2)
-                : () => {}
-            }
-            className={`hover:translate-x-0.5 transition-all duration-300 -ml-1 ${
-              sidebarState === 2 && 'hidden'
-            }`}
-          />
+          <div className='group relative'>
+            <FaCaretLeft
+              onClick={
+                sidebarState === 1
+                  ? () => setSidebarState(0)
+                  : () => setSidebarState(1)
+              }
+              className='hover:-translate-x-0.5 transition-all duration-300'
+            />
+            <Tooltip
+              label={
+                sidebarState === 1
+                  ? 'Hide sidebar'
+                  : sidebarState === 2
+                  ? 'Collapse sidebar'
+                  : ''
+              }
+              position='bottom'
+            />
+          </div>
+
+          <div className='group relative'>
+            <FaCaretRight
+              onClick={
+                sidebarState === 0
+                  ? () => setSidebarState(1)
+                  : sidebarState === 1
+                  ? () => setSidebarState(2)
+                  : () => {}
+              }
+              className={`hover:translate-x-0.5 transition-all duration-300 -ml-1 ${
+                sidebarState === 2 && 'hidden'
+              }`}
+            />
+            <Tooltip
+              label={
+                sidebarState === 1
+                  ? 'Expand sidebar'
+                  : sidebarState === 0
+                  ? 'Show sidebar'
+                  : ''
+              }
+              position={sidebarState !== 0 ? 'bottom' : 'right-tight'}
+            />
+          </div>
         </div>
         <Outlet />
       </div>

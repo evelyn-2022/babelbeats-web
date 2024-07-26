@@ -8,3 +8,4 @@ export { default as Dropdown } from './Dropdown';
 export { default as Modal } from './Modal';
 export { default as VerificationCodeForm } from './VerificationCodeForm';
 export { default as ProfilePic } from './ProfilePic';
+export { default as Tooltip } from './Tooltip';

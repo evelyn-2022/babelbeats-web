@@ -10,7 +10,6 @@
     --custom-white: 0deg 0% 99%;
     --color-primary: 160deg 95% 80%;
     --color-primary-dark: 150deg 85% 65%;
-    --color-secondary: 111 114 185;
 
     body {
       @apply text-customBlack-light;
@@ -20,9 +19,9 @@
 
   .dark {
     --custom-black-light: 0deg 0% 10%;
+    --custom-black-lighter: 0deg 0% 14%;
     --color-primary: 160deg 90% 65%;
     --color-primary-dark: 160deg 85% 35%;
-    --color-secondary: 111 114 185;
 
     body {
       @apply text-customWhite;

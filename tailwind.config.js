@@ -11,6 +11,7 @@ export default {
           dark: 'hsl(var(--color-primary-dark) / 0.8)',
         },
         customBlack: {
+          lighter: 'hsl(var(--custom-black-lighter))',
           light: 'hsl(var(--custom-black-light))',
           DEFAULT: 'hsl(var(--custom-black))',
           dark: 'hsl(var(--custom-black-dark))',
