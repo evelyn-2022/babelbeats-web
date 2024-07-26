@@ -1,4 +1,4 @@
-import { ThemeSwitcher } from '../../components';
+import { ThemeSwitcher } from '../components';
 
 const SettingsPage: React.FC = () => {
   return (
