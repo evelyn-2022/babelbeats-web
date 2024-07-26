@@ -97,7 +97,7 @@ const HomeSidebar: React.FC = () => {
     {
       to: '/',
       label: 'Home',
-      icon: <BiHomeAlt2 className='text-2xl' />,
+      icon: <BiHomeAlt2 className='text-[1.3rem] -mr-[0.05rem]' />,
     },
     {
       to: '/search',
@@ -112,7 +112,7 @@ const HomeSidebar: React.FC = () => {
     {
       to: '/playlists',
       label: 'Playlists',
-      icon: <PiPlaylist className='text-2xl -mr-1' />,
+      icon: <PiPlaylist className='text-2xl -ml-0.5 -mr-1' />,
     },
   ];
 
