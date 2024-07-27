@@ -11,7 +11,8 @@ export default defineConfig({
       key: fs.readFileSync(path.resolve(__dirname, 'certs/key.pem')),
       cert: fs.readFileSync(path.resolve(__dirname, 'certs/cert.pem')),
     },
-    port: 3000, // You can change this port if needed
+    port: 3000,
+    host: '0.0.0.0',
   },
   define: {
     global: {},
