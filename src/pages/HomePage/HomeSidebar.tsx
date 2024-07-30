@@ -10,9 +10,11 @@ import { LuSettings } from 'react-icons/lu';
 import { IoIosLogOut } from 'react-icons/io';
 import { ProfilePic, Tooltip } from '../../components';
 import { useAuth } from '../../context';
+import { useAuthService } from '../../hooks';
 
 const HomeSidebar: React.FC = () => {
   const { authState } = useAuth();
+  const { handleSignOut } = useAuthService();
   const [sidebarState, setSidebarState] = useState(1); // 0: hidden, 1: collapsed, 2: full
   const [isHovering, setIsHovering] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -238,11 +240,12 @@ const HomeSidebar: React.FC = () => {
               </li>
             ))}
             <li
-              className={`transition-all duration-300 ease-in-out group ${baseClasses} ${inactiveClasses} ${
+              className={`transition-all duration-300 ease-in-out group cursor-pointer ${baseClasses} ${inactiveClasses} ${
                 isSettingsOpen
                   ? 'opacity-100'
                   : 'translate-y-[56px] opacity-0 pointer-events-none'
               }`}
+              onClick={handleSignOut}
             >
               <LinkItem
                 link={{
