@@ -6,8 +6,8 @@
   "scripts": {
     "dev": "vite  --mode dev",
     "start": "vite --mode dev",
-    "build:test": "tsc -b && vite build  --mode test",
-    "build:aws": "tsc -b && vite build  --mode aws",
+    "build:test": "tsc -b && vite build --mode test",
+    "build:aws": "tsc -b && vite build --mode aws",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },

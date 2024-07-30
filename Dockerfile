@@ -5,7 +5,7 @@ COPY package.json yarn.lock ./
 RUN yarn install
 COPY . .
 
-RUN yarn build:test
+RUN yarn build:aws
 
 # Stage 2: Serve with Nginx
 FROM nginx:alpine
