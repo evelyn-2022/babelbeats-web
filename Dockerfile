@@ -5,9 +5,7 @@ COPY package.json yarn.lock ./
 RUN yarn install
 COPY . .
 
-ARG MODE=production
-ENV NODE_ENV=$MODE
-RUN yarn build --mode $MODE
+RUN yarn build:test
 
 # Stage 2: Serve with Nginx
 FROM nginx:alpine
