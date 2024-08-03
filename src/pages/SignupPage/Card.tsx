@@ -52,7 +52,7 @@ const Card: React.FC<CardProps> = ({
 
   return (
     <form
-      className='flex flex-col gap-6'
+      className='flex flex-col items-center gap-6 min-h-[316px]'
       onSubmit={handleNext}
       onKeyDown={handleKeyDown}
     >
@@ -73,6 +73,10 @@ const Card: React.FC<CardProps> = ({
       </Button>
 
       {step === 0 && <SocialSignInGroup text='sign up' />}
+
+      <a href='/login'>
+        Already have an account? <span className='link'>Log in</span>
+      </a>
     </form>
   );
 };

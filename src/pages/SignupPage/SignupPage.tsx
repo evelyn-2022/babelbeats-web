@@ -95,7 +95,7 @@ const SignupPage: React.FC = () => {
   const dividerWidth = `${(step / (fields.length - 1)) * 100}%`;
 
   return (
-    <div className='min-h-screen w-full flex flex-col items-center gap-8 pt-36'>
+    <div className='min-h-screen w-full flex flex-col items-center justify-center gap-8'>
       <Helmet>
         <title>BabelBeats | Sign Up</title>
       </Helmet>
@@ -138,9 +138,6 @@ const SignupPage: React.FC = () => {
         handleSubmit={handleSubmit}
         resetPasswordVisibility={resetPasswordVisibility}
       />
-      <a href='/login'>
-        Already have an account? <span className='link'>Log in</span>
-      </a>
     </div>
   );
 };
