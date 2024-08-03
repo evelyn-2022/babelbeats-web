@@ -65,6 +65,13 @@ export const validateField = ({
           category: 'validation',
         });
         return false;
+      } else if ((value as string).length > 15) {
+        addError({
+          message: 'Username must not exceed 15 characters.',
+          displayType: 'inline',
+          category: 'validation',
+        });
+        return false;
       }
       break;
     }
