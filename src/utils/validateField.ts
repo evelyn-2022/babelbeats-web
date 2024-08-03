@@ -1,5 +1,6 @@
 import validator from 'validator';
 import { CustomError, ValidatedFields } from '../types';
+import { checkEmailRegistered } from '../services';
 
 interface ValidationParams {
   id: keyof ValidatedFields;
@@ -24,6 +25,17 @@ export const validateField = ({
           message: 'Invalid email address.',
           displayType: 'inline',
           category: 'validation',
+        });
+        return false;
+      } else {
+        checkEmailRegistered(value as string).then(isRegistered => {
+          if (isRegistered) {
+            addError({
+              message: 'Email is already registered. Please log in instead.',
+              displayType: 'inline',
+              category: 'validation',
+            });
+          }
         });
         return false;
       }
