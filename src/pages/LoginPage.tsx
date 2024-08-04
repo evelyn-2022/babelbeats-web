@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { wave } from '../assets';
 import {
   Button,
   InputField,
   SocialSignInGroup,
   ToggleSwitch,
+  Logo,
 } from '../components';
 import { useAuth, useError } from '../context';
 import { useAuthService } from '../hooks';
@@ -78,13 +78,8 @@ const LoginPage: React.FC = () => {
       <Helmet>
         <title>BabelBeats | Log In</title>
       </Helmet>
-      <div className='flex flex-row items-center gap-1.5'>
-        <div className='rounded-full bg-primary p-1'>
-          <img src={wave} className='w-6 h-6' alt='Wave' />
-        </div>
-        <div className='font-sans font-bold text-lg'>BabelBeats</div>
-      </div>
-      <h1 className='text-4xl font-bold'>Welcome back!</h1>
+      <Logo />
+      <h1 className='text-2xl md:text-4xl font-bold'>Welcome back!</h1>
       <form onSubmit={handleSubmit} className='flex flex-col gap-6'>
         {fields.map((field, i) => (
           <InputField
@@ -106,12 +101,7 @@ const LoginPage: React.FC = () => {
         </div>
 
         <div className='flex flex-col items-center'>
-          <Button
-            width='w-96'
-            type='submit'
-            variant='filled'
-            disabled={isSubmitDisabled}
-          >
+          <Button type='submit' variant='filled' disabled={isSubmitDisabled}>
             {authState.loading ? (
               <>
                 <div className='w-4 h-4 border-2 border-white border-solid border-t-transparent rounded-full animate-spin mr-2'></div>

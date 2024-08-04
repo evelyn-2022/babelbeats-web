@@ -2,7 +2,7 @@ import React from 'react';
 
 interface TooltipProps {
   label: string;
-  position?: 'top' | 'bottom' | 'left' | 'right' | 'right-tight';
+  position?: 'top' | 'bottom' | 'left' | 'right' | 'right-tight' | 'hidden';
 }
 
 const Tooltip: React.FC<TooltipProps> = ({ label, position }) => {
@@ -15,6 +15,8 @@ const Tooltip: React.FC<TooltipProps> = ({ label, position }) => {
           ? 'left-1/2 top-full translate-y-3 -translate-x-1/2'
           : position === 'right-tight'
           ? 'left-6 -top-1.5'
+          : position === 'hidden'
+          ? 'hidden'
           : ''
       }`}
     >
@@ -28,6 +30,8 @@ const Tooltip: React.FC<TooltipProps> = ({ label, position }) => {
               ? '-top-1 left-1/2 -translate-x-1/2'
               : position === 'right' || position === 'right-tight'
               ? 'top-1/2 -translate-y-1/2 -left-[2px] -rotate-90'
+              : position === 'hidden'
+              ? 'hidden'
               : ''
           } -translate-x-1/2`}
         />

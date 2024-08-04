@@ -20,8 +20,8 @@ const Button: React.FC<ButtonProps> = ({
   children,
 }) => {
   let className = ` border-2 cursor-pointer text-center font-bold flex justify-center items-center rounded-full button-hover-animation transition duration-500 ${
-    width && width
-  } ${padding ? padding : 'p-2.5'}`;
+    width ? width : 'w-64 md:w-96'
+  } ${padding ? padding : 'p-2 md:p-2.5'}`;
 
   switch (variant) {
     case 'outlined':

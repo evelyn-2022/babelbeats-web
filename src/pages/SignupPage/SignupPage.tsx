@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { BsChevronLeft } from 'react-icons/bs';
-import { wave } from '../../assets';
 import Card from './Card';
 import { SignupField } from './SignupField';
+import { Logo } from '../../components';
 import { useError } from '../../context';
 import { useAuthService } from '../../hooks';
 
@@ -99,13 +99,8 @@ const SignupPage: React.FC = () => {
       <Helmet>
         <title>BabelBeats | Sign Up</title>
       </Helmet>
-      <div className='flex flex-row items-center gap-1.5'>
-        <div className='rounded-full bg-primary p-1'>
-          <img src={wave} className='w-6 h-6' alt='Wave' />
-        </div>
-        <div className='font-sans font-bold text-lg'>BabelBeats</div>
-      </div>
-      <h1 className='text-4xl font-bold'>Welcome!</h1>
+      <Logo />
+      <h1 className='text-2xl md:text-4xl font-bold'>Welcome!</h1>
       {step !== 0 && (
         <div>
           <div className='w-96 h-0.5 bg-customBlack-light/10 dark:bg-customWhite/80 relative'>

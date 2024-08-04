@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Outlet, NavLink } from 'react-router-dom';
 import { BiHomeAlt2 } from 'react-icons/bi';
 import { BsCollection, BsThreeDotsVertical } from 'react-icons/bs';
@@ -16,37 +16,20 @@ const HomeSidebar: React.FC = () => {
   const { authState } = useAuth();
   const { handleSignOut } = useAuthService();
   const [sidebarState, setSidebarState] = useState(1); // 0: hidden, 1: collapsed, 2: full
-  const [isHovering, setIsHovering] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [showDivider, setShowDivider] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const [showThreeDots, setShowThreeDots] = useState(false);
   const settingsRef = useRef<HTMLUListElement>(null);
   const profileRef = useRef<HTMLLIElement>(null);
   const startPosition = useRef(0); // To store the initial mouse down position
   const threshold = 50; // px
-
-  const sidebarWidth =
-    sidebarState === 0
-      ? 0
-      : sidebarState === 1
-      ? window.innerWidth * 0.068
-      : window.innerWidth * 0.14;
 
   const handleMouseDown = (event: React.MouseEvent) => {
     startPosition.current = event.clientX;
     document.addEventListener('mousemove', handleMouseDrag);
     document.addEventListener('mouseup', handleMouseUp);
   };
-
-  const handleMouseMove = useCallback(
-    (e: MouseEvent) => {
-      const { clientX } = e;
-      if (clientX >= sidebarWidth - 40 && clientX <= sidebarWidth + 40) {
-        setIsHovering(true);
-      } else {
-        setIsHovering(false);
-      }
-    },
-    [sidebarWidth]
-  );
 
   const handleMouseDrag = (e: MouseEvent) => {
     const currentMousePosition = e.clientX;
@@ -65,17 +48,36 @@ const HomeSidebar: React.FC = () => {
   };
 
   const handleMouseUp = () => {
-    document.removeEventListener('mousemove', handleMouseMove);
     document.removeEventListener('mousemove', handleMouseDrag);
     document.removeEventListener('mouseup', handleMouseUp);
   };
 
-  useEffect(() => {
-    document.addEventListener('mousemove', handleMouseMove);
-    return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-    };
-  }, [sidebarState, handleMouseMove]);
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setShowDivider(!showDivider);
+    startPosition.current = e.touches[0].clientX;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    setIsDragging(true);
+    const currentTouchPosition = e.touches[0].clientX;
+    const distanceMoved = currentTouchPosition - startPosition.current;
+
+    if (Math.abs(distanceMoved) >= threshold) {
+      setIsDragging(true);
+      if (distanceMoved > 0) {
+        // Touch moved to the right
+        setSidebarState(prev => (prev < 2 ? prev + 1 : 2));
+      } else if (distanceMoved < 0) {
+        // Touch moved to the left
+        setSidebarState(prev => (prev > 0 ? prev - 1 : 0));
+      }
+      startPosition.current = currentTouchPosition; // Reset start position after state change
+    }
+  };
+
+  const handleTouchEnd = () => {
+    setIsDragging(false);
+  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -86,6 +88,7 @@ const HomeSidebar: React.FC = () => {
         !profileRef.current.contains(event.target as Node)
       ) {
         setIsSettingsOpen(false);
+        setShowThreeDots(false);
       }
     };
 
@@ -99,22 +102,24 @@ const HomeSidebar: React.FC = () => {
     {
       to: '/',
       label: 'Home',
-      icon: <BiHomeAlt2 className='text-[1.3rem] -mr-[0.05rem]' />,
+      icon: (
+        <BiHomeAlt2 className='text-lg xl:text-[1.3rem] xl:-mr-[0.05rem]' />
+      ),
     },
     {
       to: '/search',
       label: 'Search',
-      icon: <LuSearch className='text-xl' />,
+      icon: <LuSearch className='text-lg xl:text-xl' />,
     },
     {
       to: '/collections',
       label: 'Collections',
-      icon: <BsCollection className='text-lg' />,
+      icon: <BsCollection className='text-md xl:text-lg' />,
     },
     {
       to: '/playlists',
       label: 'Playlists',
-      icon: <PiPlaylist className='text-2xl -ml-0.5 -mr-1' />,
+      icon: <PiPlaylist className='text-xl xl:text-2xl xl:-ml-0.5 xl:-mr-1' />,
     },
   ];
 
@@ -122,12 +127,12 @@ const HomeSidebar: React.FC = () => {
     {
       to: '/account',
       label: 'Account',
-      icon: <GoPerson className='text-xl' />,
+      icon: <GoPerson className='text-lg xl:text-xl' />,
     },
     {
       to: '/settings',
       label: 'Settings',
-      icon: <LuSettings className='text-xl' />,
+      icon: <LuSettings className='text-lg xl:text-xl' />,
     },
   ];
 
@@ -135,8 +140,8 @@ const HomeSidebar: React.FC = () => {
     to: '/profile',
     label: authState.user?.name.split(' ')[0],
     icon: (
-      <div className={`${sidebarState !== 1 && '-ml-2 -mr-1'} w-8`}>
-        <ProfilePic width='8' />
+      <div className={`${sidebarState !== 1 && '-ml-2 -mr-1'} w-6 xl:w-8`}>
+        <ProfilePic width='w-6 xl:w-8' height='h-6 xl:h-8' />
       </div>
     ),
   };
@@ -176,7 +181,9 @@ const HomeSidebar: React.FC = () => {
     );
   };
 
-  const baseClasses = `p-3 rounded-full flex items-center justify-center mb-2 h-12 relative`;
+  const baseClasses = `p-3 rounded-full flex items-center justify-center mb-2 relative ${
+    sidebarState === 2 ? 'h-9 xl:h-12 ' : 'h-9 w-9 xl:h-12 xl:w-12'
+  }`;
   const activeClasses =
     'bg-customBlack-light/[.03] dark:text-primary dark:bg-customBlack-lighter';
   const inactiveClasses =
@@ -188,7 +195,9 @@ const HomeSidebar: React.FC = () => {
       {sidebarState !== 0 && (
         <div
           className={`${
-            sidebarState === 1 ? 'w-[6.8%]' : 'w-[14%]'
+            sidebarState === 1
+              ? 'lg:w-[8%] xl:w-[6.3%]'
+              : 'lg:w-[19%] xl:w-[14%]'
           } transition-all duration-300 px-6 py-10 flex flex-col relative justify-between`}
         >
           {/* Basic links */}
@@ -261,6 +270,9 @@ const HomeSidebar: React.FC = () => {
               key='profile'
               className='relative group/profile'
               ref={profileRef}
+              onTouchStart={() => {
+                setShowThreeDots(!showThreeDots);
+              }}
             >
               <NavLink
                 to={profileLink.to}
@@ -273,12 +285,14 @@ const HomeSidebar: React.FC = () => {
                 <LinkItem link={profileLink} position='bottom' />
               </NavLink>
               <div
-                className={`absolute group top-3 right-2 cursor-pointer text-2xl text-customBlack-light/30 dark:text-customWhite/40 dark:hover:text-customWhite/60 ${
+                className={`absolute group top-1.5 xl:top-3 right-1 cursor-pointer text-2xl text-customBlack-light/30 dark:text-customWhite/40 dark:hover:text-customWhite/60 ${
                   sidebarState === 1 && 'translate-x-7'
                 }`}
               >
                 <BsThreeDotsVertical
-                  className='opacity-0 group-hover/profile:opacity-100 transition-all duration-300'
+                  className={`opacity-0 group-hover/profile:opacity-100 transition-all duration-300 ${
+                    showThreeDots && 'opacity-100'
+                  }`}
                   onClick={() => setIsSettingsOpen(!isSettingsOpen)}
                 />
                 <Tooltip label='More settings' position='right-tight' />
@@ -288,21 +302,19 @@ const HomeSidebar: React.FC = () => {
         </div>
       )}
 
-      {/* Divider */}
-      <div
-        className={`w-2 cursor-col-resize bg-customBlack-light/[.03] dark:bg-customBlack-light/95`}
-        onMouseDown={handleMouseDown}
-      />
-
       {/* Right column */}
       <div className='px-6 py-10 flex-grow bg-customBlack-light/[.03] dark:bg-customBlack-light/95 relative'>
-        {/* Collapse/expand icons */}
         <div
-          className={`absolute top-1/2 -left-[26px] flex flex-row cursor-pointer text-customWhite/40 text-xl ${
-            isHovering ? 'opacity-100' : 'opacity-0'
-          } transition-all duration-300`}
+          className={`absolute w-8 h-full cursor-col-resize top-0 -left-6 flex flex-row items-center gap-0.5 text-customWhite/40 text-xl opacity-0 hover:opacity-100 transition-all duration-300 ${
+            isDragging && 'opacity-100'
+          }`}
+          onMouseDown={handleMouseDown}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
         >
-          <div className='group relative'>
+          {/* Collapse icon */}
+          <div className='group relative cursor-pointer'>
             <FaCaretLeft
               onClick={
                 sidebarState === 1
@@ -322,8 +334,14 @@ const HomeSidebar: React.FC = () => {
               position='bottom'
             />
           </div>
-
-          <div className='group relative'>
+          {/* Divider */}
+          <div
+            className={`w-1 h-full -translate-x-[2px] bg-customBlack-light/[.03] dark:bg-customBlack-light/95 border-l-[1px] border-transparent ${
+              showDivider && 'border-white/20'
+            } ${isDragging && 'border-white/50'}`}
+          />
+          {/* Expand icon */}
+          <div className='group relative cursor-pointer'>
             <FaCaretRight
               onClick={
                 sidebarState === 0
@@ -344,7 +362,13 @@ const HomeSidebar: React.FC = () => {
                   ? 'Show sidebar'
                   : ''
               }
-              position={sidebarState !== 0 ? 'bottom' : 'right-tight'}
+              position={
+                sidebarState === 2
+                  ? 'hidden'
+                  : sidebarState === 1
+                  ? 'bottom'
+                  : 'right-tight'
+              }
             />
           </div>
         </div>

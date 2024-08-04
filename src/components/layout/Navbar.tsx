@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { wave } from '../../assets';
-import { Button, Dropdown } from '../common';
+import { Button, Dropdown, Logo } from '../../components';
 import { useAuth, useTheme } from '../../context';
 import { useAuthService } from '../../hooks';
 
@@ -38,14 +37,9 @@ const Navbar: React.FC = () => {
   }, [dropdownRef]);
 
   return (
-    <nav className='container mx-auto py-3 flex justify-between items-center relative'>
+    <nav className='py-3 flex justify-between items-center relative w-full'>
       <a href='/' className='cursor-pointer'>
-        <div className='flex flex-row items-center gap-1.5'>
-          <div className='rounded-full bg-primary p-1'>
-            <img src={wave} className='w-6 h-6' alt='Wave' />
-          </div>
-          <div className='font-sans font-bold text-lg'>BabelBeats</div>
-        </div>
+        <Logo />
       </a>
 
       {authState.user ? (
@@ -98,7 +92,7 @@ const Navbar: React.FC = () => {
         <a href='/get-started'>
           <Button
             variant={theme === 'light' ? 'outlined' : 'filled'}
-            width='w-36'
+            width='w-28 md:w-36'
           >
             Get Started
           </Button>

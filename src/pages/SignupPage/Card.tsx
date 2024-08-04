@@ -68,7 +68,7 @@ const Card: React.FC<CardProps> = ({
         ref={inputRef}
       />
 
-      <Button type='submit' variant='filled' width='w-96' padding='p-2.5'>
+      <Button type='submit' variant='filled'>
         {step < total - 1 ? 'Next' : 'Submit'}
       </Button>
 

@@ -1,7 +1,10 @@
 import React from 'react';
 import { useAuth } from '../../context';
 
-const ProfilePic: React.FC<{ width: string }> = ({ width }) => {
+const ProfilePic: React.FC<{ width: string; height: string }> = ({
+  width,
+  height,
+}) => {
   const { authState } = useAuth();
 
   return (
@@ -11,7 +14,7 @@ const ProfilePic: React.FC<{ width: string }> = ({ width }) => {
           <img
             src={authState.user.profilePic}
             alt='profile picture'
-            className={`rounded-full w-${width}`}
+            className={`rounded-full ${width} ${height}`}
             onError={e => {
               const target = e.target as HTMLImageElement;
               target.onerror = null;
@@ -25,7 +28,7 @@ const ProfilePic: React.FC<{ width: string }> = ({ width }) => {
             }}
           />
           <div
-            className={`flex items-center justify-center w-${width} h-${width} bg-gray-500 text-white rounded-full text-xl font-bold`}
+            className={`flex items-center justify-center ${width} ${height} bg-gray-500 text-white rounded-full text-lg xl:text-xl font-bold`}
             style={{ display: 'none' }}
           >
             {authState.user.name.charAt(0)}
@@ -33,7 +36,7 @@ const ProfilePic: React.FC<{ width: string }> = ({ width }) => {
         </>
       ) : (
         <div
-          className={`flex items-center justify-center w-${width} h-${width} bg-gray-500 text-white rounded-full text-xl font-bold`}
+          className={`flex items-center justify-center ${width} ${height} bg-gray-500 text-white rounded-full text-lg xl:text-xl font-bold`}
         >
           {authState.user?.name.charAt(0)}
         </div>

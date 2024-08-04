@@ -63,7 +63,7 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
 
     return (
       <div className='flex flex-col gap-1'>
-        <div className={`relative ${width ? width : 'w-96'}`}>
+        <div className={`relative ${width ? width : 'w-64 md:w-96'}`}>
           {label && (
             <label
               className={`absolute bg-customWhite dark:bg-customBlack px-1.5 left-3 top-1/2 transition-transform duration-200 ease-in ${
@@ -116,7 +116,7 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
         </div>
 
         <div
-          className={`text-red-500 text-sm flex flex-row items-center gap-0.5 ${
+          className={`text-red-500 text-xs md:text-sm flex flex-row items-center gap-0.5 max-w-64 md:max-w-96 ${
             (!errorState.error || !touched) && 'hidden'
           }`}
         >

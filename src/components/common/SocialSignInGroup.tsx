@@ -14,12 +14,12 @@ const SocialSignInGroup = ({ text }: { text: string }) => {
 
   return (
     <div className='flex flex-col gap-6 items-center'>
-      <div className='relative flex items-center w-96'>
+      <div className='relative flex items-center w-64 md:w-96'>
         <div className='flex-grow border-t border-customBlack-light/10 dark:border-customWhite/70'></div>
         <span className='flex-shrink mx-4'>or {text} with</span>
         <div className='flex-grow border-t border-customBlack-light/10 dark:border-customWhite/70'></div>
       </div>
-      <div className='flex space-x-4'>
+      <div className='flex space-x-3 md:space-x-4'>
         {buttons.map((button, index) => (
           <SocialSignInBtn
             key={index}

@@ -31,7 +31,7 @@ export const validateField = ({
         checkEmailRegistered(value as string).then(isRegistered => {
           if (isRegistered) {
             addError({
-              message: 'Email is already registered. Please log in instead.',
+              message: 'Email already registered. Please log in.',
               displayType: 'inline',
               category: 'validation',
             });

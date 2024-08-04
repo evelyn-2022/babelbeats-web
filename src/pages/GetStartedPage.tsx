@@ -1,7 +1,6 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
-import wave from '../assets/images/wave.svg';
-import { Button, SocialSignInGroup } from '../components';
+import { Button, SocialSignInGroup, Logo } from '../components';
 
 const GetStartedPage: React.FC = () => {
   return (
@@ -9,23 +8,16 @@ const GetStartedPage: React.FC = () => {
       <Helmet>
         <title>BabelBeats | Get Started</title>
       </Helmet>
-      <div className='flex flex-row items-center gap-1.5'>
-        <div className='rounded-full bg-primary p-1'>
-          <img src={wave} className='w-6 h-6' alt='Wave' />
-        </div>
-        <div className='font-sans font-bold text-lg'>BabelBeats</div>
-      </div>
+      <Logo />
 
-      <div className='flex flex-col gap-2 text-3xl font-bold items-center'>
+      <div className='flex flex-col gap-2 text-xl md:text-3xl font-bold items-center'>
         <div>Your Music, Any Language</div>
         <div>All in One App</div>
       </div>
 
       <div className='flex flex-col gap-2'>
         <a href='/signup'>
-          <Button variant='filled' width='w-96'>
-            Sign up
-          </Button>
+          <Button variant='filled'>Sign up</Button>
         </a>
       </div>
 
