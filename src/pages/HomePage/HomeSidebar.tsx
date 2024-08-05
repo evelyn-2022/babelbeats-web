@@ -23,7 +23,7 @@ const HomeSidebar: React.FC = () => {
   const settingsRef = useRef<HTMLUListElement>(null);
   const profileRef = useRef<HTMLLIElement>(null);
   const startPosition = useRef(0); // To store the initial mouse down position
-  const threshold = 50; // px
+  const threshold = 30; // px
 
   const handleMouseDown = (event: React.MouseEvent) => {
     startPosition.current = event.clientX;
@@ -78,6 +78,21 @@ const HomeSidebar: React.FC = () => {
   const handleTouchEnd = () => {
     setIsDragging(false);
   };
+
+  // Exit full screen mode when hit 'Escape' key
+  const handleKeyDown = (event: KeyboardEvent) => {
+    if (event.key === 'Escape') {
+      setSidebarState(1);
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -305,7 +320,7 @@ const HomeSidebar: React.FC = () => {
       {/* Right column */}
       <div className='px-6 py-10 flex-grow bg-customBlack-light/[.03] dark:bg-customBlack-light/95 relative'>
         <div
-          className={`absolute w-8 h-full cursor-col-resize top-0 -left-6 flex flex-row items-center gap-0.5 text-customWhite/40 text-xl opacity-0 hover:opacity-100 transition-all duration-300 ${
+          className={`absolute w-10 h-full cursor-col-resize top-0 -left-5 flex flex-row items-center text-customWhite/40 text-xl opacity-0 hover:opacity-100 transition-all duration-300 ${
             isDragging && 'opacity-100'
           }`}
           onMouseDown={handleMouseDown}
@@ -314,7 +329,7 @@ const HomeSidebar: React.FC = () => {
           onTouchEnd={handleTouchEnd}
         >
           {/* Collapse icon */}
-          <div className='group relative cursor-pointer'>
+          <div className='group relative cursor-pointer translate-x-0.5'>
             <FaCaretLeft
               onClick={
                 sidebarState === 1
@@ -336,9 +351,9 @@ const HomeSidebar: React.FC = () => {
           </div>
           {/* Divider */}
           <div
-            className={`w-1 h-full -translate-x-[2px] bg-customBlack-light/[.03] dark:bg-customBlack-light/95 border-l-[1px] border-transparent ${
-              showDivider && 'border-white/20'
-            } ${isDragging && 'border-white/50'}`}
+            className={`w-0.5 h-full bg-transparent ${
+              showDivider && 'bg-white/20'
+            } ${isDragging && 'bg-white/50'}`}
           />
           {/* Expand icon */}
           <div className='group relative cursor-pointer'>
