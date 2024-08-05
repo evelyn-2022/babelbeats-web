@@ -32,7 +32,7 @@ const AccountPage: React.FC = () => {
   };
 
   return (
-    <div className='flex flex-col gap-14 p-6'>
+    <div className='flex flex-col gap-14 px-6 py-1.5 lg:py-2.5'>
       {!authState.user?.providerId.startsWith('google') && (
         <section>
           <h2 className='font-bold text-xl'>Account Security</h2>
