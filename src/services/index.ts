@@ -1,2 +1,3 @@
 export * from './authService';
-export * from './api';
+export * from './apiService';
+export * from './spotifyService';

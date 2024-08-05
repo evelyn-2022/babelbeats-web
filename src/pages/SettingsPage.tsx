@@ -2,7 +2,7 @@ import { ThemeSwitcher } from '../components';
 
 const SettingsPage: React.FC = () => {
   return (
-    <div className='flex flex-col gap-14 px-6 py-1.5 lg:py-2.5'>
+    <div className='flex flex-col gap-14 px-6 py-1.5 lg:py-2.5 lg:max-w-[860px] mx-auto'>
       <section>
         <h2 className='font-bold text-xl'>Settings</h2>
         <div className='border-b border-white/20 my-4'></div>

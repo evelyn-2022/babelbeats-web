@@ -63,3 +63,13 @@ export const updateUserIdApi = async (user: User): Promise<User> => {
 export const deleteDBUserApi = async (userId: string): Promise<void> => {
   await apiClient.delete(`appusers/${userId}`, createAuthConfig());
 };
+
+export const spotifySigninCallback = async (
+  code: string
+): Promise<{ access_token: string; refresh_token: string }> => {
+  const res = await apiClient.get(`spotify/callback?code=${code}`);
+  return {
+    access_token: res.data.access_token,
+    refresh_token: res.data.refresh_token,
+  };
+};

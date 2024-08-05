@@ -6,6 +6,8 @@ import VerificationModal from './VerificationModal';
 import OldPasswordModal from './OldPasswordModal';
 import NewPasswordModal from './NewPasswordModal';
 import DeleteAccountModal from './DeleteAccountModal';
+import { spotifySignin } from '../../services';
+import { FaSpotify } from 'react-icons/fa';
 
 const AccountPage: React.FC = () => {
   const { authState } = useAuth();
@@ -32,11 +34,11 @@ const AccountPage: React.FC = () => {
   };
 
   return (
-    <div className='flex flex-col gap-14 px-6 py-1.5 lg:py-2.5'>
+    <div className='flex flex-col gap-16 px-6 py-1.5 lg:py-2.5 lg:max-w-[860px] mx-auto'>
       {!authState.user?.providerId.startsWith('google') && (
         <section>
           <h2 className='font-bold text-xl'>Account Security</h2>
-          <div className='border-b border-white/20 my-4'></div>
+          <div className='border-b border-white/20 my-4' />
           <div className='flex flex-col gap-8'>
             <div className='flex flex-row justify-between'>
               <div>
@@ -107,8 +109,23 @@ const AccountPage: React.FC = () => {
       )}
 
       <section>
+        <h2 className='font-bold text-xl'>Connections</h2>
+        <div className='border-b border-white/20 my-4' />
+        <div className='flex flex-row justify-between'>
+          <div className='flex flex-row items-center gap-2'>
+            <FaSpotify className='text-2xl text-green-500' />
+            <div className='font-semibold'>Spotify</div>
+          </div>
+
+          <Button width='w-40' variant='outlined' onClick={spotifySignin}>
+            Connect
+          </Button>
+        </div>
+      </section>
+
+      <section>
         <h2 className='font-bold text-xl'>Support</h2>
-        <div className='border-b border-white/20 my-4'></div>
+        <div className='border-b border-white/20 my-4' />
         <div
           className='text-red-500 cursor-pointer'
           onClick={() => {

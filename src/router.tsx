@@ -64,7 +64,14 @@ const router = createBrowserRouter([
       { path: '/forgot-password', element: <ForgotPasswordPage /> },
       { path: '/verify-password-reset', element: <VerifyPasswordResetPage /> },
       { path: '/reset-password', element: <ResetPasswordPage /> },
-      { path: '/oauth2/callback', element: <OAuthCallbackPage /> },
+      {
+        path: '/oauth2/google/callback',
+        element: <OAuthCallbackPage provider='google' />,
+      },
+      {
+        path: '/oauth2/spotify/callback',
+        element: <OAuthCallbackPage provider='spotify' />,
+      },
     ],
   },
 ]);

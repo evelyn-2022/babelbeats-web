@@ -3,9 +3,14 @@ import { Helmet } from 'react-helmet-async';
 import { wave } from '../assets';
 import { useTheme, useError } from '../context';
 import { useAuthService } from '../hooks';
+import { handleSpotifySigninCallback } from '../services';
 import { showToast } from '../utils';
 
-const OAuthCallbackPage: React.FC = () => {
+interface OAuthCallbackPageProps {
+  provider: 'google' | 'spotify';
+}
+
+const OAuthCallbackPage: React.FC<OAuthCallbackPageProps> = ({ provider }) => {
   const { theme } = useTheme();
   const { addError } = useError();
   const { handleGoogleSignInCallback } = useAuthService();
@@ -27,7 +32,11 @@ const OAuthCallbackPage: React.FC = () => {
       }
 
       try {
-        await handleGoogleSignInCallback(authorizationCode);
+        if (provider === 'google') {
+          await handleGoogleSignInCallback(authorizationCode);
+        } else if (provider === 'spotify') {
+          await handleSpotifySigninCallback(authorizationCode);
+        }
       } catch (error) {
         let errorMessage;
         if (error instanceof Error) {
@@ -44,7 +53,7 @@ const OAuthCallbackPage: React.FC = () => {
     };
 
     handleSignIn();
-  }, [handleGoogleSignInCallback, addError, theme]);
+  }, [handleGoogleSignInCallback, addError, provider, theme]);
 
   return (
     <div className='min-h-screen flex flex-col items-center justify-center w-full gap-8'>
