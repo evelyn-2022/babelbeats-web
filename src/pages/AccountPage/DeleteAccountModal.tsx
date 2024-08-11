@@ -25,7 +25,7 @@ const DeleteAccountModal: React.FC<DeleteAccountModalProps> = ({
     e.preventDefault();
     setIsLoading(true);
 
-    const accessToken = getTokens().accessToken;
+    const accessToken = getTokens('CognitoToken')?.accessToken;
     const id = authState.user?.id;
     if (!accessToken || !id) {
       addError({

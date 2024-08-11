@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
 import config from '../config';
-import { User } from '../types';
+import { CognitoToken, ConnectionToken, User } from '../types';
 import { updateCognitoUserIdAttribute } from './authService';
 import { getTokens } from '../utils';
 
@@ -11,7 +11,7 @@ const apiClient = axios.create({
 });
 
 const createAuthConfig = () => {
-  const { accessToken } = getTokens();
+  const { accessToken } = getTokens('CognitoToken') as CognitoToken;
   return {
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -64,12 +64,38 @@ export const deleteDBUserApi = async (userId: string): Promise<void> => {
   await apiClient.delete(`appusers/${userId}`, createAuthConfig());
 };
 
-export const spotifySigninCallback = async (
-  code: string
-): Promise<{ access_token: string; refresh_token: string }> => {
-  const res = await apiClient.get(`spotify/callback?code=${code}`);
+export const getDBUserByIdApi = async (userId: string): Promise<User> => {
+  const response = await apiClient.get(`appusers/${userId}`);
+  return response.data;
+};
+
+export const spotifySigninCallbackApi = async (
+  code: string,
+  userId: number
+): Promise<ConnectionToken> => {
+  const res = await apiClient.get(`spotify/callback?code=${code}&id=${userId}`);
+
   return {
-    access_token: res.data.access_token,
-    refresh_token: res.data.refresh_token,
+    accessToken: res.data.access_token,
+    refreshToken: res.data.refresh_token,
   };
+};
+
+export const refreshSpotifyAccessTokenApi = async (
+  id: string,
+  refreshToken: string
+): Promise<string> => {
+  const response = await axios.post(
+    `${API_URL}spotify/refresh-token?id=${id}`,
+    {
+      refreshToken,
+    },
+    {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+
+  return response.data.access_token;
 };

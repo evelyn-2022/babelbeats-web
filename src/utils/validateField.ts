@@ -35,9 +35,12 @@ export const validateField = ({
               displayType: 'inline',
               category: 'validation',
             });
+            return false;
+          } else {
+            clearError();
+            return true;
           }
         });
-        return false;
       }
       break;
     }

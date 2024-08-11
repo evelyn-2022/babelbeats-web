@@ -5,14 +5,14 @@ import React, {
   useCallback,
   ReactNode,
 } from 'react';
-import { AuthContextType, User } from '../types';
+import { AuthContextType, User, CognitoToken } from '../types';
 import {
   getTokens,
   storeTokens,
   isTokenExpired,
   extractUserInfo,
 } from '../utils';
-import { refreshTokens } from '../services';
+import { refreshCognitoTokens } from '../services';
 import { authReducer, initialAuthState } from '../reducers';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -67,7 +67,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       dispatch({ type: 'AUTH_REQUEST' });
       let userInfo;
 
-      const { idToken, accessToken, refreshToken } = getTokens();
+      const { idToken, accessToken, refreshToken } = getTokens(
+        'CognitoToken'
+      ) as CognitoToken;
 
       if (!idToken || !accessToken || !refreshToken) {
         dispatch({ type: 'AUTH_FAILURE' });
@@ -78,16 +80,18 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         isTokenExpired(idToken) ||
         (isTokenExpired(accessToken) && refreshToken)
       ) {
-        const newTokens = await refreshTokens(refreshToken);
+        const newTokens = await refreshCognitoTokens(refreshToken);
         if (!newTokens) {
           throw new Error('Failed to refresh tokens');
         }
 
-        await storeTokens(
-          newTokens.idToken,
-          newTokens.accessToken,
-          refreshToken
-        );
+        const cognitoToken: CognitoToken = {
+          idToken: newTokens.idToken,
+          accessToken: newTokens.accessToken,
+          refreshToken: refreshToken,
+        };
+
+        await storeTokens('CognitoToken', cognitoToken);
         userInfo = await extractUserInfo(newTokens.idToken);
       } else {
         userInfo = await extractUserInfo(idToken);

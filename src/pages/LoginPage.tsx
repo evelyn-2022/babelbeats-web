@@ -94,7 +94,11 @@ const LoginPage: React.FC = () => {
         ))}
 
         <div className='flex flex-row itmes-center justify-between text-sm  -mt-2'>
-          <ToggleSwitch checked={rememberMe} onChange={toggleRememberMe} />
+          <ToggleSwitch
+            checked={rememberMe}
+            onChange={toggleRememberMe}
+            text='Remember me'
+          />
           <Link to='/forgot-password' className='link'>
             Forgot password?
           </Link>

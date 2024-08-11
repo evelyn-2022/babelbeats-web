@@ -3,9 +3,14 @@ import React from 'react';
 interface ToggleSwitchProps {
   checked: boolean;
   onChange: () => void;
+  text?: string;
 }
 
-const ToggleSwitch: React.FC<ToggleSwitchProps> = ({ checked, onChange }) => {
+const ToggleSwitch: React.FC<ToggleSwitchProps> = ({
+  checked,
+  onChange,
+  text,
+}) => {
   return (
     <div className='flex items-center space-x-2'>
       <label htmlFor='rememberMe' className='flex items-center cursor-pointer'>
@@ -32,7 +37,7 @@ const ToggleSwitch: React.FC<ToggleSwitchProps> = ({ checked, onChange }) => {
             }`}
           ></div>
         </div>
-        <span className='ml-1 md:ml-2'>Remember me</span>
+        {text && <span className='ml-1 md:ml-2'>{text}</span>}
       </label>
     </div>
   );

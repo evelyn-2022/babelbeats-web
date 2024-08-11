@@ -1,13 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { FaSpotify } from 'react-icons/fa';
 import { useAuth } from '../../context';
-import { Button } from '../../components';
+import { Button, ToggleSwitch } from '../../components';
 import NewEmailModal from './NewEmailModal';
 import VerificationModal from './VerificationModal';
 import OldPasswordModal from './OldPasswordModal';
 import NewPasswordModal from './NewPasswordModal';
 import DeleteAccountModal from './DeleteAccountModal';
-import { spotifySignin } from '../../services';
-import { FaSpotify } from 'react-icons/fa';
+import { useSpotifyService } from '../../hooks';
 
 const AccountPage: React.FC = () => {
   const { authState } = useAuth();
@@ -20,6 +20,19 @@ const AccountPage: React.FC = () => {
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
 
+  const { spotifySignin, spotifySignout, checkSpotifyConnection } =
+    useSpotifyService();
+  const [spotifyConnected, setSpotifyConnected] = useState(false);
+
+  useEffect(() => {
+    const checkConnection = async () => {
+      const connected = await checkSpotifyConnection();
+      setSpotifyConnected(connected);
+    };
+
+    checkConnection();
+  }, []);
+
   const handleNewEmailModalClose = () => {
     setNewEmailModalOpen(false);
     setVerificationModalOpen(false);
@@ -31,6 +44,16 @@ const AccountPage: React.FC = () => {
     setNewPasswordModalOpen(false);
     setOldPassword('');
     setNewPassword('');
+  };
+
+  const handleSpotifyToggle = () => {
+    if (spotifyConnected) {
+      spotifySignout();
+      setSpotifyConnected(false);
+    } else {
+      spotifySignin();
+      setSpotifyConnected(true);
+    }
   };
 
   return (
@@ -117,9 +140,10 @@ const AccountPage: React.FC = () => {
             <div className='font-semibold'>Spotify</div>
           </div>
 
-          <Button width='w-40' variant='outlined' onClick={spotifySignin}>
-            Connect
-          </Button>
+          <ToggleSwitch
+            checked={spotifyConnected}
+            onChange={handleSpotifyToggle}
+          />
         </div>
       </section>
 

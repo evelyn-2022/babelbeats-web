@@ -5,12 +5,8 @@ export interface User {
   email: string;
   profilePic: string | null;
   providerId: string;
-}
-
-export interface Token {
-  id_token: string;
-  access_token: string;
-  refresh_token: string;
+  spotifyAccessToken?: string | null;
+  spotifyRefreshToken?: string | null;
 }
 
 export interface AuthState {

@@ -1,10 +1,13 @@
 import axios from 'axios';
 import { useError } from '../context';
-import { CustomError, User } from '../types';
+import { ConnectionToken, CustomError, User } from '../types';
 import {
   checkRegistrationApi,
   updateUserIdApi,
   deleteDBUserApi,
+  getDBUserByIdApi,
+  spotifySigninCallbackApi,
+  refreshSpotifyAccessTokenApi,
 } from '../services';
 
 export const useApiService = () => {
@@ -59,5 +62,30 @@ export const useApiService = () => {
     return callApi(() => deleteDBUserApi(userId));
   };
 
-  return { checkRegistration, updateUser, deleteDBUser };
+  const getDBUserById = async (userId: string): Promise<User | null> => {
+    return callApi(() => getDBUserByIdApi(userId));
+  };
+
+  const spotifySigninCallback = async (
+    code: string,
+    userId: number
+  ): Promise<ConnectionToken | null> => {
+    return callApi(() => spotifySigninCallbackApi(code, userId));
+  };
+
+  const refreshSpotifyAccessToken = async (
+    id: string,
+    refreshToken: string
+  ): Promise<string | null> => {
+    return callApi(() => refreshSpotifyAccessTokenApi(id, refreshToken));
+  };
+
+  return {
+    checkRegistration,
+    updateUser,
+    deleteDBUser,
+    getDBUserById,
+    spotifySigninCallback,
+    refreshSpotifyAccessToken,
+  };
 };

@@ -16,7 +16,7 @@ import {
 } from '@aws-sdk/client-cognito-identity-provider';
 import axios, { AxiosResponse } from 'axios';
 import config from '../config';
-import { Token } from '../types';
+import { CognitoToken } from '../types';
 
 const {
   region,
@@ -68,7 +68,6 @@ export const confirmSignUp = (
   return new Promise((resolve, reject) => {
     cognitoUser.confirmRegistration(code, true, (err, result) => {
       if (err) {
-        console.error('Error in confirmRegistration:', err);
         return reject(err);
       }
       resolve(result);
@@ -112,7 +111,7 @@ export const googleSignIn = () => {
 
 export const exchangeCodeForTokens = async (
   authorizationCode: string
-): Promise<Token> => {
+): Promise<CognitoToken> => {
   const tokenEndpoint = `https://${domain}/oauth2/token`;
   const params = new URLSearchParams();
   params.append('grant_type', 'authorization_code');
@@ -128,7 +127,12 @@ export const exchangeCodeForTokens = async (
     });
 
     if (response.status === 200) {
-      return response.data as Token;
+      const cognitoToken: CognitoToken = {
+        idToken: response.data.id_token,
+        accessToken: response.data.access_token,
+        refreshToken: response.data.refresh_token,
+      };
+      return cognitoToken;
     } else {
       throw new Error(`Failed to exchange code for tokens: ${response.status}`);
     }
@@ -137,7 +141,7 @@ export const exchangeCodeForTokens = async (
   }
 };
 
-export const refreshTokens = async (
+export const refreshCognitoTokens = async (
   refreshToken: string
 ): Promise<{ idToken: string; accessToken: string }> => {
   const tokenEndpoint = `https://${domain}/oauth2/token`;
@@ -157,10 +161,9 @@ export const refreshTokens = async (
       throw new Error('Failed to refresh tokens');
     }
 
-    const data = response.data;
     return {
-      idToken: data.id_token,
-      accessToken: data.access_token,
+      idToken: response.data.id_token,
+      accessToken: response.data.access_token,
     };
   } catch (error) {
     throw new Error('Failed to refresh tokens');

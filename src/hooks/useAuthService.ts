@@ -9,6 +9,7 @@ import {
 } from '../services';
 import { useApiService } from './useApiService';
 import { storeTokens, removeTokens, extractUserInfo } from '../utils';
+import { CognitoToken } from '../types';
 
 export const useAuthService = () => {
   const { authRequest, authSuccess, authFailure, setLoadingFalse } = useAuth();
@@ -106,12 +107,13 @@ export const useAuthService = () => {
 
     try {
       const result = await signIn(email, password);
-      await storeTokens(
-        result.getIdToken().getJwtToken(),
-        result.getAccessToken().getJwtToken(),
-        result.getRefreshToken().getToken(),
-        rememberMe
-      );
+
+      const cognitoToken: CognitoToken = {
+        idToken: result.getIdToken().getJwtToken(),
+        accessToken: result.getAccessToken().getJwtToken(),
+        refreshToken: result.getRefreshToken().getToken(),
+      };
+      await storeTokens('CognitoToken', cognitoToken, rememberMe);
       await processSignIn(result.getIdToken().getJwtToken());
     } catch (error) {
       let errorMessage;
@@ -133,13 +135,16 @@ export const useAuthService = () => {
     authRequest();
     try {
       const tokens = await exchangeCodeForTokens(authorizationCode);
+
       if (tokens) {
-        await storeTokens(
-          tokens.id_token,
-          tokens.access_token,
-          tokens.refresh_token
-        );
-        await processSignIn(tokens.id_token);
+        const cognitoToken: CognitoToken = {
+          idToken: tokens.idToken,
+          accessToken: tokens.accessToken,
+          refreshToken: tokens.refreshToken,
+        };
+
+        await storeTokens('CognitoToken', cognitoToken);
+        await processSignIn(tokens.idToken);
       } else {
         throw new Error('Failed to exchange code for tokens');
       }
@@ -160,7 +165,7 @@ export const useAuthService = () => {
   };
 
   const handleSignOut = () => {
-    removeTokens();
+    removeTokens('CognitoToken');
     authFailure();
     navigate('/');
   };
