@@ -13,7 +13,7 @@ import { CognitoToken } from '../types';
 
 export const useAuthService = () => {
   const { authRequest, authSuccess, authFailure, setLoadingFalse } = useAuth();
-  const { updateUser } = useApiService();
+  const { updateUserId } = useApiService();
   const navigate = useNavigate();
   const { addError } = useError();
 
@@ -78,7 +78,7 @@ export const useAuthService = () => {
       let userInfo = await extractUserInfo(idToken);
       // If user info is not in the database, update it
       if (!userInfo.id) {
-        const updatedUserInfo = await updateUser(userInfo);
+        const updatedUserInfo = await updateUserId(userInfo);
         if (updatedUserInfo) {
           userInfo = updatedUserInfo;
         } else {

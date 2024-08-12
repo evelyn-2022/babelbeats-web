@@ -60,6 +60,13 @@ export const updateUserIdApi = async (user: User): Promise<User> => {
   return updatedUser;
 };
 
+export const partialUpdateDBUserApi = async (
+  userId: string,
+  updates: Partial<User>
+): Promise<void> => {
+  await apiClient.patch(`appusers/${userId}`, updates, createAuthConfig());
+};
+
 export const deleteDBUserApi = async (userId: string): Promise<void> => {
   await apiClient.delete(`appusers/${userId}`, createAuthConfig());
 };

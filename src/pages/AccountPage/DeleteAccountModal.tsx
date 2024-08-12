@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Modal, Button } from '../../components';
 import { deleteCognitoUser } from '../../services';
-import { getTokens, showToast } from '../../utils';
+import { getTokens, isTokenExpired, showToast } from '../../utils';
 import { useError, useTheme, useAuth } from '../../context';
 import { useAuthService, useApiService } from '../../hooks';
 
@@ -38,6 +38,7 @@ const DeleteAccountModal: React.FC<DeleteAccountModalProps> = ({
 
     try {
       await deleteDBUser(id);
+      console.log(isTokenExpired(accessToken));
       await deleteCognitoUser(accessToken);
       showToast('Account deleted successfully', 'success', theme);
     } catch (error) {

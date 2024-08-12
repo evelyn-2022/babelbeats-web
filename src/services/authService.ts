@@ -396,6 +396,7 @@ export const deleteCognitoUser = async (accessToken: string): Promise<void> => {
   try {
     await cognitoClient.send(deleteUserCommand);
   } catch (error) {
+    console.log(error);
     throw new Error('Failed to delete user:' + error);
   }
 };

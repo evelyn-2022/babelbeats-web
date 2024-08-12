@@ -8,6 +8,7 @@ import {
   getDBUserByIdApi,
   spotifySigninCallbackApi,
   refreshSpotifyAccessTokenApi,
+  partialUpdateDBUserApi,
 } from '../services';
 
 export const useApiService = () => {
@@ -54,8 +55,15 @@ export const useApiService = () => {
     return callApi(() => checkRegistrationApi(providerId));
   };
 
-  const updateUser = async (user: User): Promise<User | null> => {
+  const updateUserId = async (user: User): Promise<User | null> => {
     return callApi(() => updateUserIdApi(user));
+  };
+
+  const partialUpdateDBUser = async (
+    userId: string,
+    updates: Partial<User>
+  ): Promise<void | null> => {
+    return callApi(() => partialUpdateDBUserApi(userId, updates));
   };
 
   const deleteDBUser = async (userId: string): Promise<void | null> => {
@@ -82,7 +90,8 @@ export const useApiService = () => {
 
   return {
     checkRegistration,
-    updateUser,
+    updateUserId,
+    partialUpdateDBUser,
     deleteDBUser,
     getDBUserById,
     spotifySigninCallback,

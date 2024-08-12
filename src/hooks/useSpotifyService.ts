@@ -1,6 +1,6 @@
 import config from '../config';
 import { ConnectionToken } from '../types';
-import { getTokens, removeTokens, storeTokens, isTokenExpired } from '../utils';
+import { getTokens, removeTokens, storeTokens } from '../utils';
 import { useApiService } from '../hooks';
 import { useError, useAuth } from '../context';
 
@@ -9,8 +9,12 @@ export const useSpotifyService = () => {
     spotify: { clientId, redirectUri, scope },
   } = config;
   const { authState } = useAuth();
-  const { spotifySigninCallback, refreshSpotifyAccessToken, getDBUserById } =
-    useApiService();
+  const {
+    spotifySigninCallback,
+    refreshSpotifyAccessToken,
+    getDBUserById,
+    partialUpdateDBUser,
+  } = useApiService();
   const { addError } = useError();
 
   const spotifySignin = () => {
@@ -20,12 +24,31 @@ export const useSpotifyService = () => {
     window.location.assign(spotifyAuthUrl);
   };
 
+  const checkSpotifyTokenValidity = async (
+    accessToken: string
+  ): Promise<boolean> => {
+    const response = await fetch('https://api.spotify.com/v1/me', {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    if (response.status === 200) {
+      return true;
+    } else if (response.status === 401) {
+      return false;
+    } else {
+      return false;
+    }
+  };
+
   const handleSpotifySigninCallback = async (code: string, userId: number) => {
     try {
       const res = await spotifySigninCallback(code, userId);
       if (!res) return;
 
-      await storeTokens('SpotifyToken', res);
+      await storeTokens('SpotifyToken', res, false);
       window.location.assign('/account');
     } catch (error) {
       window.location.assign('/');
@@ -49,10 +72,11 @@ export const useSpotifyService = () => {
         accessToken: currentUser.spotifyAccessToken,
         refreshToken: currentUser.spotifyRefreshToken,
       };
-      storeTokens('SpotifyToken', tokens);
+      storeTokens('SpotifyToken', tokens, false);
     }
 
-    if (isTokenExpired(tokens.accessToken)) {
+    const isTokenvalid = await checkSpotifyTokenValidity(tokens.accessToken);
+    if (!isTokenvalid) {
       try {
         await handleRefreshSpotifyAccessToken(tokens.refreshToken);
         return true;
@@ -72,10 +96,14 @@ export const useSpotifyService = () => {
       const res = await refreshSpotifyAccessToken(id, refreshToken);
       if (!res) return;
 
-      await storeTokens('SpotifyToken', {
-        accessToken: res,
-        refreshToken: refreshToken,
-      });
+      await storeTokens(
+        'SpotifyToken',
+        {
+          accessToken: res,
+          refreshToken: refreshToken,
+        },
+        false
+      );
     } catch (error) {
       addError({
         message:
@@ -83,7 +111,6 @@ export const useSpotifyService = () => {
         displayType: 'toast',
         category: 'auth',
       });
-      window.location.assign('/account');
     }
   };
 
@@ -121,7 +148,14 @@ export const useSpotifyService = () => {
 
   const spotifySignout = () => {
     removeTokens('SpotifyToken');
-    window.location.assign('/account');
+
+    const userId = authState.user?.id;
+    if (!userId) return;
+
+    partialUpdateDBUser(userId, {
+      spotifyRefreshToken: null,
+      spotifyAccessToken: null,
+    });
   };
 
   return {

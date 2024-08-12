@@ -63,6 +63,7 @@ const OAuthCallbackPage: React.FC<OAuthCallbackPageProps> = ({ provider }) => {
     addError,
     provider,
     theme,
+    authState.user?.id,
   ]);
 
   return (
