@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { FaSpotify } from 'react-icons/fa';
+import { PiWarningCircle } from 'react-icons/pi';
 import { useAuth } from '../../context';
 import { Button, ToggleSwitch } from '../../components';
 import NewEmailModal from './NewEmailModal';
@@ -23,11 +24,13 @@ const AccountPage: React.FC = () => {
   const { spotifySignin, spotifySignout, checkSpotifyConnection } =
     useSpotifyService();
   const [spotifyConnected, setSpotifyConnected] = useState(false);
+  const [isSpotifyPremium, setIsSpotifyPremium] = useState(false);
 
   useEffect(() => {
     const checkConnection = async () => {
-      const connected = await checkSpotifyConnection();
+      const { connected, isPremium } = await checkSpotifyConnection();
       setSpotifyConnected(connected);
+      setIsSpotifyPremium(isPremium);
     };
 
     checkConnection();
@@ -134,16 +137,29 @@ const AccountPage: React.FC = () => {
       <section>
         <h2 className='font-bold text-xl'>Connections</h2>
         <div className='border-b border-white/20 my-4' />
-        <div className='flex flex-row justify-between'>
-          <div className='flex flex-row items-center gap-2'>
-            <FaSpotify className='text-2xl text-green-500' />
-            <div className='font-semibold'>Spotify</div>
-          </div>
+        <div className='flex flex-col gap-2'>
+          <div className='flex flex-row justify-between'>
+            <div className='flex flex-row items-center gap-2'>
+              <FaSpotify className='text-2xl text-green-500' />
+              <div className='font-semibold'>Spotify</div>
+            </div>
 
-          <ToggleSwitch
-            checked={spotifyConnected}
-            onChange={handleSpotifyToggle}
-          />
+            <ToggleSwitch
+              checked={spotifyConnected}
+              onChange={handleSpotifyToggle}
+            />
+          </div>
+          {spotifyConnected && !isSpotifyPremium && (
+            <div className='text-red-500 flex flex-row gap-1 text-xs md:text-sm'>
+              <div className='w-min-[12px] mt-0.5 md:mt-[3px]'>
+                <PiWarningCircle />
+              </div>
+              <div>
+                To play music through Spotify, please upgrade to Spotify premium
+                and reconnect your Spotify account
+              </div>
+            </div>
+          )}
         </div>
       </section>
 

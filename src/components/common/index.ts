@@ -9,4 +9,4 @@ export { default as Modal } from './Modal';
 export { default as VerificationCodeForm } from './VerificationCodeForm';
 export { default as ProfilePic } from './ProfilePic';
 export { default as Tooltip } from './Tooltip';
-export { default as MySpotifyPlayer } from './MySpotifyPlayer';
+export { default as SpotifyWebPlayback } from './SpotifyWebPlayback';

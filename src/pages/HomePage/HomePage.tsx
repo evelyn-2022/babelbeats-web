@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Navbar, MySpotifyPlayer } from '../../components';
+import { Navbar, SpotifyWebPlayback } from '../../components';
 import { getTokens } from '../../utils';
 
 const HomePage: React.FC = () => {
@@ -19,11 +19,9 @@ const HomePage: React.FC = () => {
     <div className='flex flex-col md:px-6'>
       <Navbar />
       <h1>Home Page</h1>
-      {accessToken ? (
-        <MySpotifyPlayer accessToken={accessToken} />
-      ) : (
-        <p>Loading...</p>
-      )}
+      <a href='spotify:track:4tfIMhIhRWWDEMFuK13HQx'>Play on Spotify</a>
+
+      {accessToken ? <SpotifyWebPlayback /> : <p>Loading...</p>}
     </div>
   );
 };

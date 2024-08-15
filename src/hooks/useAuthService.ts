@@ -185,33 +185,39 @@ export const useAuthService = () => {
 
   const scheduleTokenRefresh = (accessToken: string, refreshToken: string) => {
     const expirationTime = getExpiryTime(accessToken);
-    const refreshTime = expirationTime - Date.now() - 5 * 60 * 1000; // Refresh 5 minutes before expiry
+    const refreshTime = expirationTime * 1000 - Date.now() - 5 * 60 * 1000; // Refresh 5 minutes before expiry
 
-    setTimeout(() => {
-      (async () => {
-        try {
-          const { idToken, accessToken: newAccessToken } =
-            await refreshCognitoTokens(refreshToken);
-          storeTokens('CognitoToken', {
-            idToken,
-            accessToken: newAccessToken,
-            refreshToken,
-          });
+    const refreshTokenAndReschedule = async () => {
+      try {
+        const { idToken, accessToken: newAccessToken } =
+          await refreshCognitoTokens(refreshToken);
+        storeTokens('CognitoToken', {
+          idToken,
+          accessToken: newAccessToken,
+          refreshToken,
+        });
 
-          // Schedule the next refresh after this one succeeds
-          scheduleTokenRefresh(newAccessToken, refreshToken);
-        } catch (error) {
-          addError({
-            message: 'Your session has expired. Please sign in again.',
-            displayType: 'toast',
-            category: 'auth',
-          });
-          setTimeout(() => {
-            handleSignOut();
-          }, 3000);
-        }
-      })();
-    }, refreshTime);
+        // Schedule the next refresh after this one succeeds
+        scheduleTokenRefresh(newAccessToken, refreshToken);
+      } catch (error) {
+        addError({
+          message: 'Your session has expired. Please sign in again.',
+          displayType: 'toast',
+          category: 'auth',
+        });
+        setTimeout(() => {
+          handleSignOut();
+        }, 3000);
+      }
+    };
+
+    if (refreshTime <= 0) {
+      refreshTokenAndReschedule();
+    } else {
+      setTimeout(() => {
+        refreshTokenAndReschedule();
+      }, refreshTime);
+    }
   };
 
   const handleSignOut = () => {

@@ -26,7 +26,7 @@ export const useSpotifyService = () => {
 
   const checkSpotifyTokenValidity = async (
     accessToken: string
-  ): Promise<boolean> => {
+  ): Promise<{ valid: boolean; isPremium: boolean }> => {
     const response = await fetch('https://api.spotify.com/v1/me', {
       method: 'GET',
       headers: {
@@ -35,11 +35,13 @@ export const useSpotifyService = () => {
     });
 
     if (response.status === 200) {
-      return true;
-    } else if (response.status === 401) {
-      return false;
+      const data = await response.json();
+      const isPremium = data.product === 'premium';
+      return { valid: true, isPremium };
+    } else if (response.status === 403) {
+      return { valid: false, isPremium: false };
     } else {
-      return false;
+      return { valid: false, isPremium: false };
     }
   };
 
@@ -55,11 +57,15 @@ export const useSpotifyService = () => {
     }
   };
 
-  const checkSpotifyConnection = async (): Promise<boolean> => {
+  const checkSpotifyConnection = async (): Promise<{
+    connected: boolean;
+    isPremium: boolean;
+    accessToken: string | null;
+  }> => {
     let tokens = getTokens('SpotifyToken') as ConnectionToken;
     if (!tokens) {
       const id = authState.user?.id;
-      if (!id) return false;
+      if (!id) return { connected: false, isPremium: false, accessToken: null };
 
       const currentUser = await getDBUserById(id);
       if (
@@ -67,34 +73,45 @@ export const useSpotifyService = () => {
         !currentUser.spotifyAccessToken ||
         !currentUser.spotifyRefreshToken
       )
-        return false;
+        return { connected: false, isPremium: false, accessToken: null };
+
       tokens = {
         accessToken: currentUser.spotifyAccessToken,
         refreshToken: currentUser.spotifyRefreshToken,
       };
-      storeTokens('SpotifyToken', tokens, false);
+      await storeTokens('SpotifyToken', tokens, false);
     }
 
-    const isTokenvalid = await checkSpotifyTokenValidity(tokens.accessToken);
-    if (!isTokenvalid) {
+    const { valid, isPremium } = await checkSpotifyTokenValidity(
+      tokens.accessToken
+    );
+    if (!valid) {
       try {
-        await handleRefreshSpotifyAccessToken(tokens.refreshToken);
-        return true;
+        const newAccessToken = await handleRefreshSpotifyAccessToken(
+          tokens.refreshToken
+        );
+        return { connected: true, isPremium, accessToken: newAccessToken };
       } catch (error) {
-        return false;
+        return {
+          connected: false,
+          isPremium: false,
+          accessToken: tokens.accessToken,
+        };
       }
     } else {
-      return true;
+      return { connected: true, isPremium, accessToken: tokens.accessToken };
     }
   };
 
-  const handleRefreshSpotifyAccessToken = async (refreshToken: string) => {
+  const handleRefreshSpotifyAccessToken = async (
+    refreshToken: string
+  ): Promise<string | null> => {
     const id = authState.user?.id;
-    if (!id) return;
+    if (!id) return null;
 
     try {
       const res = await refreshSpotifyAccessToken(id, refreshToken);
-      if (!res) return;
+      if (!res) return null;
 
       await storeTokens(
         'SpotifyToken',
@@ -104,6 +121,7 @@ export const useSpotifyService = () => {
         },
         false
       );
+      return res;
     } catch (error) {
       addError({
         message:
@@ -111,39 +129,8 @@ export const useSpotifyService = () => {
         displayType: 'toast',
         category: 'auth',
       });
+      return null;
     }
-  };
-
-  const fetchWithToken = async (url: string, options: RequestInit = {}) => {
-    const tokens = getTokens('SpotifyToken');
-    if (!tokens) {
-      addError({
-        message: 'You need to sign in to Spotify',
-        displayType: 'toast',
-        category: 'auth',
-      });
-      return;
-    }
-
-    const makeRequest = async () => {
-      const response = await fetch(url, {
-        ...options,
-        headers: {
-          ...options.headers,
-          Authorization: `Bearer ${tokens.accessToken}`,
-        },
-      });
-
-      if (response.status === 401) {
-        // Access token expired, refresh it
-        await handleRefreshSpotifyAccessToken(tokens.refreshToken);
-        return makeRequest();
-      }
-
-      return response;
-    };
-
-    return makeRequest();
   };
 
   const spotifySignout = () => {
@@ -163,7 +150,6 @@ export const useSpotifyService = () => {
     handleSpotifySigninCallback,
     checkSpotifyConnection,
     handleRefreshSpotifyAccessToken,
-    fetchWithToken,
     spotifySignout,
   };
 };
