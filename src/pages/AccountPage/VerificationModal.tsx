@@ -25,7 +25,7 @@ const VerificationModal: React.FC<VerificationModalProps> = ({
 
   const handleConfirm = async (code: string) => {
     setIsLoading(true);
-    const accessToken = getTokens().accessToken;
+    const accessToken = getTokens('CognitoToken')?.accessToken;
     if (!accessToken) return;
 
     try {

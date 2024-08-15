@@ -1,4 +1,4 @@
-export type TokenType = 'CognitoToken' | 'SpotifyToken';
+export type TokenType = 'CognitoToken';
 
 export interface TokenBase {
   accessToken: string;

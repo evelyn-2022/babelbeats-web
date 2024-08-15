@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { wave } from '../assets';
 import { useTheme, useError, useAuth } from '../context';
-import { useAuthService, useSpotifyService } from '../hooks';
+import { useAuthService } from '../hooks';
 
 import { showToast } from '../utils';
 
@@ -15,7 +15,7 @@ const OAuthCallbackPage: React.FC<OAuthCallbackPageProps> = ({ provider }) => {
   const { addError } = useError();
   const { authState } = useAuth();
   const { handleGoogleSignInCallback } = useAuthService();
-  const { handleSpotifySigninCallback } = useSpotifyService();
+
   const hasRun = useRef(false);
 
   useEffect(() => {
@@ -36,10 +36,6 @@ const OAuthCallbackPage: React.FC<OAuthCallbackPageProps> = ({ provider }) => {
       try {
         if (provider === 'google') {
           await handleGoogleSignInCallback(authorizationCode);
-        } else if (provider === 'spotify') {
-          const id = authState.user?.id;
-          if (!id) return;
-          await handleSpotifySigninCallback(authorizationCode, parseInt(id));
         }
       } catch (error) {
         let errorMessage;
@@ -59,7 +55,6 @@ const OAuthCallbackPage: React.FC<OAuthCallbackPageProps> = ({ provider }) => {
     handleSignIn();
   }, [
     handleGoogleSignInCallback,
-    handleSpotifySigninCallback,
     addError,
     provider,
     theme,

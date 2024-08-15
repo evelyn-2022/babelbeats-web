@@ -53,7 +53,7 @@ const NewPasswordModal: React.FC<NewPasswordModalProps> = ({
       setIsLoading(false);
       return;
     }
-    const accessToken = getTokens().accessToken;
+    const accessToken = getTokens('CognitoToken')?.accessToken;
     if (!accessToken) return;
 
     try {
