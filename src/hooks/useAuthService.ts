@@ -6,9 +6,15 @@ import {
   signIn,
   googleSignIn,
   exchangeCodeForTokens,
+  refreshCognitoTokens,
 } from '../services';
 import { useApiService } from './useApiService';
-import { storeTokens, removeTokens, extractUserInfo } from '../utils';
+import {
+  storeTokens,
+  removeTokens,
+  extractUserInfo,
+  getExpiryTime,
+} from '../utils';
 import { CognitoToken } from '../types';
 
 export const useAuthService = () => {
@@ -73,7 +79,11 @@ export const useAuthService = () => {
     }
   };
 
-  const processSignIn = async (idToken: string) => {
+  const processSignIn = async (
+    idToken: string,
+    accessToken: string,
+    refreshToken: string
+  ) => {
     try {
       let userInfo = await extractUserInfo(idToken);
       // If user info is not in the database, update it
@@ -86,6 +96,7 @@ export const useAuthService = () => {
         }
       }
       authSuccess(userInfo);
+      scheduleTokenRefresh(accessToken, refreshToken);
       navigate('/');
     } catch (error) {
       let errorMessage;
@@ -114,7 +125,11 @@ export const useAuthService = () => {
         refreshToken: result.getRefreshToken().getToken(),
       };
       await storeTokens('CognitoToken', cognitoToken, rememberMe);
-      await processSignIn(result.getIdToken().getJwtToken());
+      await processSignIn(
+        result.getIdToken().getJwtToken(),
+        result.getAccessToken().getJwtToken(),
+        result.getRefreshToken().getToken()
+      );
     } catch (error) {
       let errorMessage;
       if (error instanceof Error) {
@@ -144,7 +159,11 @@ export const useAuthService = () => {
         };
 
         await storeTokens('CognitoToken', cognitoToken);
-        await processSignIn(tokens.idToken);
+        await processSignIn(
+          tokens.idToken,
+          tokens.accessToken,
+          tokens.refreshToken
+        );
       } else {
         throw new Error('Failed to exchange code for tokens');
       }
@@ -164,6 +183,37 @@ export const useAuthService = () => {
     }
   };
 
+  const scheduleTokenRefresh = (accessToken: string, refreshToken: string) => {
+    const expirationTime = getExpiryTime(accessToken);
+    const refreshTime = expirationTime - Date.now() - 5 * 60 * 1000; // Refresh 5 minutes before expiry
+
+    setTimeout(() => {
+      (async () => {
+        try {
+          const { idToken, accessToken: newAccessToken } =
+            await refreshCognitoTokens(refreshToken);
+          storeTokens('CognitoToken', {
+            idToken,
+            accessToken: newAccessToken,
+            refreshToken,
+          });
+
+          // Schedule the next refresh after this one succeeds
+          scheduleTokenRefresh(newAccessToken, refreshToken);
+        } catch (error) {
+          addError({
+            message: 'Your session has expired. Please sign in again.',
+            displayType: 'toast',
+            category: 'auth',
+          });
+          setTimeout(() => {
+            handleSignOut();
+          }, 3000);
+        }
+      })();
+    }, refreshTime);
+  };
+
   const handleSignOut = () => {
     removeTokens('CognitoToken');
     authFailure();
@@ -175,6 +225,7 @@ export const useAuthService = () => {
     handleConfirmSignUp,
     handleSignIn,
     handleGoogleSignInCallback,
+    scheduleTokenRefresh,
     handleSignOut,
     handleGoogleSignIn: googleSignIn,
     handleFBSignIn: () => {},

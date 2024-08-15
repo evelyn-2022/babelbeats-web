@@ -41,12 +41,19 @@ export const parseJwt = (token: string) => {
   }
 };
 
-export const isTokenExpired = (token: string): boolean => {
+export const getExpiryTime = (token: string): number => {
   const decoded = parseJwt(token);
   if (!decoded) {
+    return 0;
+  }
+  return decoded.exp;
+};
+
+export const isTokenExpired = (token: string): boolean => {
+  const exp = getExpiryTime(token);
+  if (exp === 0) {
     return true;
   }
-  const exp = decoded.exp;
   const currentTime = Math.floor(Date.now() / 1000);
   return exp < currentTime;
 };
