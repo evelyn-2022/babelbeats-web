@@ -13,11 +13,7 @@ const config = {
     secretAccessKey: import.meta.env.VITE_COGNITO_ADMIN_SECRET_ACCESS_KEY || '',
   },
   REACT_APP_API_URL: import.meta.env.VITE_API_URL,
-  spotify: {
-    clientId: import.meta.env.VITE_SPOTIFY_CLIENT_ID,
-    redirectUri: import.meta.env.VITE_SPOTIFY_REDIRECT_URI,
-    scope: import.meta.env.VITE_SPOTIFY_SCOPE,
-  },
+  GOOGLE_API_KEY: import.meta.env.VITE_GOOGLE_API_KEY,
 };
 
 export default config;

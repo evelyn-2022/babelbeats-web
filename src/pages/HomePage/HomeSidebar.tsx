@@ -8,7 +8,7 @@ import { PiPlaylist } from 'react-icons/pi';
 import { GoPerson } from 'react-icons/go';
 import { LuSettings } from 'react-icons/lu';
 import { IoIosLogOut } from 'react-icons/io';
-import { ProfilePic, Tooltip } from '../../components';
+import { ProfilePic, Tooltip, YtbMusicPlayer } from '../../components';
 import { useAuth } from '../../context';
 import { useAuthService } from '../../hooks';
 
@@ -205,15 +205,13 @@ const HomeSidebar: React.FC = () => {
     'hover:bg-customBlack-light/5 dark:hover:bg-customBlack-light';
 
   return (
-    <div className='min-h-screen flex w-full relative'>
+    <div className='min-h-screen flex w-full'>
       {/* Left column */}
       {sidebarState !== 0 && (
         <div
-          className={`${
-            sidebarState === 1
-              ? 'lg:w-[8%] xl:w-[6.3%]'
-              : 'lg:w-[19%] xl:w-[14%]'
-          } transition-all duration-300 px-6 py-10 flex flex-col relative justify-between`}
+          className={`fixed left-0 h-full ${
+            sidebarState === 1 ? 'w-[8%] xl:w-[6.3%]' : 'w-[19%] xl:w-[14%]'
+          } transition-all duration-300 px-6 py-10 flex flex-col justify-between`}
         >
           {/* Basic links */}
           <ul>
@@ -318,76 +316,103 @@ const HomeSidebar: React.FC = () => {
       )}
 
       {/* Right column */}
-      <div className='px-6 py-10 flex-grow bg-customBlack-light/[.03] dark:bg-customBlack-light/95 relative'>
-        <div
-          className={`absolute w-10 h-full cursor-col-resize top-0 -left-5 flex flex-row items-center text-customWhite/40 text-xl opacity-0 hover:opacity-100 transition-all duration-300 ${
-            isDragging && 'opacity-100'
-          }`}
-          onMouseDown={handleMouseDown}
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
-        >
-          {/* Collapse icon */}
-          <div className='group relative cursor-pointer translate-x-0.5'>
-            <FaCaretLeft
-              onClick={
-                sidebarState === 1
-                  ? () => setSidebarState(0)
-                  : () => setSidebarState(1)
-              }
-              className='hover:-translate-x-0.5 transition-all duration-300'
-            />
-            <Tooltip
-              label={
-                sidebarState === 1
-                  ? 'Hide sidebar'
-                  : sidebarState === 2
-                  ? 'Collapse sidebar'
-                  : ''
-              }
-              position='bottom'
-            />
-          </div>
-          {/* Divider */}
-          <div
-            className={`w-0.5 h-full bg-transparent ${
-              showDivider && 'bg-white/20'
-            } ${isDragging && 'bg-white/50'}`}
-          />
-          {/* Expand icon */}
-          <div className='group relative cursor-pointer'>
-            <FaCaretRight
-              onClick={
-                sidebarState === 0
-                  ? () => setSidebarState(1)
-                  : sidebarState === 1
-                  ? () => setSidebarState(2)
-                  : () => {}
-              }
-              className={`hover:translate-x-0.5 transition-all duration-300 -ml-1 ${
-                sidebarState === 2 && 'hidden'
-              }`}
-            />
-            <Tooltip
-              label={
-                sidebarState === 1
-                  ? 'Expand sidebar'
-                  : sidebarState === 0
-                  ? 'Show sidebar'
-                  : ''
-              }
-              position={
-                sidebarState === 2
-                  ? 'hidden'
-                  : sidebarState === 1
-                  ? 'bottom'
-                  : 'right-tight'
-              }
-            />
-          </div>
-        </div>
+      <div
+        className={`px-6 py-10 flex-grow bg-customBlack-light/[.03] dark:bg-customBlack-light/95 absolute right-0 ${
+          sidebarState === 1
+            ? 'w-[92%] xl:w-[93.7%]'
+            : sidebarState === 0
+            ? 'w-full'
+            : 'w-[81%] xl:w-[86%]'
+        } transition-all duration-300`}
+      >
         <Outlet />
+      </div>
+      <div
+        className={`fixed w-10 h-full cursor-col-resize top-0 -translate-x-5 z-50 ${
+          sidebarState === 1
+            ? 'lg:left-[8%] xl:left-[6.3%]'
+            : sidebarState === 0
+            ? 'left-0'
+            : 'lg:left-[19%] xl:left-[14%]'
+        } flex flex-row items-center text-customWhite/40 text-xl opacity-0 hover:opacity-100 transition-all duration-300 ${
+          isDragging && 'opacity-100'
+        }`}
+        onMouseDown={handleMouseDown}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      >
+        {/* Collapse icon */}
+        <div className='group relative cursor-pointer translate-x-0.5'>
+          <FaCaretLeft
+            onClick={
+              sidebarState === 1
+                ? () => setSidebarState(0)
+                : () => setSidebarState(1)
+            }
+            className='hover:-translate-x-0.5 transition-all duration-300'
+          />
+          <Tooltip
+            label={
+              sidebarState === 1
+                ? 'Hide sidebar'
+                : sidebarState === 2
+                ? 'Collapse sidebar'
+                : ''
+            }
+            position='bottom'
+          />
+        </div>
+        {/* Divider */}
+        <div
+          className={`w-0.5 h-full bg-transparent ${
+            showDivider && 'bg-white/20'
+          } ${isDragging && 'bg-white/50'}`}
+        />
+        {/* Expand icon */}
+        <div className='group relative cursor-pointer'>
+          <FaCaretRight
+            onClick={
+              sidebarState === 0
+                ? () => setSidebarState(1)
+                : sidebarState === 1
+                ? () => setSidebarState(2)
+                : () => {}
+            }
+            className={`hover:translate-x-0.5 transition-all duration-300 -ml-1 ${
+              sidebarState === 2 && 'hidden'
+            }`}
+          />
+          <Tooltip
+            label={
+              sidebarState === 1
+                ? 'Expand sidebar'
+                : sidebarState === 0
+                ? 'Show sidebar'
+                : ''
+            }
+            position={
+              sidebarState === 2
+                ? 'hidden'
+                : sidebarState === 1
+                ? 'bottom'
+                : 'right-tight'
+            }
+          />
+        </div>
+      </div>
+
+      {/* Music player */}
+      <div
+        className={`fixed bottom-0 right-0 w-full px-6 py-2 bg-customBlack/50 backdrop-blur-lg transition-all duration-300 ${
+          sidebarState === 1
+            ? 'lg:w-[92%] xl:w-[93.7%]'
+            : sidebarState === 0
+            ? 'w-full'
+            : 'lg:w-[81%] xl:w-[86%]'
+        }`}
+      >
+        <YtbMusicPlayer videoId='0Q7w7gk1JhQ' />
       </div>
     </div>
   );
