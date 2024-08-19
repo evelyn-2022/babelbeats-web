@@ -210,8 +210,8 @@ const HomeSidebar: React.FC = () => {
       {sidebarState !== 0 && (
         <div
           className={`fixed left-0 h-full ${
-            sidebarState === 1 ? 'w-[8%] xl:w-[6.3%]' : 'w-[19%] xl:w-[14%]'
-          } transition-all duration-300 px-6 py-10 flex flex-col justify-between`}
+            sidebarState === 1 ? 'w-[8%] xl:w-[6.7%]' : 'w-[19%] xl:w-[14%]'
+          } transition-all duration-300 px-6 py-10 flex flex-col justify-between z-30`}
         >
           {/* Basic links */}
           <ul>
@@ -317,9 +317,9 @@ const HomeSidebar: React.FC = () => {
 
       {/* Right column */}
       <div
-        className={`px-6 py-10 flex-grow bg-customBlack-light/[.03] dark:bg-customBlack-light/95 absolute right-0 ${
+        className={`px-6 py-10 h-fit min-h-screen flex-grow bg-customBlack-light/[.03] dark:bg-customBlack-light/95 absolute right-0 ${
           sidebarState === 1
-            ? 'w-[92%] xl:w-[93.7%]'
+            ? 'w-[92%] xl:w-[93.3%]'
             : sidebarState === 0
             ? 'w-full'
             : 'w-[81%] xl:w-[86%]'
@@ -328,9 +328,9 @@ const HomeSidebar: React.FC = () => {
         <Outlet />
       </div>
       <div
-        className={`fixed w-10 h-full cursor-col-resize top-0 -translate-x-5 z-50 ${
+        className={`fixed w-4 h-full -translate-x-2 cursor-col-resize top-0 z-50 bg-transparent ${
           sidebarState === 1
-            ? 'lg:left-[8%] xl:left-[6.3%]'
+            ? 'lg:left-[8%] xl:left-[6.7%]'
             : sidebarState === 0
             ? 'left-0'
             : 'lg:left-[19%] xl:left-[14%]'
@@ -343,7 +343,7 @@ const HomeSidebar: React.FC = () => {
         onTouchEnd={handleTouchEnd}
       >
         {/* Collapse icon */}
-        <div className='group relative cursor-pointer translate-x-0.5'>
+        <div className='group relative cursor-pointer -translate-x-3'>
           <FaCaretLeft
             onClick={
               sidebarState === 1
@@ -370,7 +370,7 @@ const HomeSidebar: React.FC = () => {
           } ${isDragging && 'bg-white/50'}`}
         />
         {/* Expand icon */}
-        <div className='group relative cursor-pointer'>
+        <div className='group relative cursor-pointer -translate-x-3'>
           <FaCaretRight
             onClick={
               sidebarState === 0
@@ -406,7 +406,7 @@ const HomeSidebar: React.FC = () => {
       <div
         className={`fixed bottom-0 right-0 w-full px-6 py-2 bg-customBlack/50 backdrop-blur-lg transition-all duration-300 ${
           sidebarState === 1
-            ? 'lg:w-[92%] xl:w-[93.7%]'
+            ? 'lg:w-[92%] xl:w-[93.3%]'
             : sidebarState === 0
             ? 'w-full'
             : 'lg:w-[81%] xl:w-[86%]'

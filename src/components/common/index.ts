@@ -10,3 +10,4 @@ export { default as VerificationCodeForm } from './VerificationCodeForm';
 export { default as ProfilePic } from './ProfilePic';
 export { default as Tooltip } from './Tooltip';
 export { default as YtbMusicPlayer } from './YtbMusicPlayer';
+export { default as SearchBar } from './SearchBar';
