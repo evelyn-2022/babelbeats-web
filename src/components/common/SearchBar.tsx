@@ -2,11 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { LuSearch } from 'react-icons/lu';
 import { RxCrossCircled } from 'react-icons/rx';
 import InputField from './InputField';
-
-interface SearchResult {
-  playlist?: any;
-  music?: any;
-}
+import { SearchResult } from '../../types';
 
 interface SearchBarProps {
   onSearch: (query: string) => Promise<SearchResult>; // A function that returns a promise of search results
@@ -52,7 +48,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
           onChange={handleInputChange}
           padding='px-12'
           width='w-full'
-          placeholder='Paste a YouTube link here...'
+          placeholder='Paste YouTube link here...'
         />
         {query && (
           <RxCrossCircled
@@ -66,17 +62,17 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
           {results.music && (
             <li
               className='p-2 cursor-pointer hover:bg-blue-500 hover:text-white'
-              onClick={() => handleResultClick(results.music.snippet.title)}
+              onClick={() => handleResultClick(results.music!.title)}
             >
-              Music: {results.music.snippet.title}
+              Music: {results.music.title}
             </li>
           )}
           {results.playlist && (
             <li
               className='p-2 cursor-pointer hover:bg-blue-500 hover:text-white'
-              onClick={() => handleResultClick(results.playlist.snippet.title)}
+              onClick={() => handleResultClick(results.playlist!.title)}
             >
-              Playlist: {results.playlist.snippet.title}
+              Playlist: {results.playlist.title}
             </li>
           )}
           {!results.music && !results.playlist && <div>No result found</div>}

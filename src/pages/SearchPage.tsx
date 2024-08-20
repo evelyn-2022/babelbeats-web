@@ -1,10 +1,6 @@
 import { SearchBar } from '../components';
 import config from '../config';
-
-interface SearchResult {
-  playlist?: any;
-  music?: any;
-}
+import { SearchResult, YouTubePlaylist, YouTubeVideo } from '../types';
 
 const { GOOGLE_API_KEY } = config;
 
@@ -52,7 +48,9 @@ const SearchPage: React.FC = () => {
   };
 
   // Function to fetch video details from YouTube API
-  const fetchYouTubeVideoDetails = async (videoId: string) => {
+  const fetchYouTubeVideoDetails = async (
+    videoId: string
+  ): Promise<YouTubeVideo> => {
     const response = await fetch(
       `https://www.googleapis.com/youtube/v3/videos?id=${videoId}&key=${GOOGLE_API_KEY}&part=snippet,contentDetails,statistics`
     );
@@ -62,10 +60,20 @@ const SearchPage: React.FC = () => {
       throw new Error('No video found for the provided ID');
     }
 
-    return data.items[0];
+    const video = {
+      id: videoId,
+      title: data.items[0].snippet.title,
+      channelTitle: data.items[0].snippet.channelTitle,
+      description: data.items[0].snippet.description,
+      thumbnail: data.items[0].snippet.thumbnails.default.url,
+    };
+
+    return video;
   };
 
-  const fetchYouTubePlaylistDetails = async (playlistId: string) => {
+  const fetchYouTubePlaylistDetails = async (
+    playlistId: string
+  ): Promise<YouTubePlaylist> => {
     const response = await fetch(
       `https://www.googleapis.com/youtube/v3/playlists?id=${playlistId}&key=${GOOGLE_API_KEY}&part=snippet,contentDetails`
     );
@@ -75,7 +83,16 @@ const SearchPage: React.FC = () => {
       throw new Error('No playlist found for the provided ID');
     }
 
-    return data.items[0];
+    const playlist = {
+      id: playlistId,
+      title: data.items[0].snippet.title,
+      channelTitle: data.items[0].snippet.channelTitle,
+      description: data.items[0].snippet.description,
+      thumbnail: data.items[0].snippet.thumbnails.default.url,
+      itemCount: data.items[0].contentDetails.itemCount,
+    };
+
+    return playlist;
   };
 
   return (
