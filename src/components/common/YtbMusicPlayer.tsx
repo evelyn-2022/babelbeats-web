@@ -19,10 +19,22 @@ const YtbMusicPlayer: React.FC<{ videoId: string }> = ({ videoId }) => {
   const [currentTime, setCurrentTime] = useState<string>('0:00');
   const [isPlayerReady, setIsPlayerReady] = useState<boolean>(false);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const userInteractedRef = useRef<boolean>(false);
   const apiKey = config.GOOGLE_API_KEY;
 
   useEffect(() => {
-    // Fetch video details
+    // Pause the current video if playing
+    if (playerRef.current && isPlaying) {
+      playerRef.current.pauseVideo();
+    }
+
+    // Reset states when videoId changes
+    setCurrentTime('0:00');
+    setProgress(0);
+    setIsPlaying(false);
+    setIsPlayerReady(false); // Reset player readiness
+
+    // Fetch video details for the new video
     const fetchVideoDetails = async () => {
       try {
         const response = await axios.get(
@@ -36,11 +48,13 @@ const YtbMusicPlayer: React.FC<{ videoId: string }> = ({ videoId }) => {
 
     fetchVideoDetails();
 
-    // Load the IFrame Player API code asynchronously
-    const tag = document.createElement('script');
-    tag.src = 'https://www.youtube.com/iframe_api';
-    const firstScriptTag = document.getElementsByTagName('script')[0];
-    firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag);
+    // Load the IFrame Player API code asynchronously if not already loaded
+    if (!window.YT) {
+      const tag = document.createElement('script');
+      tag.src = 'https://www.youtube.com/iframe_api';
+      const firstScriptTag = document.getElementsByTagName('script')[0];
+      firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag);
+    }
 
     // Create a YouTube player when the API code downloads
     window.onYouTubeIframeAPIReady = () => {
@@ -55,17 +69,34 @@ const YtbMusicPlayer: React.FC<{ videoId: string }> = ({ videoId }) => {
       });
     };
 
+    // If the player is already initialized, cue the video and load metadata
+    if (playerRef.current) {
+      playerRef.current.cueVideoById(videoId);
+    }
+
     // Cleanup on component unmount
     return () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
       }
     };
-  }, []);
+  }, [videoId]);
 
   const onPlayerReady = (event: YT.PlayerEvent) => {
     const player = event.target;
-    player.cueVideoById(videoId);
+    const playerDuration = player.getDuration();
+    if (playerDuration) {
+      durationRef.current = playerDuration - 1;
+      setIsPlayerReady(true);
+      setCurrentTime(numberToTime(0));
+      setProgress(0);
+      setIsPlaying(false);
+      // playVideo(); // Auto-play the video when the player is ready
+    }
+
+    if (userInteractedRef.current) {
+      playVideo(); // Auto-play if user has interacted
+    }
   };
 
   const onPlayerStateChange = (event: YT.OnStateChangeEvent) => {
@@ -75,8 +106,11 @@ const YtbMusicPlayer: React.FC<{ videoId: string }> = ({ videoId }) => {
       if (playerDuration) {
         durationRef.current = playerDuration - 1;
         setIsPlayerReady(true);
-        // setCurrentTime(numberToTime(0)); // Set initial time to 0:00
         setProgress(0); // Reset progress bar
+      }
+
+      if (userInteractedRef.current && !isPlaying) {
+        playVideo(); // Autoplay video if user has interacted
       }
     }
 
@@ -86,9 +120,16 @@ const YtbMusicPlayer: React.FC<{ videoId: string }> = ({ videoId }) => {
       }
       // Set interval to update progress every second
       intervalRef.current = setInterval(updateProgressBar, 1000);
+      setIsPlaying(true); // Update playing state
     } else {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
+      }
+      if (
+        event.data === YT.PlayerState.PAUSED ||
+        event.data === YT.PlayerState.ENDED
+      ) {
+        setIsPlaying(false); // Update playing state
       }
     }
   };
@@ -120,6 +161,12 @@ const YtbMusicPlayer: React.FC<{ videoId: string }> = ({ videoId }) => {
     setCurrentTime(numberToTime(newTime));
   };
 
+  const handleUserInteraction = () => {
+    if (!userInteractedRef.current) {
+      userInteractedRef.current = true;
+    }
+  };
+
   const numberToTime = (time: number) => {
     const minutes = Math.floor(time / 60);
     const seconds = Math.floor(time % 60);
@@ -127,7 +174,10 @@ const YtbMusicPlayer: React.FC<{ videoId: string }> = ({ videoId }) => {
   };
 
   return (
-    <div className='flex flex-row gap-12 w-full items-center'>
+    <div
+      className='flex flex-row gap-12 w-full items-center'
+      onClick={handleUserInteraction}
+    >
       <div id='player' className='hidden' />
 
       {videoInfo && (

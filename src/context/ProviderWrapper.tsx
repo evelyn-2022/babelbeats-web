@@ -1,10 +1,11 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
+import { HelmetProvider } from 'react-helmet-async';
 import { Layout } from '../components';
 import { ThemeProvider } from './ThemeProvider';
 import { AuthProvider } from './AuthProvider';
 import { ErrorProvider } from './ErrorProvider';
-import { HelmetProvider } from 'react-helmet-async';
+import { VideoProvider } from './VideoProvider';
 
 export const ProviderWrapper: React.FC<{ children?: React.ReactNode }> = ({
   children,
@@ -13,9 +14,11 @@ export const ProviderWrapper: React.FC<{ children?: React.ReactNode }> = ({
     <HelmetProvider>
       <ErrorProvider>
         <ThemeProvider>
-          <AuthProvider>
-            <Layout>{children || <Outlet />}</Layout>
-          </AuthProvider>
+          <VideoProvider>
+            <AuthProvider>
+              <Layout>{children || <Outlet />}</Layout>
+            </AuthProvider>
+          </VideoProvider>
         </ThemeProvider>
       </ErrorProvider>
     </HelmetProvider>

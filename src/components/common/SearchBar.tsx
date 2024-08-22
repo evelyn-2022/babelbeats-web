@@ -3,6 +3,7 @@ import { LuSearch } from 'react-icons/lu';
 import { RxCrossCircled } from 'react-icons/rx';
 import InputField from './InputField';
 import { SearchResult } from '../../types';
+import { useVideo } from '../../context';
 
 interface SearchBarProps {
   onSearch: (query: string) => Promise<SearchResult>; // A function that returns a promise of search results
@@ -12,6 +13,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
   const [query, setQuery] = useState<string>('');
   const [results, setResults] = useState<SearchResult | null>(null);
   const [showDropdown, setShowDropdown] = useState<boolean>(false);
+  const { setCurrentVideoId } = useVideo();
 
   useEffect(() => {
     if (query.length > 0) {
@@ -32,14 +34,16 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
     setQuery(e.target.value);
   };
 
-  const handleResultClick = (result: string) => {
-    setQuery(result);
+  const handleResultClick = (type: string, id: string) => {
+    setQuery('');
     setShowDropdown(false);
-    // Implement any additional logic on selecting a result
+    if (type === 'music') {
+      setCurrentVideoId(id);
+    }
   };
 
   return (
-    <div className='relative w-full max-w-md mx-auto mt-4'>
+    <div className='relative w-full max-w-md  mt-4'>
       <div className='relative flex items-center'>
         <LuSearch className='absolute left-4 z-50 text-white' />
         <InputField
@@ -62,7 +66,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
           {results.music && (
             <li
               className='p-2 cursor-pointer hover:bg-blue-500 hover:text-white'
-              onClick={() => handleResultClick(results.music!.title)}
+              onClick={() => handleResultClick('music', results.music!.id)}
             >
               Music: {results.music.title}
             </li>
@@ -70,7 +74,9 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
           {results.playlist && (
             <li
               className='p-2 cursor-pointer hover:bg-blue-500 hover:text-white'
-              onClick={() => handleResultClick(results.playlist!.title)}
+              onClick={() =>
+                handleResultClick('playllist', results.playlist!.id)
+              }
             >
               Playlist: {results.playlist.title}
             </li>

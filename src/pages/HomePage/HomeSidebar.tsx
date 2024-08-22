@@ -9,11 +9,12 @@ import { GoPerson } from 'react-icons/go';
 import { LuSettings } from 'react-icons/lu';
 import { IoIosLogOut } from 'react-icons/io';
 import { ProfilePic, Tooltip, YtbMusicPlayer } from '../../components';
-import { useAuth } from '../../context';
+import { useAuth, useVideo } from '../../context';
 import { useAuthService } from '../../hooks';
 
 const HomeSidebar: React.FC = () => {
   const { authState } = useAuth();
+  const { currentVideoId } = useVideo();
   const { handleSignOut } = useAuthService();
   const [sidebarState, setSidebarState] = useState(1); // 0: hidden, 1: collapsed, 2: full
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -211,7 +212,7 @@ const HomeSidebar: React.FC = () => {
         <div
           className={`fixed left-0 h-full ${
             sidebarState === 1 ? 'w-[8%] xl:w-[6.7%]' : 'w-[19%] xl:w-[14%]'
-          } transition-all duration-300 px-6 py-10 flex flex-col justify-between z-30`}
+          } transition-all duration-300 p-6 flex flex-col justify-between z-30`}
         >
           {/* Basic links */}
           <ul>
@@ -298,7 +299,7 @@ const HomeSidebar: React.FC = () => {
                 <LinkItem link={profileLink} position='bottom' />
               </NavLink>
               <div
-                className={`absolute group top-1.5 xl:top-3 right-1 cursor-pointer text-2xl text-customBlack-light/30 dark:text-customWhite/40 dark:hover:text-customWhite/60 ${
+                className={`absolute group top-1.5 xl:top-3 right-2 cursor-pointer text-2xl text-customBlack-light/30 dark:text-customWhite/40 dark:hover:text-customWhite/60 ${
                   sidebarState === 1 && 'translate-x-7'
                 }`}
               >
@@ -317,7 +318,7 @@ const HomeSidebar: React.FC = () => {
 
       {/* Right column */}
       <div
-        className={`px-6 py-10 h-fit min-h-screen flex-grow bg-customBlack-light/[.03] dark:bg-customBlack-light/95 absolute right-0 ${
+        className={`p-6 h-fit min-h-screen flex-grow bg-customBlack-light/[.03] dark:bg-customBlack-light/95 absolute right-0 ${
           sidebarState === 1
             ? 'w-[92%] xl:w-[93.3%]'
             : sidebarState === 0
@@ -412,7 +413,7 @@ const HomeSidebar: React.FC = () => {
             : 'lg:w-[81%] xl:w-[86%]'
         }`}
       >
-        <YtbMusicPlayer videoId='0Q7w7gk1JhQ' />
+        <YtbMusicPlayer videoId={currentVideoId} />
       </div>
     </div>
   );
