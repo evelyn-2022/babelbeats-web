@@ -405,7 +405,7 @@ const HomeSidebar: React.FC = () => {
 
       {/* Music player */}
       <div
-        className={`fixed bottom-0 right-0 w-full px-6 py-2 bg-customBlack/50 backdrop-blur-lg transition-all duration-300 ${
+        className={`fixed bottom-0 right-0 w-full z-20 transition-all duration-300 ${
           sidebarState === 1
             ? 'lg:w-[92%] xl:w-[93.3%]'
             : sidebarState === 0

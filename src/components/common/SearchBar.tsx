@@ -45,7 +45,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
   return (
     <div className='relative w-full max-w-md  mt-4'>
       <div className='relative flex items-center'>
-        <LuSearch className='absolute left-4 z-50 text-white' />
+        <LuSearch className='absolute left-4 z-10 text-white' />
         <InputField
           type='text'
           value={query}
