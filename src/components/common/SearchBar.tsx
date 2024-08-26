@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { LuSearch } from 'react-icons/lu';
 import { RxCrossCircled } from 'react-icons/rx';
 import InputField from './InputField';
@@ -14,6 +14,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
   const [results, setResults] = useState<SearchResult | null>(null);
   const [showDropdown, setShowDropdown] = useState<boolean>(false);
   const { setCurrentVideoId } = useVideo();
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     if (query.length > 0) {
@@ -29,6 +30,12 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
       setShowDropdown(false);
     }
   }, [query, onSearch]);
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
@@ -53,6 +60,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
           padding='px-12'
           width='w-full'
           placeholder='Paste YouTube link here...'
+          ref={inputRef}
         />
         {query && (
           <RxCrossCircled
