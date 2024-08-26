@@ -4,6 +4,6 @@ export * from './ThemeProvider';
 export * from './useTheme';
 export * from './ErrorProvider';
 export * from './useError';
-export * from './VideoProvider';
-export * from './useVideo';
+export * from './PlayQueueProvider';
+export * from './usePlayQueue';
 export * from './ProviderWrapper';

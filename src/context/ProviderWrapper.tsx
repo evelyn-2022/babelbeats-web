@@ -5,7 +5,7 @@ import { Layout } from '../components';
 import { ThemeProvider } from './ThemeProvider';
 import { AuthProvider } from './AuthProvider';
 import { ErrorProvider } from './ErrorProvider';
-import { VideoProvider } from './VideoProvider';
+import { PlayQueueProvider } from './PlayQueueProvider';
 
 export const ProviderWrapper: React.FC<{ children?: React.ReactNode }> = ({
   children,
@@ -14,11 +14,11 @@ export const ProviderWrapper: React.FC<{ children?: React.ReactNode }> = ({
     <HelmetProvider>
       <ErrorProvider>
         <ThemeProvider>
-          <VideoProvider>
+          <PlayQueueProvider>
             <AuthProvider>
               <Layout>{children || <Outlet />}</Layout>
             </AuthProvider>
-          </VideoProvider>
+          </PlayQueueProvider>
         </ThemeProvider>
       </ErrorProvider>
     </HelmetProvider>

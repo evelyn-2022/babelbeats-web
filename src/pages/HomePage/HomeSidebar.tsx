@@ -9,12 +9,12 @@ import { GoPerson } from 'react-icons/go';
 import { LuSettings } from 'react-icons/lu';
 import { IoIosLogOut } from 'react-icons/io';
 import { ProfilePic, Tooltip, YtbMusicPlayer } from '../../components';
-import { useAuth, useVideo } from '../../context';
+import { useAuth, usePlayQueue } from '../../context';
 import { useAuthService } from '../../hooks';
 
 const HomeSidebar: React.FC = () => {
   const { authState } = useAuth();
-  const { currentVideoId } = useVideo();
+  const { playQueue, currentVideoIndex } = usePlayQueue();
   const { handleSignOut } = useAuthService();
   const [sidebarState, setSidebarState] = useState(1); // 0: hidden, 1: collapsed, 2: full
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -413,7 +413,7 @@ const HomeSidebar: React.FC = () => {
             : 'lg:w-[81%] xl:w-[86%]'
         }`}
       >
-        <YtbMusicPlayer videoId={currentVideoId} />
+        <YtbMusicPlayer videoId={playQueue[currentVideoIndex].id} />
       </div>
     </div>
   );

@@ -6,6 +6,10 @@ import { FaCaretDown, FaCaretUp } from 'react-icons/fa6';
 import axios from 'axios';
 import config from '../../config';
 import { YouTubeVideo } from '../../types';
+import { searchSong } from '../../services';
+import { usePlayQueue } from '../../context';
+// import YouTubePlaylistFetcher from './YtbPlaylistFetcher';
+// import { usePlaylist } from '../../context';
 
 declare global {
   interface Window {
@@ -26,6 +30,7 @@ const YtbMusicPlayer: React.FC<{ videoId: string }> = ({ videoId }) => {
   const userInteractedRef = useRef<boolean>(false);
   const location = useLocation();
   const apiKey = config.GOOGLE_API_KEY;
+  const { playQueue, currentVideoIndex, setCurrentVideoIndex } = usePlayQueue();
 
   useEffect(() => {
     // Hide the player when the URL path changes
@@ -107,6 +112,12 @@ const YtbMusicPlayer: React.FC<{ videoId: string }> = ({ videoId }) => {
         height: '360',
         width: '640',
         videoId: videoId,
+        playerVars: {
+          controls: 0, // Hides all player controls
+          modestbranding: 1, // Reduces YouTube branding
+          iv_load_policy: 3, // Hides video annotations
+          rel: 0, // Prevents showing related videos at the end
+        },
         events: {
           onReady: onPlayerReady,
           onStateChange: onPlayerStateChange,
@@ -232,17 +243,28 @@ const YtbMusicPlayer: React.FC<{ videoId: string }> = ({ videoId }) => {
           showPlayer ? 'h-full' : 'hidden'
         }`}
       >
-        <div className='w-7/12 h-full flex items-center justify-center p-4'>
+        <div className='w-7/12 h-full flex flex-col items-center p-4'>
           <div id='player' />
+          <div className='flex flex-col'>
+            next
+            {/* <YouTubePlaylistFetcher playlistId={currentPlaylistId} /> */}
+          </div>
         </div>
 
-        <div className='w-5/12 p-4'>lyrics</div>
+        <div className='w-5/12 p-4'>
+          <button onClick={() => searchSong('Ne Me Quitte Pas', 'Nina Simone')}>
+            Search for lyrics
+          </button>
+        </div>
       </div>
 
       <div className='absolute bottom-0 flex flex-row gap-12 w-full items-center px-6 py-2'>
         {videoInfo && (
           <div className='flex flex-row gap-4 items-center'>
-            <div className='w-16 h-16 overflow-hidden cursor-pointer'>
+            <div
+              className='w-16 h-16 overflow-hidden cursor-pointer'
+              onClick={() => setShowPlayer(!showPlayer)}
+            >
               <img
                 src={videoInfo.thumbnail}
                 alt={videoInfo.title}
@@ -273,7 +295,15 @@ const YtbMusicPlayer: React.FC<{ videoId: string }> = ({ videoId }) => {
           <span>{numberToTime(durationRef.current)}</span>
         </div>
         <div className='flex flew-row items-center gap-6'>
-          <TbPlayerSkipBack className='w-6 h-6' />
+          <TbPlayerSkipBack
+            className={`w-6 h-6 ${
+              currentVideoIndex === 0 ? 'text-customWhite/20' : 'cursor-pointer'
+            }`}
+            onClick={() => {
+              if (currentVideoIndex === 0) return;
+              setCurrentVideoIndex(currentVideoIndex - 1);
+            }}
+          />
           <button
             onClick={isPlaying ? pauseVideo : playVideo}
             className='outline-none'
@@ -285,7 +315,17 @@ const YtbMusicPlayer: React.FC<{ videoId: string }> = ({ videoId }) => {
             )}
           </button>
 
-          <TbPlayerSkipForward className='w-6 h-6' />
+          <TbPlayerSkipForward
+            className={`w-6 h-6 ${
+              currentVideoIndex === playQueue.length - 1
+                ? 'text-customWhite/20'
+                : 'cursor-pointer'
+            }`}
+            onClick={() => {
+              if (currentVideoIndex === playQueue.length - 1) return;
+              setCurrentVideoIndex(currentVideoIndex + 1);
+            }}
+          />
           <div
             className='cursor-pointer'
             onClick={() => setShowPlayer(!showPlayer)}

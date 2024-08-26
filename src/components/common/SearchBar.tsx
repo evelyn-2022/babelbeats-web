@@ -2,8 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { LuSearch } from 'react-icons/lu';
 import { RxCrossCircled } from 'react-icons/rx';
 import InputField from './InputField';
-import { SearchResult } from '../../types';
-import { useVideo } from '../../context';
+import { SearchResult, YouTubePlaylist, YouTubeVideo } from '../../types';
+import { usePlayQueue } from '../../context';
 
 interface SearchBarProps {
   onSearch: (query: string) => Promise<SearchResult>; // A function that returns a promise of search results
@@ -13,7 +13,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
   const [query, setQuery] = useState<string>('');
   const [results, setResults] = useState<SearchResult | null>(null);
   const [showDropdown, setShowDropdown] = useState<boolean>(false);
-  const { setCurrentVideoId } = useVideo();
+  const { playNext } = usePlayQueue();
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
@@ -41,11 +41,16 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
     setQuery(e.target.value);
   };
 
-  const handleResultClick = (type: string, id: string) => {
+  const handleResultClick = (
+    type: string,
+    result: YouTubeVideo | YouTubePlaylist
+  ) => {
     setQuery('');
     setShowDropdown(false);
     if (type === 'music') {
-      setCurrentVideoId(id);
+      playNext(result);
+    } else if (type === 'playlist') {
+      console.log('Add playlist to queue:', result);
     }
   };
 
@@ -74,7 +79,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
           {results.music && (
             <li
               className='p-2 cursor-pointer hover:bg-blue-500 hover:text-white'
-              onClick={() => handleResultClick('music', results.music!.id)}
+              onClick={() => handleResultClick('music', results.music)}
             >
               Music: {results.music.title}
             </li>
@@ -82,9 +87,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
           {results.playlist && (
             <li
               className='p-2 cursor-pointer hover:bg-blue-500 hover:text-white'
-              onClick={() =>
-                handleResultClick('playllist', results.playlist!.id)
-              }
+              onClick={() => handleResultClick('playlist', results.playlist)}
             >
               Playlist: {results.playlist.title}
             </li>
