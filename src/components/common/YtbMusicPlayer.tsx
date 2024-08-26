@@ -33,6 +33,25 @@ const YtbMusicPlayer: React.FC<{ videoId: string }> = ({ videoId }) => {
   }, [location.pathname]);
 
   useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.code === 'Space') {
+        event.preventDefault();
+        if (isPlaying) {
+          pauseVideo();
+        } else {
+          playVideo();
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isPlaying]);
+
+  useEffect(() => {
     // Pause the current video if playing
     if (playerRef.current && isPlaying) {
       playerRef.current.pauseVideo();
