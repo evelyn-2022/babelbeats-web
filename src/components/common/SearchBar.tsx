@@ -64,7 +64,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
         />
         {query && (
           <RxCrossCircled
-            className='absolute right-4 z-50 text-white cursor-pointer'
+            className='absolute right-4 z-10 text-white cursor-pointer'
             onClick={() => setQuery('')}
           />
         )}
