@@ -1,0 +1,94 @@
+import { YouTubePlaylist, YouTubeVideo } from '../types';
+import config from '../config';
+import axios from 'axios';
+
+const { GOOGLE_API_KEY } = config;
+
+export const extractParameterFromUrl = (
+  input: string,
+  parameter: string
+): string | null => {
+  let url: URL;
+
+  try {
+    // Attempt to create a new URL object
+    url = new URL(input);
+  } catch (error) {
+    return null;
+  }
+
+  return url.searchParams.get(parameter);
+};
+
+export const fetchYouTubeVideoDetails = async (
+  videoId: string
+): Promise<YouTubeVideo | null> => {
+  const response = await fetch(
+    `https://www.googleapis.com/youtube/v3/videos?id=${videoId}&key=${GOOGLE_API_KEY}&part=snippet,contentDetails,statistics`
+  );
+  const data = await response.json();
+
+  if (!data.items || data.items.length === 0) {
+    return null;
+  }
+
+  const video = {
+    id: videoId,
+    title: data.items[0].snippet.title,
+    channelTitle: data.items[0].snippet.channelTitle,
+    description: data.items[0].snippet.description,
+    thumbnail: data.items[0].snippet.thumbnails.default.url,
+  };
+
+  return video;
+};
+
+export const fetchYouTubePlaylistDetails = async (
+  playlistId: string
+): Promise<YouTubePlaylist | null> => {
+  const response = await fetch(
+    `https://www.googleapis.com/youtube/v3/playlists?id=${playlistId}&key=${GOOGLE_API_KEY}&part=snippet,contentDetails`
+  );
+  const data = await response.json();
+
+  if (!data.items || data.items.length === 0) return null;
+
+  const playlist = {
+    id: playlistId,
+    title: data.items[0].snippet.title,
+    channelTitle: data.items[0].snippet.channelTitle,
+    description: data.items[0].snippet.description,
+    thumbnail: data.items[0].snippet.thumbnails.default.url,
+    itemCount: data.items[0].contentDetails.itemCount,
+  };
+
+  return playlist;
+};
+
+export const fetchVideoDetails = async (
+  videoId: string
+): Promise<YouTubeVideo | null> => {
+  try {
+    const response = await axios.get(
+      `https://www.googleapis.com/youtube/v3/videos?id=${videoId}&key=${GOOGLE_API_KEY}&part=snippet,contentDetails`
+    );
+    const info = response.data.items[0].snippet;
+
+    const title =
+      info.title.length > 30 ? info.title.slice(0, 30) + '...' : info.title;
+    const channelTitle = info.channelTitle.split('-')[0].trim();
+    const thumbnail = info.thumbnails.medium
+      ? info.thumbnails.medium.url
+      : info.thumbnails.default.url;
+
+    return {
+      id: videoId,
+      title,
+      channelTitle,
+      description: info.description,
+      thumbnail,
+    };
+  } catch (error) {
+    return null;
+  }
+};

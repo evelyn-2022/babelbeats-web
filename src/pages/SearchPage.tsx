@@ -1,104 +1,87 @@
+import { useState } from 'react';
 import { SearchBar } from '../components';
-import config from '../config';
 import { SearchResult, YouTubePlaylist, YouTubeVideo } from '../types';
-
-const { GOOGLE_API_KEY } = config;
+import { usePlayQueue } from '../context';
+import {
+  extractParameterFromUrl,
+  fetchYouTubeVideoDetails,
+  fetchYouTubePlaylistDetails,
+} from '../services';
 
 const SearchPage: React.FC = () => {
+  const { playNext, setAutoplay, autoplay } = usePlayQueue();
+  const [results, setResults] = useState<SearchResult | null>(null);
+  const [searchInitiated, setSearchInitiated] = useState<boolean>(false);
+
   const handleSearch = async (url: string): Promise<SearchResult> => {
+    setSearchInitiated(true);
     const videoId = extractParameterFromUrl(url, 'v');
     const playlistId = extractParameterFromUrl(url, 'list');
+    setAutoplay(true);
 
     const result: SearchResult = {};
 
     if (videoId) {
       const videoDetails = await fetchYouTubeVideoDetails(videoId);
-      console.log('Video Details:', videoDetails);
-      result.music = videoDetails; // Add video details under 'music'
+      if (videoDetails) {
+        result.music = videoDetails;
+      }
     }
 
     if (playlistId) {
       const playlistDetails = await fetchYouTubePlaylistDetails(playlistId);
-      console.log('Playlist Details:', playlistDetails);
-      result.playlist = playlistDetails; // Add playlist details under 'playlist'
+      if (playlistDetails) {
+        result.playlist = playlistDetails;
+      }
     }
 
+    setResults(result);
     return result;
   };
 
-  // Helper function to extract parameters from the URL
-  const extractParameterFromUrl = (
-    input: string,
-    parameter: string
-  ): string | null => {
-    let url: URL;
-
-    try {
-      // Attempt to create a new URL object
-      url = new URL(input);
-    } catch (error) {
-      // If the input isn't a full URL, assume it's a video ID or similar
-      // You might want to add additional logic here to handle different cases
-      console.error('Invalid URL:', input);
-      return null;
+  const handleResultClick = async (
+    type: string,
+    result: YouTubeVideo | YouTubePlaylist
+  ) => {
+    if (type === 'music') {
+      playNext(result);
+    } else if (type === 'playlist') {
+      console.log('Add playlist to queue:', result);
     }
-
-    // Return the parameter value if it exists
-    return url.searchParams.get(parameter);
-  };
-
-  // Function to fetch video details from YouTube API
-  const fetchYouTubeVideoDetails = async (
-    videoId: string
-  ): Promise<YouTubeVideo> => {
-    const response = await fetch(
-      `https://www.googleapis.com/youtube/v3/videos?id=${videoId}&key=${GOOGLE_API_KEY}&part=snippet,contentDetails,statistics`
-    );
-    const data = await response.json();
-
-    if (!data.items || data.items.length === 0) {
-      throw new Error('No video found for the provided ID');
-    }
-
-    const video = {
-      id: videoId,
-      title: data.items[0].snippet.title,
-      channelTitle: data.items[0].snippet.channelTitle,
-      description: data.items[0].snippet.description,
-      thumbnail: data.items[0].snippet.thumbnails.default.url,
-    };
-
-    return video;
-  };
-
-  const fetchYouTubePlaylistDetails = async (
-    playlistId: string
-  ): Promise<YouTubePlaylist> => {
-    const response = await fetch(
-      `https://www.googleapis.com/youtube/v3/playlists?id=${playlistId}&key=${GOOGLE_API_KEY}&part=snippet,contentDetails`
-    );
-    const data = await response.json();
-
-    if (!data.items || data.items.length === 0) {
-      throw new Error('No playlist found for the provided ID');
-    }
-
-    const playlist = {
-      id: playlistId,
-      title: data.items[0].snippet.title,
-      channelTitle: data.items[0].snippet.channelTitle,
-      description: data.items[0].snippet.description,
-      thumbnail: data.items[0].snippet.thumbnails.default.url,
-      itemCount: data.items[0].contentDetails.itemCount,
-    };
-
-    return playlist;
+    console.log(autoplay);
   };
 
   return (
     <div className='h-full flex flex-col my-2 items-center gap-2'>
       <h1 className='text-2xl'>Search for a song or playlist</h1>
-      <SearchBar onSearch={handleSearch} />
+      <SearchBar
+        onSearch={handleSearch}
+        setResults={setResults}
+        setSearchInitiated={setSearchInitiated}
+      />
+
+      {/* Display search results here */}
+      {results && results.music && (
+        <div
+          className='p-2 cursor-pointer hover:bg-blue-500 hover:text-white'
+          onClick={() => handleResultClick('music', results.music)}
+        >
+          <h3>Song</h3>
+          {results.music.title}
+          {results.music.channelTitle}
+          <img src={results.music.thumbnail} alt='thumbnail' />
+        </div>
+      )}
+      {results && results.playlist && (
+        <div
+          className='p-2 cursor-pointer hover:bg-blue-500 hover:text-white'
+          onClick={() => handleResultClick('playlist', results.playlist)}
+        >
+          <h3>Playlist</h3>
+          {results.playlist.title}
+        </div>
+      )}
+      {searchInitiated && !results && <div>No result found</div>}
     </div>
   );
 };

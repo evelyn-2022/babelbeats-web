@@ -3,13 +3,9 @@ import { useLocation } from 'react-router-dom';
 import { TbPlayerSkipForward, TbPlayerSkipBack } from 'react-icons/tb';
 import { AiOutlinePlayCircle, AiOutlinePauseCircle } from 'react-icons/ai';
 import { FaCaretDown, FaCaretUp } from 'react-icons/fa6';
-import axios from 'axios';
-import config from '../../config';
 import { YouTubeVideo } from '../../types';
-import { searchSong } from '../../services';
+import { searchSong, fetchVideoDetails } from '../../services';
 import { usePlayQueue } from '../../context';
-// import YouTubePlaylistFetcher from './YtbPlaylistFetcher';
-// import { usePlaylist } from '../../context';
 
 declare global {
   interface Window {
@@ -27,10 +23,14 @@ const YtbMusicPlayer: React.FC<{ videoId: string }> = ({ videoId }) => {
   const [isPlayerReady, setIsPlayerReady] = useState<boolean>(false);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [showPlayer, setShowPlayer] = useState<boolean>(false);
-  const userInteractedRef = useRef<boolean>(false);
   const location = useLocation();
-  const apiKey = config.GOOGLE_API_KEY;
-  const { playQueue, currentVideoIndex, setCurrentVideoIndex } = usePlayQueue();
+  const { playQueue, currentVideoIndex, setCurrentVideoIndex, autoplay } =
+    usePlayQueue();
+  const autoplayRef = useRef(autoplay);
+
+  useEffect(() => {
+    autoplayRef.current = autoplay;
+  }, [autoplay]);
 
   useEffect(() => {
     // Hide the player when the URL path changes
@@ -57,78 +57,59 @@ const YtbMusicPlayer: React.FC<{ videoId: string }> = ({ videoId }) => {
   }, [isPlaying]);
 
   useEffect(() => {
-    // Pause the current video if playing
-    if (playerRef.current && isPlaying) {
-      playerRef.current.pauseVideo();
-    }
+    // Define an async function inside the useEffect
+    const fetchAndSetupVideo = async () => {
+      // // Pause the current video if playing
+      // if (playerRef.current && isPlaying) {
+      //   playerRef.current.pauseVideo();
+      // }
 
-    // Reset states when videoId changes
-    setCurrentTime('0:00');
-    setProgress(0);
-    setIsPlaying(false);
-    setIsPlayerReady(false); // Reset player readiness
+      // Reset states when videoId changes
+      setCurrentTime('0:00');
+      setProgress(0);
+      setIsPlaying(false);
+      setIsPlayerReady(false); // Reset player readiness
 
-    // Fetch video details for the new video
-    const fetchVideoDetails = async () => {
-      try {
-        const response = await axios.get(
-          `https://www.googleapis.com/youtube/v3/videos?id=${videoId}&key=${apiKey}&part=snippet,contentDetails`
-        );
-        const info = response.data.items[0].snippet;
-        console.log(response.data.items[0]);
+      // Fetch video details and update state
+      const videoInfo = await fetchVideoDetails(videoId);
 
-        const title =
-          info.title.length > 30 ? info.title.slice(0, 30) + '...' : info.title;
-        const channelTitle = info.channelTitle.split('-')[0].trim();
-        const thumbnail = info.thumbnails.medium
-          ? info.thumbnails.medium.url
-          : info.thumbnails.default.url;
+      setVideoInfo(videoInfo);
 
-        setVideoInfo({
-          id: videoId,
-          title,
-          channelTitle,
-          description: info.description,
-          thumbnail,
+      // Load the IFrame Player API code asynchronously if not already loaded
+      if (!window.YT) {
+        const tag = document.createElement('script');
+        tag.src = 'https://www.youtube.com/iframe_api';
+        const firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag);
+      }
+
+      // Create a YouTube player when the API code downloads
+      window.onYouTubeIframeAPIReady = () => {
+        playerRef.current = new YT.Player('player', {
+          height: '360',
+          width: '640',
+          videoId: videoId,
+          playerVars: {
+            controls: 0, // Hides all player controls
+            modestbranding: 1, // Reduces YouTube branding
+            iv_load_policy: 3, // Hides video annotations
+            rel: 0, // Prevents showing related videos at the end
+          },
+          events: {
+            onReady: onPlayerReady,
+            onStateChange: onPlayerStateChange,
+          },
         });
-      } catch (error) {
-        console.error('Error fetching video details:', error);
+      };
+
+      // If the player is already initialized, cue the video and load metadata
+      if (playerRef.current) {
+        playerRef.current.cueVideoById(videoId);
       }
     };
 
-    fetchVideoDetails();
-
-    // Load the IFrame Player API code asynchronously if not already loaded
-    if (!window.YT) {
-      const tag = document.createElement('script');
-      tag.src = 'https://www.youtube.com/iframe_api';
-      const firstScriptTag = document.getElementsByTagName('script')[0];
-      firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag);
-    }
-
-    // Create a YouTube player when the API code downloads
-    window.onYouTubeIframeAPIReady = () => {
-      playerRef.current = new YT.Player('player', {
-        height: '360',
-        width: '640',
-        videoId: videoId,
-        playerVars: {
-          controls: 0, // Hides all player controls
-          modestbranding: 1, // Reduces YouTube branding
-          iv_load_policy: 3, // Hides video annotations
-          rel: 0, // Prevents showing related videos at the end
-        },
-        events: {
-          onReady: onPlayerReady,
-          onStateChange: onPlayerStateChange,
-        },
-      });
-    };
-
-    // If the player is already initialized, cue the video and load metadata
-    if (playerRef.current) {
-      playerRef.current.cueVideoById(videoId);
-    }
+    // Call the async function
+    fetchAndSetupVideo();
 
     // Cleanup on component unmount
     return () => {
@@ -149,8 +130,9 @@ const YtbMusicPlayer: React.FC<{ videoId: string }> = ({ videoId }) => {
       setIsPlaying(false);
     }
 
-    if (userInteractedRef.current) {
-      playVideo(); // Auto-play if user has interacted
+    // Auto-play if autoplay is true
+    if (autoplayRef.current) {
+      playVideo();
     }
   };
 
@@ -164,7 +146,7 @@ const YtbMusicPlayer: React.FC<{ videoId: string }> = ({ videoId }) => {
         setProgress(0); // Reset progress bar
       }
 
-      if (userInteractedRef.current && !isPlaying) {
+      if (autoplayRef.current) {
         playVideo(); // Autoplay video if user has interacted
       }
     }
@@ -217,12 +199,6 @@ const YtbMusicPlayer: React.FC<{ videoId: string }> = ({ videoId }) => {
     setCurrentTime(numberToTime(newTime));
   };
 
-  const handleUserInteraction = () => {
-    if (!userInteractedRef.current) {
-      userInteractedRef.current = true;
-    }
-  };
-
   const numberToTime = (time: number) => {
     const minutes = Math.floor(time / 60);
     const seconds = Math.floor(time % 60);
@@ -236,7 +212,6 @@ const YtbMusicPlayer: React.FC<{ videoId: string }> = ({ videoId }) => {
           ? 'h-screen bg-black'
           : 'h-[80px] bg-customBlack/50 backdrop-blur-lg'
       } `}
-      onClick={handleUserInteraction}
     >
       <div
         className={`w-full flex flex-row gap-36 transition-all duration-300 ${
@@ -245,10 +220,7 @@ const YtbMusicPlayer: React.FC<{ videoId: string }> = ({ videoId }) => {
       >
         <div className='w-7/12 h-full flex flex-col items-center p-4'>
           <div id='player' />
-          <div className='flex flex-col'>
-            next
-            {/* <YouTubePlaylistFetcher playlistId={currentPlaylistId} /> */}
-          </div>
+          <div className='flex flex-col'>next</div>
         </div>
 
         <div className='w-5/12 p-4'>

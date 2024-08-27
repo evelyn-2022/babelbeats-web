@@ -10,6 +10,8 @@ export interface PlayQueueContextProps {
   removeVideoFromQueue: (videoId: string) => void;
   setCurrentVideoIndex: (index: number) => void;
   clearQueue: () => void;
+  autoplay: boolean;
+  setAutoplay: (autoplay: boolean) => void;
 }
 
 export const PlayQueueContext = createContext<
@@ -43,6 +45,7 @@ export const PlayQueueProvider: React.FC<{ children: React.ReactNode }> = ({
     },
   ]);
   const [currentVideoIndex, setCurrentVideoIndex] = useState<number>(0);
+  const [autoplay, setAutoplay] = useState<boolean>(false);
 
   const addVideoToTopOfQueue = (video: YouTubeVideo) => {
     setPlayQueue(prevQueue => [video, ...prevQueue]);
@@ -85,6 +88,8 @@ export const PlayQueueProvider: React.FC<{ children: React.ReactNode }> = ({
         removeVideoFromQueue,
         setCurrentVideoIndex,
         clearQueue,
+        autoplay,
+        setAutoplay,
       }}
     >
       {children}
