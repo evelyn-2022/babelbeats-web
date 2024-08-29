@@ -64,7 +64,7 @@ const SearchPage: React.FC = () => {
       {results && results.music && (
         <div
           className='p-2 cursor-pointer hover:bg-blue-500 hover:text-white'
-          onClick={() => handleResultClick('music', results.music)}
+          onClick={() => handleResultClick('music', results.music!)}
         >
           <h3>Song</h3>
           {results.music.title}
@@ -75,7 +75,7 @@ const SearchPage: React.FC = () => {
       {results && results.playlist && (
         <div
           className='p-2 cursor-pointer hover:bg-blue-500 hover:text-white'
-          onClick={() => handleResultClick('playlist', results.playlist)}
+          onClick={() => handleResultClick('playlist', results.playlist!)}
         >
           <h3>Playlist</h3>
           {results.playlist.title}
