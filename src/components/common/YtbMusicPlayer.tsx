@@ -59,11 +59,6 @@ const YtbMusicPlayer: React.FC<{ videoId: string }> = ({ videoId }) => {
   useEffect(() => {
     // Define an async function inside the useEffect
     const fetchAndSetupVideo = async () => {
-      // // Pause the current video if playing
-      // if (playerRef.current && isPlaying) {
-      //   playerRef.current.pauseVideo();
-      // }
-
       // Reset states when videoId changes
       setCurrentTime('0:00');
       setProgress(0);
@@ -240,7 +235,7 @@ const YtbMusicPlayer: React.FC<{ videoId: string }> = ({ videoId }) => {
               <img
                 src={videoInfo.thumbnail}
                 alt={videoInfo.title}
-                className='w-full h-[calc(100%+24px)] object-cover object-center -mt-2.5'
+                className='w-full h-[calc(100%+8px)] object-cover object-center -mt-2.5'
               />
             </div>
 
@@ -281,9 +276,9 @@ const YtbMusicPlayer: React.FC<{ videoId: string }> = ({ videoId }) => {
             className='outline-none'
           >
             {isPlaying ? (
-              <AiOutlinePauseCircle className='w-10 h-10' />
+              <AiOutlinePauseCircle className='w-10 h-10 text-primary' />
             ) : (
-              <AiOutlinePlayCircle className='w-10 h-10' />
+              <AiOutlinePlayCircle className='w-10 h-10 text-primary' />
             )}
           </button>
 

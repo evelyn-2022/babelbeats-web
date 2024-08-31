@@ -50,7 +50,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
   };
 
   return (
-    <div className='w-full max-w-md mt-4'>
+    <div className='w-full max-w-md'>
       <div className='relative flex items-center'>
         <LuSearch className='absolute left-4 z-10 text-white' />
         <InputField

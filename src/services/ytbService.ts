@@ -32,12 +32,16 @@ export const fetchYouTubeVideoDetails = async (
     return null;
   }
 
+  const snippet = data.items[0].snippet;
+
   const video = {
     id: videoId,
-    title: data.items[0].snippet.title,
-    channelTitle: data.items[0].snippet.channelTitle,
-    description: data.items[0].snippet.description,
-    thumbnail: data.items[0].snippet.thumbnails.default.url,
+    title: snippet.title,
+    channelTitle: snippet.channelTitle,
+    description: snippet.description,
+    thumbnail: snippet.thumbnails.medium
+      ? snippet.thumbnails.medium.url
+      : snippet.thumbnails.default.url,
   };
 
   return video;
