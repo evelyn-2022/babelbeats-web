@@ -57,12 +57,16 @@ export const fetchYouTubePlaylistDetails = async (
 
   if (!data.items || data.items.length === 0) return null;
 
+  const info = data.items[0].snippet;
+
   const playlist = {
     id: playlistId,
-    title: data.items[0].snippet.title,
-    channelTitle: data.items[0].snippet.channelTitle,
-    description: data.items[0].snippet.description,
-    thumbnail: data.items[0].snippet.thumbnails.default.url,
+    title: info.title,
+    channelTitle: info.channelTitle,
+    description: info.description,
+    thumbnail: info.thumbnails.medium
+      ? info.thumbnails.medium.url
+      : info.thumbnails.default.url,
     itemCount: data.items[0].contentDetails.itemCount,
   };
 
@@ -76,6 +80,7 @@ export const fetchVideoDetails = async (
     const response = await axios.get(
       `https://www.googleapis.com/youtube/v3/videos?id=${videoId}&key=${GOOGLE_API_KEY}&part=snippet,contentDetails`
     );
+
     const info = response.data.items[0].snippet;
 
     const title =

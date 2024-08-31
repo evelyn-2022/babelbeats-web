@@ -6,6 +6,7 @@ import { FaCaretDown, FaCaretUp } from 'react-icons/fa6';
 import { YouTubeVideo } from '../../types';
 import { searchSong, fetchVideoDetails } from '../../services';
 import { usePlayQueue } from '../../context';
+import MusicItem from './MusicItem';
 
 declare global {
   interface Window {
@@ -28,6 +29,7 @@ const YtbMusicPlayer: React.FC<{ videoId: string }> = ({ videoId }) => {
     currentVideoIndex,
     setCurrentVideoIndex,
     autoplay,
+    setAutoplay,
     showPlayer,
     setShowPlayer,
   } = usePlayQueue();
@@ -207,23 +209,44 @@ const YtbMusicPlayer: React.FC<{ videoId: string }> = ({ videoId }) => {
 
   return (
     <div
-      className={`relative flex flex-col justify-between transition-all duration-300 ${
+      className={`relative flex flex-col justify-between  transition-all duration-300 ${
         showPlayer
           ? 'h-screen bg-black'
           : 'h-[80px] bg-customBlack/50 backdrop-blur-lg'
       } `}
+      onClick={() => setAutoplay(true)}
     >
       <div
-        className={`w-full flex flex-row gap-36 transition-all duration-300 ${
+        className={`w-full flex flex-row gap-36 p-6 transition-all duration-300 ${
           showPlayer ? 'h-full' : 'hidden'
         }`}
       >
-        <div className='w-7/12 h-full flex flex-col items-center p-4'>
-          <div id='player' />
-          <div className='flex flex-col'>next</div>
+        <div className='w-7/12 h-full flex flex-col items-center'>
+          <div id='player' className='w-full' />
+          <div className='w-full'>
+            <div>Now playing</div>
+            <div className='flex flex-col w-full max-h-64 overflow-y-auto'>
+              {playQueue.map((video, index) => (
+                <div
+                  className='border-b-[1px] last:border-b-0 border-customWhite/20'
+                  key={index}
+                >
+                  <MusicItem
+                    key={index.toString()}
+                    data={video}
+                    type='music'
+                    nowPlaying={index === currentVideoIndex}
+                    handleResultClick={() => {
+                      setCurrentVideoIndex(index);
+                    }}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
 
-        <div className='w-5/12 p-4'>
+        <div className='w-5/12'>
           <button onClick={() => searchSong('Ne Me Quitte Pas', 'Nina Simone')}>
             Search for lyrics
           </button>
@@ -240,7 +263,7 @@ const YtbMusicPlayer: React.FC<{ videoId: string }> = ({ videoId }) => {
               <img
                 src={videoInfo.thumbnail}
                 alt={videoInfo.title}
-                className='w-full h-[calc(100%+8px)] object-cover object-center -mt-2.5'
+                className='w-full h-[calc(100%+8px)] object-cover object-center'
               />
             </div>
 

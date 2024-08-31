@@ -1,7 +1,5 @@
 import { useState } from 'react';
-import { BsThreeDotsVertical } from 'react-icons/bs';
-import { FaPlay } from 'react-icons/fa';
-import { SearchBar } from '../components';
+import { SearchBar, MusicItem } from '../components';
 import { SearchResult, YouTubePlaylist, YouTubeVideo } from '../types';
 import { usePlayQueue } from '../context';
 import {
@@ -75,67 +73,21 @@ const SearchPage: React.FC = () => {
       {results && results.music && (
         <div className='w-full max-w-md cursor-pointer flex flex-col gap-4'>
           <h3 className='text-xl font-fold'>Song</h3>
-          <div className='flex flex-row justify-between items-center group'>
-            <div className='flex flex-row gap-4 items-center'>
-              <div className='w-16 h-16 overflow-hidden cursor-pointer relative'>
-                <img
-                  src={results.music.thumbnail}
-                  alt='thumbnail'
-                  className='w-full h-[calc(100%+8px)] object-cover object-center -mt-2.5'
-                />
-                <div
-                  className='absolute top-0 left-0 hidden group-hover:flex bg-customBlack/80 w-full h-full items-center justify-center'
-                  onClick={() => handleResultClick('music', results.music!)}
-                >
-                  <FaPlay className='text-2xl text-customWhite/90' />
-                </div>
-              </div>
-
-              <div className='flex flex-col gap-1'>
-                <span className='font-bold text-nowrap'>
-                  {results.music.title.length > 36
-                    ? results.music.title.slice(0, 36) + '...'
-                    : results.music.title}
-                </span>
-                <span>{results.music.channelTitle.split('-')[0].trim()}</span>
-              </div>
-            </div>
-            <BsThreeDotsVertical className='text-2xl text-customWhite/40 hover:text-customWhite/80 transition-all duration-300' />
-          </div>
+          <MusicItem
+            data={results.music}
+            type='music'
+            handleResultClick={handleResultClick}
+          />
         </div>
       )}
       {results && results.playlist && (
         <div className='w-full max-w-md cursor-pointer flex flex-col gap-4'>
           <h3 className='text-xl font-fold'>Playlist</h3>
-          <div className='flex flex-row justify-between items-center group'>
-            <div className='flex flex-row gap-4 items-center'>
-              <div className='w-16 h-16 overflow-hidden cursor-pointer relative'>
-                <img
-                  src={results.playlist.thumbnail}
-                  alt='thumbnail'
-                  className='w-full h-[calc(100%+8px)] object-cover object-center -mt-2.5'
-                />
-                <div
-                  className='absolute top-0 left-0 hidden group-hover:flex bg-customBlack/80 w-full h-full items-center justify-center'
-                  onClick={() =>
-                    handleResultClick('playlist', results.playlist!)
-                  }
-                >
-                  <FaPlay className='text-2xl text-customWhite/90' />
-                </div>
-              </div>
-
-              <div className='flex flex-col gap-1 py-1'>
-                <span className='font-bold text-nowrap'>
-                  {results.playlist.title.length > 36
-                    ? results.playlist.title.slice(0, 36) + '...'
-                    : results.playlist.title}
-                </span>
-                <span>{results.playlist.channelTitle}</span>
-              </div>
-            </div>
-            <BsThreeDotsVertical className='text-2xl text-customWhite/40 hover:text-customWhite/80 transition-all duration-300' />
-          </div>
+          <MusicItem
+            data={results.playlist}
+            type='playlist'
+            handleResultClick={handleResultClick}
+          />
         </div>
       )}
       {searchInitiated && !results && <div>No result found</div>}

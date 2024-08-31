@@ -25,25 +25,25 @@ export const PlayQueueProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [playQueue, setPlayQueue] = useState<YouTubeVideo[]>([
     {
-      id: '0Q7w7gk1JhQ',
-      title: 'Nina Simone - Ne Me Quitte Pas',
-      channelTitle: 'aaa',
-      description: 'aaa',
-      thumbnail: 'https://i.ytimg.com/vi/0Q7w7gk1JhQ/default.jpg',
-    },
-    {
       id: '8AHCfZTRGiI',
       title: 'Johnny Cash - Hurt',
       channelTitle: 'aaa',
       description: 'aaa',
-      thumbnail: 'https://i.ytimg.com/vi/8AHCfZTRGiI/default.jpg',
+      thumbnail: 'https://i.ytimg.com/vi/8AHCfZTRGiI/mqdefault.jpg',
+    },
+    {
+      id: '0Q7w7gk1JhQ',
+      title: 'Nina Simone - Ne Me Quitte Pas',
+      channelTitle: 'aaa',
+      description: 'aaa',
+      thumbnail: 'https://i.ytimg.com/vi/0Q7w7gk1JhQ/mqdefault.jpg',
     },
     {
       id: 'uhvrvsiQqbI',
       title: 'Soldier Of Fortune',
       channelTitle: 'aaa',
       description: 'aaa',
-      thumbnail: 'https://i.ytimg.com/vi/uhvrvsiQqbI/default.jpg',
+      thumbnail: 'https://i.ytimg.com/vi/uhvrvsiQqbI/mqdefault.jpg',
     },
   ]);
   const [currentVideoIndex, setCurrentVideoIndex] = useState<number>(0);
