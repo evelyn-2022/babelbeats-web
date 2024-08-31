@@ -11,7 +11,7 @@ import {
 } from '../services';
 
 const SearchPage: React.FC = () => {
-  const { playQueue, currentVideoIndex, playNext, setAutoplay } =
+  const { playQueue, currentVideoIndex, playNext, setAutoplay, setShowPlayer } =
     usePlayQueue();
   const [results, setResults] = useState<SearchResult | null>(null);
   const [searchInitiated, setSearchInitiated] = useState<boolean>(false);
@@ -48,8 +48,8 @@ const SearchPage: React.FC = () => {
   ) => {
     if (type === 'music') {
       if (result.id === playQueue[currentVideoIndex].id) {
-        console.log('same');
-        // removeVideoFromQueue(result.id);
+        setShowPlayer(true);
+        return;
       }
 
       playNext(result);
@@ -61,7 +61,7 @@ const SearchPage: React.FC = () => {
   };
 
   return (
-    <div className='h-full flex flex-col my-2 items-center gap-16'>
+    <div className='h-full flex flex-col my-2 items-center gap-12'>
       <div className='flex flex-col gap-4 w-full max-w-md items-center'>
         <h1 className='text-2xl font-bold'>Search for a song or playlist</h1>
         <SearchBar
@@ -100,7 +100,7 @@ const SearchPage: React.FC = () => {
                 <span>{results.music.channelTitle.split('-')[0].trim()}</span>
               </div>
             </div>
-            <BsThreeDotsVertical className='text-xl text-customWhite/40 hover:text-customWhite/80 transition-all duration-300' />
+            <BsThreeDotsVertical className='text-2xl text-customWhite/40 hover:text-customWhite/80 transition-all duration-300' />
           </div>
         </div>
       )}
@@ -134,7 +134,7 @@ const SearchPage: React.FC = () => {
                 <span>{results.playlist.channelTitle}</span>
               </div>
             </div>
-            <BsThreeDotsVertical className='text-xl text-customWhite/40 hover:text-customWhite/80 transition-all duration-300' />
+            <BsThreeDotsVertical className='text-2xl text-customWhite/40 hover:text-customWhite/80 transition-all duration-300' />
           </div>
         </div>
       )}

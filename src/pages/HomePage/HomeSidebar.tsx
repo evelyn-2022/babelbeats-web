@@ -14,7 +14,7 @@ import { useAuthService } from '../../hooks';
 
 const HomeSidebar: React.FC = () => {
   const { authState } = useAuth();
-  const { playQueue, currentVideoIndex } = usePlayQueue();
+  const { playQueue, currentVideoIndex, setShowPlayer } = usePlayQueue();
   const { handleSignOut } = useAuthService();
   const [sidebarState, setSidebarState] = useState(1); // 0: hidden, 1: collapsed, 2: full
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -175,7 +175,7 @@ const HomeSidebar: React.FC = () => {
 
   const LinkItem: React.FC<LinkItemProps> = ({ link, position }) => {
     return (
-      <div className='w-full relative'>
+      <div className='w-full relative' onClick={() => setShowPlayer(false)}>
         <div
           className={`flex items-center w-full transition-all duration-300 ease-in-out ${
             sidebarState === 1 ? 'justify-center' : 'pl-1.5'

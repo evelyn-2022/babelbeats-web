@@ -22,10 +22,15 @@ const YtbMusicPlayer: React.FC<{ videoId: string }> = ({ videoId }) => {
   const [currentTime, setCurrentTime] = useState<string>('0:00');
   const [isPlayerReady, setIsPlayerReady] = useState<boolean>(false);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
-  const [showPlayer, setShowPlayer] = useState<boolean>(false);
   const location = useLocation();
-  const { playQueue, currentVideoIndex, setCurrentVideoIndex, autoplay } =
-    usePlayQueue();
+  const {
+    playQueue,
+    currentVideoIndex,
+    setCurrentVideoIndex,
+    autoplay,
+    showPlayer,
+    setShowPlayer,
+  } = usePlayQueue();
   const autoplayRef = useRef(autoplay);
 
   useEffect(() => {
