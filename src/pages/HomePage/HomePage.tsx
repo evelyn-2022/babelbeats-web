@@ -1,6 +1,14 @@
+import { usePlayQueue } from '../../context';
+
 const HomePage: React.FC = () => {
+  const { showPlayer } = usePlayQueue();
+
   return (
-    <div className='flex flex-col md:px-6'>
+    <div
+      className={`flex flex-col md:px-6 ${
+        showPlayer && 'max-h-96 overflow-y-hidden'
+      }`}
+    >
       <h1>Home Page</h1>
       <div>
         Lorem ipsum dolor sit amet consectetur adipisicing elit. Ex explicabo
