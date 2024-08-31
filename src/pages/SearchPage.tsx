@@ -13,9 +13,11 @@ const SearchPage: React.FC = () => {
     usePlayQueue();
   const [results, setResults] = useState<SearchResult | null>(null);
   const [searchInitiated, setSearchInitiated] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleSearch = async (url: string): Promise<SearchResult> => {
     setSearchInitiated(true);
+    setIsLoading(true);
     const videoId = extractParameterFromUrl(url, 'v');
     const playlistId = extractParameterFromUrl(url, 'list');
     setAutoplay(true);
@@ -37,6 +39,7 @@ const SearchPage: React.FC = () => {
     }
 
     setResults(result);
+    setIsLoading(false);
     return result;
   };
 
@@ -90,7 +93,8 @@ const SearchPage: React.FC = () => {
           />
         </div>
       )}
-      {searchInitiated && !results && <div>No result found</div>}
+      {isLoading && <div>Loading...</div>}
+      {searchInitiated && !isLoading && !results && <div>No result found</div>}
     </div>
   );
 };

@@ -221,10 +221,10 @@ const YtbMusicPlayer: React.FC<{ videoId: string }> = ({ videoId }) => {
           showPlayer ? 'h-full' : 'hidden'
         }`}
       >
-        <div className='w-7/12 h-full flex flex-col items-center'>
+        <div className='w-7/12 h-full flex flex-col items-center gap-4'>
           <div id='player' className='w-full' />
-          <div className='w-full'>
-            <div>Now playing</div>
+          <div className='w-full flex flex-col gap-2'>
+            <h2 className='font-bold text-2xl'>Now playing</h2>
             <div className='flex flex-col w-full max-h-64 overflow-y-auto'>
               {playQueue.map((video, index) => (
                 <div
