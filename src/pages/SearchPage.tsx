@@ -73,11 +73,14 @@ const SearchPage: React.FC = () => {
     result: YouTubeVideo | YouTubePlaylist
   ) => {
     if (type === 'music') {
-      if (result.id === playQueue[currentVideoIndex].id) {
+      if (result.id === playQueue[currentVideoIndex]?.id) {
         setShowPlayer(true);
-        return;
+      } else if (playQueue.length === 0) {
+        setAutoplay(true);
+        addVideoToBottomOfQueue(result);
+      } else {
+        playNext(result);
       }
-      playNext(result);
     } else if (type === 'playlist') {
       try {
         clearQueue();

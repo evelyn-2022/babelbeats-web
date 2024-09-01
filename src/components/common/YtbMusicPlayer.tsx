@@ -48,6 +48,8 @@ const YtbMusicPlayer: React.FC<{ videoId: string }> = ({ videoId }) => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.code === 'Space') {
         event.preventDefault();
+        if (!videoInfo) return;
+
         if (isPlaying) {
           pauseVideo();
         } else {
@@ -272,7 +274,9 @@ const YtbMusicPlayer: React.FC<{ videoId: string }> = ({ videoId }) => {
         <div className='flex flew-row items-center gap-6'>
           <TbPlayerSkipBack
             className={`w-6 h-6 ${
-              currentVideoIndex === 0 ? 'text-customWhite/20' : 'cursor-pointer'
+              currentVideoIndex === 0
+                ? 'text-customWhite/20 pointer-events-none'
+                : 'cursor-pointer'
             }`}
             onClick={() => {
               if (currentVideoIndex === 0) return;
@@ -281,28 +285,41 @@ const YtbMusicPlayer: React.FC<{ videoId: string }> = ({ videoId }) => {
           />
           <button
             onClick={isPlaying ? pauseVideo : playVideo}
-            className='outline-none'
+            className={`outline-none ${
+              videoInfo
+                ? 'text-primary cursor-pointer '
+                : 'text-customWhite/20 cursor-default pointer-events-none'
+            }`}
           >
             {isPlaying ? (
-              <AiOutlinePauseCircle className='w-10 h-10 text-primary' />
+              <AiOutlinePauseCircle className='w-10 h-10' />
             ) : (
-              <AiOutlinePlayCircle className='w-10 h-10 text-primary' />
+              <AiOutlinePlayCircle className='w-10 h-10' />
             )}
           </button>
 
           <TbPlayerSkipForward
             className={`w-6 h-6 ${
-              currentVideoIndex === playQueue.length - 1
-                ? 'text-customWhite/20'
+              currentVideoIndex === playQueue.length - 1 ||
+              playQueue.length === 0
+                ? 'text-customWhite/20 pointer-events-none'
                 : 'cursor-pointer'
             }`}
             onClick={() => {
-              if (currentVideoIndex === playQueue.length - 1) return;
+              if (
+                currentVideoIndex === playQueue.length - 1 ||
+                playQueue.length === 0
+              )
+                return;
               setCurrentVideoIndex(currentVideoIndex + 1);
             }}
           />
           <div
-            className='cursor-pointer'
+            className={`${
+              videoInfo
+                ? 'cursor-pointer'
+                : 'text-customWhite/20 pointer-events-none'
+            }`}
             onClick={() => setShowPlayer(!showPlayer)}
           >
             {showPlayer ? (

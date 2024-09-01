@@ -102,6 +102,7 @@ export const PlayQueueProvider: React.FC<{ children: React.ReactNode }> = ({
       ...prevQueue.slice(currentVideoIndex + 1),
     ]);
     setCurrentVideoIndex(prevIndex => prevIndex + 1);
+    console.log(playQueue, currentVideoIndex);
   };
 
   const removeVideoFromQueue = (videoId: string) => {
