@@ -4,7 +4,10 @@ import MusicItem from './MusicItem';
 import { usePlayQueue } from '../../context';
 import { fetchPlaylistItems } from '../../services';
 
-const MusicQueue: React.FC<{ playQueue: YouTubeVideo[] }> = ({ playQueue }) => {
+const MusicQueue: React.FC<{
+  playQueue: YouTubeVideo[];
+  maxHeight: string;
+}> = ({ playQueue, maxHeight }) => {
   const {
     currentVideoIndex,
     setCurrentVideoIndex,
@@ -64,7 +67,10 @@ const MusicQueue: React.FC<{ playQueue: YouTubeVideo[] }> = ({ playQueue }) => {
     <div className='w-full flex flex-col gap-2'>
       <h2 className='font-bold text-2xl'>Now playing</h2>
       <div
-        className='flex flex-col w-full max-h-64 overflow-y-auto'
+        className={`flex flex-col w-full  overflow-y-auto`}
+        style={{
+          maxHeight: maxHeight,
+        }}
         id='playlist-ul'
       >
         {playQueue.map((video, index) => (

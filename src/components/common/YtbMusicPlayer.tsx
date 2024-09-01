@@ -23,6 +23,7 @@ const YtbMusicPlayer: React.FC<{ videoId: string }> = ({ videoId }) => {
   const [currentTime, setCurrentTime] = useState<string>('0:00');
   const [isPlayerReady, setIsPlayerReady] = useState<boolean>(false);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [showVideo, setShowVideo] = useState<boolean>(true);
   const location = useLocation();
   const {
     playQueue,
@@ -220,9 +221,32 @@ const YtbMusicPlayer: React.FC<{ videoId: string }> = ({ videoId }) => {
           showPlayer ? 'h-full' : 'hidden'
         }`}
       >
-        <div className='w-7/12 h-full flex flex-col items-center gap-4'>
-          <div id='player' className='w-full' />
-          <MusicQueue playQueue={playQueue} />
+        <div className='w-7/12 h-full flex flex-col items-center'>
+          <div
+            className={`w-full mb-4 ${
+              showVideo ? 'h-fit' : 'h-0'
+            } transition-all duration-300 overflow-hidden`}
+          >
+            <div id='player' className='w-full' />
+          </div>
+          <div className='w-full relative'>
+            <div
+              className='absolute top-2 right-1 cursor-pointer text-customWhite/40 hover:text-customWhite'
+              onClick={() => {
+                setShowVideo(!showVideo);
+              }}
+            >
+              {showVideo ? (
+                <FaCaretUp className='w-4 h-4' />
+              ) : (
+                <FaCaretDown className='w-4 h-4' />
+              )}
+            </div>
+          </div>
+          <MusicQueue
+            playQueue={playQueue}
+            maxHeight={showVideo ? '270px' : 'calc(100vh - 160px)'}
+          />
         </div>
 
         <div className='w-5/12'>
