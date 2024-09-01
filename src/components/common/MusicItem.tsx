@@ -35,7 +35,7 @@ const MusicItem: React.FC<MusicItemProps> = ({
               className='w-full h-[calc(100%+8px)] object-cover object-center'
             />
           ) : (
-            <div className='w-full h-full bg-customBlack' />
+            <div className='w-full h-full bg-transparent' />
           )}
 
           <div

@@ -234,25 +234,28 @@ const YtbMusicPlayer: React.FC<{ videoId: string }> = ({ videoId }) => {
       </div>
 
       <div className='absolute bottom-0 flex flex-row gap-12 w-full items-center px-6 py-2'>
-        {videoInfo && (
-          <div className='flex flex-row gap-4 items-center'>
-            <div
-              className='w-16 h-16 overflow-hidden cursor-pointer'
-              onClick={() => setShowPlayer(!showPlayer)}
-            >
+        <div className='flex flex-row gap-4 items-center'>
+          <div
+            className='w-16 h-16 overflow-hidden cursor-pointer'
+            onClick={() => setShowPlayer(!showPlayer)}
+          >
+            {videoInfo?.thumbnail ? (
               <img
                 src={videoInfo.thumbnail}
-                alt={videoInfo.title}
+                alt='thumbnail'
                 className='w-full h-[calc(100%+8px)] object-cover object-center'
               />
-            </div>
-
-            <div className='flex flex-col gap-1'>
-              <h3 className='font-bold'>{videoInfo.title}</h3>
-              <p className=''>{videoInfo.channelTitle}</p>
-            </div>
+            ) : (
+              <div className='w-full h-full bg-transparent' />
+            )}
           </div>
-        )}
+
+          <div className='flex flex-col gap-1 min-w-20'>
+            <h3 className='font-bold'>{videoInfo?.title}</h3>
+            <p className=''>{videoInfo?.channelTitle}</p>
+          </div>
+        </div>
+
         <div className='flex items-center h-5 grow gap-2'>
           <span>
             {isPlayerReady && playerRef.current ? currentTime : '0:00'}
@@ -267,7 +270,7 @@ const YtbMusicPlayer: React.FC<{ videoId: string }> = ({ videoId }) => {
             value={Math.round(progress)}
             onChange={onProgressBarChange}
           />
-          <span>{numberToTime(durationRef.current)}</span>
+          <span>{videoInfo ? numberToTime(durationRef.current) : '0:00'}</span>
         </div>
         <div className='flex flew-row items-center gap-6'>
           <TbPlayerSkipBack
