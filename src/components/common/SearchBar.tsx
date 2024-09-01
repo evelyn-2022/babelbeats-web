@@ -1,23 +1,26 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import { LuSearch } from 'react-icons/lu';
 import { RxCrossCircled } from 'react-icons/rx';
 import InputField from './InputField';
 import { SearchResult } from '../../types';
 
 interface SearchBarProps {
+  query: string;
+  setQuery: (query: string) => void;
+  inputRef: React.RefObject<HTMLInputElement>;
+  handleClearInput: () => void;
   onSearch: (query: string) => Promise<SearchResult>;
   setResults: (result: SearchResult | null) => void;
   setSearchInitiated: (searchInitiated: boolean) => void;
 }
 
 const SearchBar: React.FC<SearchBarProps> = ({
+  query,
+  setQuery,
+  inputRef,
+  handleClearInput,
   onSearch,
-  setResults,
-  setSearchInitiated,
 }) => {
-  const [query, setQuery] = useState<string>('');
-  const inputRef = useRef<HTMLInputElement | null>(null);
-
   useEffect(() => {
     if (query.length > 0) {
       const delayDebounceFn = setTimeout(async () => {
@@ -36,17 +39,6 @@ const SearchBar: React.FC<SearchBarProps> = ({
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
-  };
-
-  const handleClearInput = () => {
-    setQuery('');
-    setResults(null);
-    setSearchInitiated(false);
-
-    // Move cursor back to input field
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
   };
 
   return (

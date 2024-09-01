@@ -64,13 +64,12 @@ const YtbMusicPlayer: React.FC<{ videoId: string }> = ({ videoId }) => {
   }, [isPlaying]);
 
   useEffect(() => {
-    // Define an async function inside the useEffect
     const fetchAndSetupVideo = async () => {
       // Reset states when videoId changes
       setCurrentTime('0:00');
       setProgress(0);
       setIsPlaying(false);
-      setIsPlayerReady(false); // Reset player readiness
+      setIsPlayerReady(false);
 
       // Fetch video details and update state
       const videoInfo = await fetchVideoDetails(videoId);
@@ -110,10 +109,8 @@ const YtbMusicPlayer: React.FC<{ videoId: string }> = ({ videoId }) => {
       }
     };
 
-    // Call the async function
     fetchAndSetupVideo();
 
-    // Cleanup on component unmount
     return () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { SearchBar, MusicItem } from '../components';
 import { SearchResult, YouTubePlaylist, YouTubeVideo } from '../types';
 import { usePlayQueue } from '../context';
@@ -26,6 +26,19 @@ const SearchPage: React.FC = () => {
   const [results, setResults] = useState<SearchResult | null>(null);
   const [searchInitiated, setSearchInitiated] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [query, setQuery] = useState<string>('');
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
+  const handleClearInput = () => {
+    setQuery('');
+    setResults(null);
+    setSearchInitiated(false);
+
+    // Move cursor back to input field
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  };
 
   const handleSearch = async (url: string): Promise<SearchResult> => {
     setSearchInitiated(true);
@@ -86,9 +99,7 @@ const SearchPage: React.FC = () => {
       }
     }
 
-    // Reset results and search state
-    setResults(null);
-    setSearchInitiated(false);
+    handleClearInput();
   };
 
   return (
@@ -96,13 +107,17 @@ const SearchPage: React.FC = () => {
       <div className='flex flex-col gap-4 w-full max-w-md items-center'>
         <h1 className='text-2xl font-bold'>Search for a song or playlist</h1>
         <SearchBar
+          query={query}
+          setQuery={setQuery}
+          inputRef={inputRef}
+          handleClearInput={handleClearInput}
           onSearch={handleSearch}
           setResults={setResults}
           setSearchInitiated={setSearchInitiated}
         />
       </div>
 
-      {/* Display search results here */}
+      {/* Display search results */}
       {results && results.music && (
         <div className='w-full max-w-md cursor-pointer flex flex-col gap-4'>
           <h3 className='text-xl font-fold'>Song</h3>
