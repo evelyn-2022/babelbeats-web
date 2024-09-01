@@ -97,6 +97,7 @@ const MusicQueue: React.FC<{
               handleResultClick={() => {
                 setCurrentVideoIndex(index);
               }}
+              maxTitleLength={80}
             />
           </div>
         ))}

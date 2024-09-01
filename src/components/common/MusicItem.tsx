@@ -12,6 +12,7 @@ interface MusicItemProps {
     type: 'music' | 'playlist',
     data: YouTubePlaylist | YouTubeVideo
   ) => void;
+  maxTitleLength?: number;
 }
 
 const MusicItem: React.FC<MusicItemProps> = ({
@@ -19,6 +20,7 @@ const MusicItem: React.FC<MusicItemProps> = ({
   data,
   type,
   handleResultClick,
+  maxTitleLength = 30,
 }) => {
   return (
     <div
@@ -48,8 +50,8 @@ const MusicItem: React.FC<MusicItemProps> = ({
 
         <div className='flex flex-col gap-1'>
           <span className='font-bold text-nowrap'>
-            {data.title.length > 36
-              ? data.title.slice(0, 36) + '...'
+            {data.title.length > maxTitleLength
+              ? data.title.slice(0, maxTitleLength) + '...'
               : data.title}
           </span>
           <span>{data.channelTitle.split('-')[0].trim()}</span>
