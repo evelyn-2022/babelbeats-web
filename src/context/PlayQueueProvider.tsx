@@ -1,5 +1,6 @@
-import React, { useState, createContext } from 'react';
+import React, { useState, createContext, useEffect } from 'react';
 import { YouTubeVideo } from '../types';
+import { useAuth } from './useAuth';
 
 export interface PlayQueueContextProps {
   playQueue: YouTubeVideo[];
@@ -24,43 +25,69 @@ export const PlayQueueContext = createContext<
   PlayQueueContextProps | undefined
 >(undefined);
 
+const getInitialPlayQueue = (userId: string | undefined): YouTubeVideo[] => {
+  if (!userId) return [];
+  const savedData = localStorage.getItem('playQueue');
+  if (!savedData) return [];
+  try {
+    const parsedData = JSON.parse(savedData);
+    return parsedData[userId]?.queue || [];
+  } catch {
+    return [];
+  }
+};
+
+const getInitialCurrentVideoIndex = (userId: string | undefined): number => {
+  if (!userId) return 0;
+  const savedData = localStorage.getItem('playQueue');
+  if (!savedData) return 0;
+  try {
+    const parsedData = JSON.parse(savedData);
+    return parsedData[userId]?.index || 0;
+  } catch {
+    return 0;
+  }
+};
+
 export const PlayQueueProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [playQueue, setPlayQueue] = useState<YouTubeVideo[]>([
-    {
-      id: '8AHCfZTRGiI',
-      title: 'Johnny Cash - Hurt',
-      channelTitle: 'aaa',
-      description: 'aaa',
-      thumbnail: 'https://i.ytimg.com/vi/8AHCfZTRGiI/mqdefault.jpg',
-    },
-    {
-      id: '0Q7w7gk1JhQ',
-      title: 'Nina Simone - Ne Me Quitte Pas',
-      channelTitle: 'aaa',
-      description: 'aaa',
-      thumbnail: 'https://i.ytimg.com/vi/0Q7w7gk1JhQ/mqdefault.jpg',
-    },
-    {
-      id: 'uhvrvsiQqbI',
-      title: 'Soldier Of Fortune',
-      channelTitle: 'aaa',
-      description: 'aaa',
-      thumbnail: 'https://i.ytimg.com/vi/uhvrvsiQqbI/mqdefault.jpg',
-    },
-  ]);
-  const [currentVideoIndex, setCurrentVideoIndex] = useState<number>(0);
+  const { authState } = useAuth();
+  const userId = authState.user?.id;
+
+  const [playQueue, setPlayQueue] = useState<YouTubeVideo[]>(() =>
+    getInitialPlayQueue(userId)
+  );
+  const [currentVideoIndex, setCurrentVideoIndex] = useState<number>(() =>
+    getInitialCurrentVideoIndex(userId)
+  );
   const [autoplay, setAutoplay] = useState<boolean>(false);
   const [showPlayer, setShowPlayer] = useState<boolean>(false);
   const [playlistId, setPlaylistId] = useState<string>('');
   const [nextPageToken, setNextPageToken] = useState<string | null>(null);
 
+  useEffect(() => {
+    saveQueueToLocal();
+  }, [playQueue, currentVideoIndex]);
+
+  const saveQueueToLocal = () => {
+    if (!userId) return;
+    const savedData = localStorage.getItem('playQueue');
+    const parsedData = savedData ? JSON.parse(savedData) : {};
+
+    parsedData[userId] = {
+      queue: playQueue,
+      index: currentVideoIndex,
+    };
+
+    localStorage.setItem('playQueue', JSON.stringify(parsedData));
+  };
+
   const addVideoToTopOfQueue = (video: YouTubeVideo) => {
     setPlayQueue(prevQueue => [video, ...prevQueue]);
-    // Adjust the current video index if needed
+
     if (currentVideoIndex >= 0) {
-      setCurrentVideoIndex(currentVideoIndex + 1);
+      setCurrentVideoIndex(prevIndex => prevIndex + 1);
     }
   };
 
@@ -74,7 +101,7 @@ export const PlayQueueProvider: React.FC<{ children: React.ReactNode }> = ({
       video,
       ...prevQueue.slice(currentVideoIndex + 1),
     ]);
-    setCurrentVideoIndex(currentVideoIndex + 1);
+    setCurrentVideoIndex(prevIndex => prevIndex + 1);
   };
 
   const removeVideoFromQueue = (videoId: string) => {

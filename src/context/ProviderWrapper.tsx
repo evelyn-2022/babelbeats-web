@@ -14,11 +14,11 @@ export const ProviderWrapper: React.FC<{ children?: React.ReactNode }> = ({
     <HelmetProvider>
       <ErrorProvider>
         <ThemeProvider>
-          <PlayQueueProvider>
-            <AuthProvider>
+          <AuthProvider>
+            <PlayQueueProvider>
               <Layout>{children || <Outlet />}</Layout>
-            </AuthProvider>
-          </PlayQueueProvider>
+            </PlayQueueProvider>
+          </AuthProvider>
         </ThemeProvider>
       </ErrorProvider>
     </HelmetProvider>
