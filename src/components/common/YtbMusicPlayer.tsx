@@ -6,7 +6,7 @@ import { FaCaretDown, FaCaretUp } from 'react-icons/fa6';
 import { YouTubeVideo } from '../../types';
 import { searchSong, fetchVideoDetails } from '../../services';
 import { usePlayQueue } from '../../context';
-import MusicItem from './MusicItem';
+import MusicQueue from './MusicQueue';
 
 declare global {
   interface Window {
@@ -223,27 +223,7 @@ const YtbMusicPlayer: React.FC<{ videoId: string }> = ({ videoId }) => {
       >
         <div className='w-7/12 h-full flex flex-col items-center gap-4'>
           <div id='player' className='w-full' />
-          <div className='w-full flex flex-col gap-2'>
-            <h2 className='font-bold text-2xl'>Now playing</h2>
-            <div className='flex flex-col w-full max-h-64 overflow-y-auto'>
-              {playQueue.map((video, index) => (
-                <div
-                  className='border-b-[1px] last:border-b-0 border-customWhite/20'
-                  key={index}
-                >
-                  <MusicItem
-                    key={index.toString()}
-                    data={video}
-                    type='music'
-                    nowPlaying={index === currentVideoIndex}
-                    handleResultClick={() => {
-                      setCurrentVideoIndex(index);
-                    }}
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
+          <MusicQueue playQueue={playQueue} />
         </div>
 
         <div className='w-5/12'>

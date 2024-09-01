@@ -101,3 +101,36 @@ export const fetchVideoDetails = async (
     return null;
   }
 };
+
+export const fetchPlaylistItems = async (
+  playlistId: string,
+  pageToken = ''
+): Promise<{ items: YouTubeVideo[]; nextPageToken: string | null }> => {
+  try {
+    const response = await fetch(
+      `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${playlistId}&maxResults=50&pageToken=${pageToken}&key=${GOOGLE_API_KEY}`
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch playlist items');
+    }
+
+    const data = await response.json();
+    console.log(data);
+
+    const playlistItems: YouTubeVideo[] = data.items.map(item => ({
+      id: item.snippet.resourceId.videoId,
+      title: item.snippet.title,
+      channelTitle: item.snippet.channelTitle,
+      description: item.snippet.description,
+      thumbnail: item.snippet.thumbnails.medium
+        ? item.snippet.thumbnails.medium.url
+        : item.snippet.thumbnails.default?.url,
+    }));
+
+    return { items: playlistItems, nextPageToken: data.nextPageToken };
+  } catch (error) {
+    console.error('Error fetching playlist items:', error);
+    return { items: [], nextPageToken: null };
+  }
+};

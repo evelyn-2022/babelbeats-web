@@ -6,11 +6,21 @@ import {
   extractParameterFromUrl,
   fetchYouTubeVideoDetails,
   fetchYouTubePlaylistDetails,
+  fetchPlaylistItems,
 } from '../services';
 
 const SearchPage: React.FC = () => {
-  const { playQueue, currentVideoIndex, playNext, setAutoplay, setShowPlayer } =
-    usePlayQueue();
+  const {
+    playQueue,
+    currentVideoIndex,
+    playNext,
+    setAutoplay,
+    setShowPlayer,
+    addVideoToBottomOfQueue,
+    clearQueue,
+    setPlaylistId,
+    setNextPageToken,
+  } = usePlayQueue();
   const [results, setResults] = useState<SearchResult | null>(null);
   const [searchInitiated, setSearchInitiated] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -52,11 +62,25 @@ const SearchPage: React.FC = () => {
         setShowPlayer(true);
         return;
       }
-
       playNext(result);
     } else if (type === 'playlist') {
-      console.log('Add playlist to queue:', result);
+      try {
+        clearQueue();
+        setPlaylistId(result.id);
+        const { items, nextPageToken: newNextPageToken } =
+          await fetchPlaylistItems(result.id);
+
+        setNextPageToken(newNextPageToken);
+
+        items.forEach(video => {
+          addVideoToBottomOfQueue(video);
+        });
+      } catch (error) {
+        console.error('Error fetching playlist items:', error);
+      }
     }
+
+    // Reset results and search state
     setResults(null);
     setSearchInitiated(false);
   };

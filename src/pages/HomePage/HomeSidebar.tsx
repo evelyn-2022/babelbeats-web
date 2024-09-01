@@ -413,7 +413,7 @@ const HomeSidebar: React.FC = () => {
             : 'lg:w-[81%] xl:w-[86%]'
         }`}
       >
-        <YtbMusicPlayer videoId={playQueue[currentVideoIndex].id} />
+        <YtbMusicPlayer videoId={playQueue[currentVideoIndex]?.id} />
       </div>
     </div>
   );

@@ -12,3 +12,4 @@ export { default as Tooltip } from './Tooltip';
 export { default as YtbMusicPlayer } from './YtbMusicPlayer';
 export { default as SearchBar } from './SearchBar';
 export { default as MusicItem } from './MusicItem';
+export { default as MusicQueue } from './MusicQueue';

@@ -28,11 +28,16 @@ const MusicItem: React.FC<MusicItemProps> = ({
     >
       <div className='flex flex-row gap-4 items-center'>
         <div className='w-16 h-16 overflow-hidden cursor-pointer relative'>
-          <img
-            src={data.thumbnail}
-            alt='thumbnail'
-            className='w-full h-[calc(100%+8px)] object-cover object-center'
-          />
+          {data.thumbnail ? (
+            <img
+              src={data.thumbnail}
+              alt='thumbnail'
+              className='w-full h-[calc(100%+8px)] object-cover object-center'
+            />
+          ) : (
+            <div className='w-full h-full bg-customBlack' />
+          )}
+
           <div
             className='absolute top-0 left-0 hidden group-hover:flex bg-customBlack/80 w-full h-full items-center justify-center'
             onClick={() => handleResultClick(type, data)}
