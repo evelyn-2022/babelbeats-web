@@ -38,7 +38,7 @@ const YtbMusicPlayer: React.FC<{ videoId: string }> = ({ videoId }) => {
   const currentIndexRef = useRef(currentVideoIndex);
   const [shuffle, setShuffle] = useState(false);
   const [loop, setLoop] = useState(0); // 0: no loop, 1: loop all, 2: loop one
-  const shuffleRef = useRef(false); // Ref to keep track of shuffle state
+  const shuffleRef = useRef(false);
   const loopRef = useRef(0);
 
   useEffect(() => {
@@ -149,7 +149,6 @@ const YtbMusicPlayer: React.FC<{ videoId: string }> = ({ videoId }) => {
   };
 
   const onPlayerStateChange = (event: YT.OnStateChangeEvent) => {
-    console.log('Player state:', event.data);
     if (event.data === YT.PlayerState.CUED) {
       const playerDuration = playerRef.current?.getDuration();
       if (playerDuration) {
@@ -181,53 +180,14 @@ const YtbMusicPlayer: React.FC<{ videoId: string }> = ({ videoId }) => {
         setIsPlaying(false);
       }
       if (event.data === YT.PlayerState.ENDED) {
-        console.log('Video ended');
         playNextSong();
       }
     }
   };
 
-  // const playNextSong = () => {
-  //   setCurrentVideoIndex(prevIndex => {
-  //     const shuffle = shuffleRef.current; // Use the ref value to ensure the latest state
-  //     const loop = loopRef.current;
-  //     console.log('Current shuffle state:', shuffle);
-  //     console.log('Current loop', loop);
-
-  //     let nextIndex: number;
-
-  //     if (shuffle) {
-  //       console.log('shuffle');
-  //       nextIndex = getRandomIndex(prevIndex, playQueue.length);
-  //     } else if (loop === 2) {
-  //       nextIndex = prevIndex;
-  //     } else if (prevIndex < playQueue.length - 1) {
-  //       console.log('next');
-  //       nextIndex = prevIndex + 1;
-  //     } else {
-  //       // If at the end of the queue
-  //       if (loop === 1) {
-  //         nextIndex = 0;
-  //       } else {
-  //         setIsPlaying(false);
-  //         return prevIndex; // Exit if not looping
-  //       }
-  //     }
-
-  //     setTimeout(() => {
-  //       playVideo();
-  //     }, 1000);
-
-  //     console.log(prevIndex, nextIndex);
-  //     return nextIndex;
-  //   });
-  // };
-
   const playNextSong = () => {
-    const shuffle = shuffleRef.current; // Use the ref value to ensure the latest state
+    const shuffle = shuffleRef.current;
     const loop = loopRef.current;
-    console.log('Current shuffle state:', shuffle);
-    console.log('Current loop', loop);
 
     let nextIndex: number;
     const currentVideoIndex = currentIndexRef.current;
@@ -236,10 +196,8 @@ const YtbMusicPlayer: React.FC<{ videoId: string }> = ({ videoId }) => {
       // Loop one
       nextIndex = currentVideoIndex;
     } else if (shuffle) {
-      console.log('shuffle');
       nextIndex = getRandomIndex(currentVideoIndex, playQueue.length);
     } else if (currentVideoIndex < playQueue.length - 1) {
-      console.log('next');
       nextIndex = currentVideoIndex + 1;
     } else {
       // If at the end of the queue
@@ -254,8 +212,6 @@ const YtbMusicPlayer: React.FC<{ videoId: string }> = ({ videoId }) => {
     setTimeout(() => {
       playVideo();
     }, 1000);
-
-    console.log(currentVideoIndex, nextIndex);
 
     setCurrentVideoIndex(nextIndex);
   };
@@ -312,7 +268,7 @@ const YtbMusicPlayer: React.FC<{ videoId: string }> = ({ videoId }) => {
       onClick={() => setAutoplay(true)}
     >
       <div
-        className={`w-full flex flex-row gap-36 p-6 transition-all duration-300 ${
+        className={`w-full flex flex-row gap-6 p-6 transition-all duration-300 ${
           showPlayer ? 'h-full' : 'hidden'
         }`}
       >
