@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useLocation } from 'react-router-dom';
 import { TbPlayerSkipForward, TbPlayerSkipBack } from 'react-icons/tb';
 import { AiOutlinePlayCircle, AiOutlinePauseCircle } from 'react-icons/ai';
 import { FaCaretDown, FaCaretUp } from 'react-icons/fa6';
+import { RxShuffle, RxLoop } from 'react-icons/rx';
 import { YouTubeVideo } from '../../types';
 import { searchSong, fetchVideoDetails } from '../../services';
 import { usePlayQueue } from '../../context';
@@ -24,7 +24,7 @@ const YtbMusicPlayer: React.FC<{ videoId: string }> = ({ videoId }) => {
   const [isPlayerReady, setIsPlayerReady] = useState<boolean>(false);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [showVideo, setShowVideo] = useState<boolean>(true);
-  const location = useLocation();
+
   const {
     playQueue,
     currentVideoIndex,
@@ -35,15 +35,27 @@ const YtbMusicPlayer: React.FC<{ videoId: string }> = ({ videoId }) => {
     setShowPlayer,
   } = usePlayQueue();
   const autoplayRef = useRef(autoplay);
+  const currentIndexRef = useRef(currentVideoIndex);
+  const [shuffle, setShuffle] = useState(false);
+  const [loop, setLoop] = useState(0); // 0: no loop, 1: loop all, 2: loop one
+  const shuffleRef = useRef(false); // Ref to keep track of shuffle state
+  const loopRef = useRef(0);
 
   useEffect(() => {
     autoplayRef.current = autoplay;
   }, [autoplay]);
 
   useEffect(() => {
-    // Hide the player when the URL path changes
-    setShowPlayer(false);
-  }, [location.pathname]);
+    currentIndexRef.current = currentVideoIndex;
+  }, [currentVideoIndex]);
+
+  useEffect(() => {
+    shuffleRef.current = shuffle;
+  }, [shuffle]);
+
+  useEffect(() => {
+    loopRef.current = loop;
+  }, [loop]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -68,7 +80,6 @@ const YtbMusicPlayer: React.FC<{ videoId: string }> = ({ videoId }) => {
 
   useEffect(() => {
     const fetchAndSetupVideo = async () => {
-      // Reset states when videoId changes
       setCurrentTime('0:00');
       setProgress(0);
       setIsPlaying(false);
@@ -132,20 +143,19 @@ const YtbMusicPlayer: React.FC<{ videoId: string }> = ({ videoId }) => {
       setIsPlaying(false);
     }
 
-    // Auto-play if autoplay is true
     if (autoplayRef.current) {
       playVideo();
     }
   };
 
   const onPlayerStateChange = (event: YT.OnStateChangeEvent) => {
+    console.log('Player state:', event.data);
     if (event.data === YT.PlayerState.CUED) {
-      // Video is cued and metadata is loaded
       const playerDuration = playerRef.current?.getDuration();
       if (playerDuration) {
         durationRef.current = playerDuration - 1;
         setIsPlayerReady(true);
-        setProgress(0); // Reset progress bar
+        setProgress(0);
       }
 
       if (autoplayRef.current) {
@@ -159,7 +169,7 @@ const YtbMusicPlayer: React.FC<{ videoId: string }> = ({ videoId }) => {
       }
       // Set interval to update progress every second
       intervalRef.current = setInterval(updateProgressBar, 1000);
-      setIsPlaying(true); // Update playing state
+      setIsPlaying(true);
     } else {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
@@ -168,9 +178,94 @@ const YtbMusicPlayer: React.FC<{ videoId: string }> = ({ videoId }) => {
         event.data === YT.PlayerState.PAUSED ||
         event.data === YT.PlayerState.ENDED
       ) {
-        setIsPlaying(false); // Update playing state
+        setIsPlaying(false);
+      }
+      if (event.data === YT.PlayerState.ENDED) {
+        console.log('Video ended');
+        playNextSong();
       }
     }
+  };
+
+  // const playNextSong = () => {
+  //   setCurrentVideoIndex(prevIndex => {
+  //     const shuffle = shuffleRef.current; // Use the ref value to ensure the latest state
+  //     const loop = loopRef.current;
+  //     console.log('Current shuffle state:', shuffle);
+  //     console.log('Current loop', loop);
+
+  //     let nextIndex: number;
+
+  //     if (shuffle) {
+  //       console.log('shuffle');
+  //       nextIndex = getRandomIndex(prevIndex, playQueue.length);
+  //     } else if (loop === 2) {
+  //       nextIndex = prevIndex;
+  //     } else if (prevIndex < playQueue.length - 1) {
+  //       console.log('next');
+  //       nextIndex = prevIndex + 1;
+  //     } else {
+  //       // If at the end of the queue
+  //       if (loop === 1) {
+  //         nextIndex = 0;
+  //       } else {
+  //         setIsPlaying(false);
+  //         return prevIndex; // Exit if not looping
+  //       }
+  //     }
+
+  //     setTimeout(() => {
+  //       playVideo();
+  //     }, 1000);
+
+  //     console.log(prevIndex, nextIndex);
+  //     return nextIndex;
+  //   });
+  // };
+
+  const playNextSong = () => {
+    const shuffle = shuffleRef.current; // Use the ref value to ensure the latest state
+    const loop = loopRef.current;
+    console.log('Current shuffle state:', shuffle);
+    console.log('Current loop', loop);
+
+    let nextIndex: number;
+    const currentVideoIndex = currentIndexRef.current;
+
+    if (loop === 2) {
+      // Loop one
+      nextIndex = currentVideoIndex;
+    } else if (shuffle) {
+      console.log('shuffle');
+      nextIndex = getRandomIndex(currentVideoIndex, playQueue.length);
+    } else if (currentVideoIndex < playQueue.length - 1) {
+      console.log('next');
+      nextIndex = currentVideoIndex + 1;
+    } else {
+      // If at the end of the queue
+      if (loop === 1) {
+        nextIndex = 0;
+      } else {
+        setIsPlaying(false);
+        return; // Exit if not looping
+      }
+    }
+
+    setTimeout(() => {
+      playVideo();
+    }, 1000);
+
+    console.log(currentVideoIndex, nextIndex);
+
+    setCurrentVideoIndex(nextIndex);
+  };
+
+  const getRandomIndex = (currentIndex: number, queueLength: number) => {
+    let randomIndex;
+    do {
+      randomIndex = Math.floor(Math.random() * queueLength);
+    } while (randomIndex === currentIndex && queueLength > 1); // Ensure not the same as the current index
+    return randomIndex;
   };
 
   const updateProgressBar = () => {
@@ -256,7 +351,7 @@ const YtbMusicPlayer: React.FC<{ videoId: string }> = ({ videoId }) => {
         </div>
       </div>
 
-      <div className='absolute bottom-0 flex flex-row gap-12 w-full items-center px-6 py-2'>
+      <div className='absolute bottom-0 flex flex-row gap-16 w-full items-center px-6 py-2'>
         <div className='flex flex-row gap-4 items-center'>
           <div
             className='w-16 h-16 overflow-hidden cursor-pointer'
@@ -279,22 +374,6 @@ const YtbMusicPlayer: React.FC<{ videoId: string }> = ({ videoId }) => {
           </div>
         </div>
 
-        <div className='flex items-center h-5 grow gap-2'>
-          <span>
-            {isPlayerReady && playerRef.current ? currentTime : '0:00'}
-          </span>
-          <input
-            className='cursor-pointer w-full'
-            type='range'
-            id='progressBar'
-            min='0'
-            max='993'
-            step='1'
-            value={Math.round(progress)}
-            onChange={onProgressBarChange}
-          />
-          <span>{videoInfo ? numberToTime(durationRef.current) : '0:00'}</span>
-        </div>
         <div className='flex flew-row items-center gap-6'>
           <TbPlayerSkipBack
             className={`w-6 h-6 ${
@@ -329,15 +408,54 @@ const YtbMusicPlayer: React.FC<{ videoId: string }> = ({ videoId }) => {
                 ? 'text-customWhite/20 pointer-events-none'
                 : 'cursor-pointer'
             }`}
-            onClick={() => {
-              if (
-                currentVideoIndex === playQueue.length - 1 ||
-                playQueue.length === 0
-              )
-                return;
-              setCurrentVideoIndex(currentVideoIndex + 1);
-            }}
+            onClick={playNextSong}
           />
+        </div>
+
+        <div className='flex items-center h-5 grow gap-2'>
+          <span>
+            {isPlayerReady && playerRef.current ? currentTime : '0:00'}
+          </span>
+          <input
+            className='cursor-pointer w-full'
+            type='range'
+            id='progressBar'
+            min='0'
+            max='993'
+            step='1'
+            value={Math.round(progress)}
+            onChange={onProgressBarChange}
+          />
+          <span>{videoInfo ? numberToTime(durationRef.current) : '0:00'}</span>
+        </div>
+
+        <div className='flex flew-row items-center gap-6'>
+          <RxShuffle
+            className={`w-6 h-6 cursor-pointer ${
+              shuffle ? 'text-customWhite' : 'text-customWhite/40'
+            }`}
+            onClick={() => setShuffle(prev => !prev)}
+          />
+          <div className='relative'>
+            <RxLoop
+              className={`w-6 h-6 cursor-pointer ${
+                loop === 0 ? 'text-customWhite/40' : `text-customWhite`
+              }`}
+              onClick={() => {
+                loop === 2 ? setLoop(0) : setLoop(loop + 1);
+              }}
+            />
+            <span
+              className={`${
+                loop === 2
+                  ? 'text-xs absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'
+                  : 'hidden'
+              }`}
+            >
+              1
+            </span>
+          </div>
+
           <div
             className={`${
               videoInfo
