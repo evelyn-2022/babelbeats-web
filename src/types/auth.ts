@@ -35,4 +35,8 @@ export interface ValidatedFields {
   password?: string;
   passwordConfirm?: string;
   name?: string;
+  title?: string;
+  artist?: string;
+  album?: string;
+  year?: string;
 }

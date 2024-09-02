@@ -4,9 +4,9 @@ import { AiOutlinePlayCircle, AiOutlinePauseCircle } from 'react-icons/ai';
 import { FaCaretDown, FaCaretUp } from 'react-icons/fa6';
 import { RxShuffle, RxLoop } from 'react-icons/rx';
 import { YouTubeVideo } from '../../types';
-import { searchSong, fetchVideoDetails } from '../../services';
+import { fetchVideoDetails } from '../../services';
 import { usePlayQueue } from '../../context';
-import MusicQueue from './MusicQueue';
+import { MusicQueue, LyricsPanel } from '../../components';
 
 declare global {
   interface Window {
@@ -274,8 +274,8 @@ const YtbMusicPlayer: React.FC<{ videoId: string }> = ({ videoId }) => {
       >
         <div className='w-7/12 h-full flex flex-col items-center'>
           <div
-            className={`w-full mb-4 ${
-              showVideo ? 'h-fit' : 'h-0'
+            className={`w-full ${
+              showVideo ? 'h-fit mb-4' : 'h-0 mb-2'
             } transition-all duration-300 overflow-hidden`}
           >
             <div id='player' className='w-full' />
@@ -296,19 +296,19 @@ const YtbMusicPlayer: React.FC<{ videoId: string }> = ({ videoId }) => {
           </div>
           <MusicQueue
             playQueue={playQueue}
-            maxHeight={showVideo ? '270px' : 'calc(100vh - 160px)'}
+            maxHeight={
+              showVideo ? 'calc(100vh - 518px)' : 'calc(100vh - 150px)'
+            }
           />
         </div>
 
         <div className='w-5/12'>
-          <button onClick={() => searchSong('Ne Me Quitte Pas', 'Nina Simone')}>
-            Search for lyrics
-          </button>
+          <LyricsPanel />
         </div>
       </div>
 
       <div className='absolute bottom-0 flex flex-row gap-16 w-full items-center px-6 py-2'>
-        <div className='flex flex-row gap-4 items-center'>
+        <div className='flex flex-row gap-4 items-center w-3/12 min-w-72'>
           <div
             className='w-16 h-16 overflow-hidden cursor-pointer'
             onClick={() => setShowPlayer(!showPlayer)}

@@ -48,13 +48,15 @@ const MusicItem: React.FC<MusicItemProps> = ({
           </div>
         </div>
 
-        <div className='flex flex-col gap-1'>
+        <div className='flex flex-col '>
           <span className='font-bold text-nowrap'>
             {data.title.length > maxTitleLength
               ? data.title.slice(0, maxTitleLength) + '...'
               : data.title}
           </span>
-          <span>{data.channelTitle.split('-')[0].trim()}</span>
+          <span className='text-customWhite/70'>
+            {data.channelTitle.split('-')[0].trim()}
+          </span>
         </div>
       </div>
       <BsThreeDotsVertical className='text-2xl text-customWhite/20 hover:text-customWhite/80 transition-all duration-300' />

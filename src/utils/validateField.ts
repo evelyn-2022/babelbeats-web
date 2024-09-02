@@ -72,10 +72,12 @@ export const validateField = ({
       }
       break;
     }
-    case 'name': {
+    case 'name':
+    case 'title': {
+      const message = id === 'name' ? 'Username' : 'Song title';
       if ((value as string).trim() === '') {
         addError({
-          message: 'Username cannot be empty.',
+          message: message + ' cannot be empty.',
           displayType: 'inline',
           category: 'validation',
         });

@@ -13,3 +13,5 @@ export { default as YtbMusicPlayer } from './YtbMusicPlayer';
 export { default as SearchBar } from './SearchBar';
 export { default as MusicItem } from './MusicItem';
 export { default as MusicQueue } from './MusicQueue';
+export { default as LyricsPanel } from './LyricsPanel';
+export { default as LyricsSearch } from './LyricsSearch';

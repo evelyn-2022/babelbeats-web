@@ -107,9 +107,12 @@ export const refreshSpotifyAccessTokenApi = async (
   return response.data.access_token;
 };
 
-export const searchSong = async (songTitle: string, artistName: string) => {
+export const searchGeniusSongsApi = async (
+  songTitle: string,
+  artistName: string
+) => {
   const response = await apiClient.get('lyrics', {
     params: { songTitle, artistName },
   });
-  console.log(response.data);
+  return response.data;
 };

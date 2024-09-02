@@ -120,7 +120,7 @@ export const fetchPlaylistItems = async (
     const playlistItems: YouTubeVideo[] = data.items.map(item => ({
       id: item.snippet.resourceId.videoId,
       title: item.snippet.title,
-      channelTitle: item.snippet.channelTitle,
+      channelTitle: item.snippet.videoOwnerChannelTitle,
       description: item.snippet.description,
       thumbnail: item.snippet.thumbnails.medium
         ? item.snippet.thumbnails.medium.url
