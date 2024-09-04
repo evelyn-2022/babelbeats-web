@@ -11,7 +11,6 @@ export { default as ResetPasswordPage } from './ResetPasswordPage';
 export { default as AccountPage } from './AccountPage/AccountPage';
 export { default as HomeSidebar } from './HomePage/HomeSidebar';
 export { default as HomePage } from './HomePage/HomePage';
-export { default as SearchPage } from './SearchPage';
 export { default as PlaylistsPage } from './PlaylistsPage';
 export { default as CollectionsPage } from './CollectionsPage';
 export { default as SettingsPage } from './SettingsPage';

@@ -14,7 +14,6 @@ import {
   SettingsPage,
   HomePage,
   ProfilePage,
-  SearchPage,
   PlaylistsPage,
   CollectionsPage,
   ErrorBoundary,
@@ -45,7 +44,6 @@ const router = createBrowserRouter([
                 children: [
                   { path: '', element: <HomePage /> },
                   { path: 'settings', element: <SettingsPage /> },
-                  { path: 'search', element: <SearchPage /> },
                   { path: 'playlists', element: <PlaylistsPage /> },
                   { path: 'collections', element: <CollectionsPage /> },
                   { path: 'settings', element: <SettingsPage /> },

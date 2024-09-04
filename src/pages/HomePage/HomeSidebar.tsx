@@ -3,7 +3,6 @@ import { Outlet, NavLink } from 'react-router-dom';
 import { BiHomeAlt2 } from 'react-icons/bi';
 import { BsCollection, BsThreeDotsVertical } from 'react-icons/bs';
 import { FaCaretLeft, FaCaretRight } from 'react-icons/fa';
-import { LuSearch } from 'react-icons/lu';
 import { PiPlaylist } from 'react-icons/pi';
 import { GoPerson } from 'react-icons/go';
 import { LuSettings } from 'react-icons/lu';
@@ -121,11 +120,6 @@ const HomeSidebar: React.FC = () => {
       icon: (
         <BiHomeAlt2 className='text-lg xl:text-[1.3rem] xl:-mr-[0.05rem]' />
       ),
-    },
-    {
-      to: '/search',
-      label: 'Search',
-      icon: <LuSearch className='text-lg xl:text-xl' />,
     },
     {
       to: '/collections',
