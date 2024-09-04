@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { SearchBar, MusicItem } from '../components';
+import { SearchBar, MusicCard } from '../components';
 import { SearchResult, YouTubePlaylist, YouTubeVideo } from '../types';
 import { usePlayQueue } from '../context';
 import {
@@ -72,7 +72,7 @@ const SearchPage: React.FC = () => {
     type: string,
     result: YouTubeVideo | YouTubePlaylist
   ) => {
-    if (type === 'music') {
+    if (type === 'song') {
       if (result.id === playQueue[currentVideoIndex]?.id) {
         setShowPlayer(true);
       } else if (playQueue.length === 0) {
@@ -122,24 +122,19 @@ const SearchPage: React.FC = () => {
 
       {/* Display search results */}
       {results && results.music && (
-        <div className='w-full max-w-md cursor-pointer flex flex-col gap-4'>
-          <h3 className='text-xl font-fold'>Song</h3>
-          <MusicItem
-            data={results.music}
-            type='music'
-            handleResultClick={handleResultClick}
-          />
-        </div>
+        <MusicCard
+          data={results.music}
+          type='song'
+          handleResultClick={handleResultClick}
+        />
       )}
+
       {results && results.playlist && (
-        <div className='w-full max-w-md cursor-pointer flex flex-col gap-4'>
-          <h3 className='text-xl font-fold'>Playlist</h3>
-          <MusicItem
-            data={results.playlist}
-            type='playlist'
-            handleResultClick={handleResultClick}
-          />
-        </div>
+        <MusicCard
+          data={results.playlist}
+          type='playlist'
+          handleResultClick={handleResultClick}
+        />
       )}
       {isLoading && <div>Loading...</div>}
       {searchInitiated && !isLoading && !results && <div>No result found</div>}

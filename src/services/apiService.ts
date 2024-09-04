@@ -111,8 +111,35 @@ export const searchGeniusSongsApi = async (
   songTitle: string,
   artistName: string
 ) => {
-  const response = await apiClient.get('lyrics', {
+  const response = await apiClient.get('songs', {
     params: { songTitle, artistName },
   });
   return response.data;
+};
+
+export const searchGeniusLyrics = async (id: string | undefined) => {
+  if (!id) return null;
+
+  const response = await apiClient.get(`songs/${id}`);
+  console.log(response.data);
+  return response.data;
+};
+
+export const processTextWithBreaks = (text: string): string => {
+  // Step 1: Remove <br> tags at the start and end
+  text = text.trim();
+  while (text.startsWith('<br>')) {
+    text = text.substring(4).trim();
+  }
+  while (text.endsWith('<br>')) {
+    text = text.substring(0, text.length - 4).trim();
+  }
+
+  // Step 2: Replace multiple <br> tags with two newlines (paragraph separator)
+  text = text.replace(/(<br>\s*){2,}/g, '\n\n');
+
+  // Step 3: Replace single <br> tags with a single newline
+  text = text.replace(/<br>/g, '\n');
+
+  return text;
 };
