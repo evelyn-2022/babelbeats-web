@@ -8,6 +8,7 @@ import {
   getDBUserByIdApi,
   partialUpdateDBUserApi,
   searchGeniusSongsApi,
+  searchGeniusLyricsApi,
 } from '../services';
 
 export const useApiService = () => {
@@ -77,6 +78,10 @@ export const useApiService = () => {
     return callApi(() => searchGeniusSongsApi(songTitle, artistName));
   };
 
+  const searchGeniusLyrics = async (id: number) => {
+    return callApi(() => searchGeniusLyricsApi(id));
+  };
+
   return {
     checkRegistration,
     updateUserId,
@@ -84,5 +89,6 @@ export const useApiService = () => {
     deleteDBUser,
     getDBUserById,
     searchGeniusSongs,
+    searchGeniusLyrics,
   };
 };

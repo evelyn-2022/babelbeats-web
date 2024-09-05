@@ -3,11 +3,11 @@ import { FaAngleLeft } from 'react-icons/fa6';
 import { useApiService } from '../../hooks';
 import { usePlayQueue } from '../../context';
 import { InputField, Button } from '../../components';
-import { searchGeniusLyrics, processTextWithBreaks } from '../../services';
+import { processTextWithBreaks } from '../../services';
 
 const LyricsPanel: React.FC = () => {
   const { playQueue, currentVideoIndex } = usePlayQueue();
-  const { searchGeniusSongs } = useApiService();
+  const { searchGeniusSongs, searchGeniusLyrics } = useApiService();
   const [songTitle, setSongTitle] = useState<string>(
     playQueue.length === 0 ? '' : playQueue[currentVideoIndex]?.title
   );
@@ -21,6 +21,7 @@ const LyricsPanel: React.FC = () => {
   const [advancedSearch, setAdvancedSearch] = useState<boolean>(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [lyric, setLyric] = useState<string>('');
+  const [error, setError] = useState<string>('');
 
   useEffect(() => {
     if (inputRef.current) {
@@ -48,9 +49,19 @@ const LyricsPanel: React.FC = () => {
 
     try {
       const response = await searchGeniusSongs(songTitle, artist);
+
+      if (response.response.hits.length === 0) {
+        setError('No matching songs found. Please check your input.');
+        return;
+      }
       const song = response.response.hits[0]?.result;
 
-      const data = await searchGeniusLyrics(song.id);
+      const data = await searchGeniusLyrics(song?.id);
+
+      if (!data) {
+        setError('No lyrics found.');
+        return;
+      }
 
       const processedData = processTextWithBreaks(data);
       console.log(processedData);
@@ -148,6 +159,7 @@ const LyricsPanel: React.FC = () => {
           >
             {advancedSearch ? 'Less info' : 'More info'}
           </div>
+          {error && <div className='text-red-500'>{error}</div>}
           <div className='flex flex-row justify-between items-center w-full'>
             <Button
               type='submit'

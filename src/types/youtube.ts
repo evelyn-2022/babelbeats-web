@@ -19,14 +19,3 @@ export interface SearchResult {
   playlist?: YouTubePlaylist;
   music?: YouTubeVideo;
 }
-
-export interface Song {
-  id?: string;
-  title: string;
-  artist: string;
-  album?: string;
-  thumbnail: string;
-  releaseDate: string;
-  lyricsId?: string;
-  lyrics?: string;
-}

@@ -129,7 +129,6 @@ export const fetchPlaylistItems = async (
 
     return { items: playlistItems, nextPageToken: data.nextPageToken };
   } catch (error) {
-    console.error('Error fetching playlist items:', error);
     return { items: [], nextPageToken: null };
   }
 };

@@ -108,7 +108,7 @@ const HomePage: React.FC = () => {
     <div className='h-full flex flex-col my-2 items-center gap-10'>
       <div
         className={`flex flex-col gap-8 w-full max-w-xl items-center ${
-          results ? 'mt-10' : 'mt-56'
+          results ? 'mt-10' : 'mt-52'
         } transition-all duration-300`}
       >
         <h1 className='text-3xl font-bold'>What's on your playlist today?</h1>

@@ -117,11 +117,11 @@ export const searchGeniusSongsApi = async (
   return response.data;
 };
 
-export const searchGeniusLyrics = async (id: string | undefined) => {
+export const searchGeniusLyricsApi = async (id: number | undefined) => {
   if (!id) return null;
 
   const response = await apiClient.get(`songs/${id}`);
-  console.log(response.data);
+
   return response.data;
 };
 

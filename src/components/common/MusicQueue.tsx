@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { YouTubeVideo } from '../../types';
 import MusicItem from './MusicItem';
-import { usePlayQueue } from '../../context';
+import { usePlayQueue, useError } from '../../context';
 import { fetchPlaylistItems } from '../../services';
 
 const MusicQueue: React.FC<{
@@ -17,6 +17,7 @@ const MusicQueue: React.FC<{
     setNextPageToken,
     playlistId,
   } = usePlayQueue();
+  const { addError } = useError();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const currentItemRef = useRef<HTMLDivElement | null>(null);
@@ -34,7 +35,11 @@ const MusicQueue: React.FC<{
       items.map((item: YouTubeVideo) => addVideoToBottomOfQueue(item));
       setNextPageToken(token || null);
     } catch (error) {
-      console.error('Error fetching playlist items:', error);
+      addError({
+        message: 'Error fetching playlist items',
+        displayType: 'toast',
+        category: 'general',
+      });
     } finally {
       setIsLoading(false);
     }
