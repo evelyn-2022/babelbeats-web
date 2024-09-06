@@ -3,7 +3,7 @@ import { IoEyeOutline, IoEyeOffOutline } from 'react-icons/io5';
 import { PiWarningCircle, PiCircle, PiCheckCircleFill } from 'react-icons/pi';
 import { useError } from '../../context';
 import { validateField } from '../../utils';
-import { ValidatedFields } from '../../types';
+import { CustomError, ValidatedFields } from '../../types';
 
 interface InputFieldProps {
   id?: keyof ValidatedFields;
@@ -19,6 +19,9 @@ interface InputFieldProps {
   validationMessage?: string;
   resetPasswordVisibility?: boolean;
   placeholder?: string;
+  passSetStateToParent?: (
+    setter: React.Dispatch<React.SetStateAction<CustomError | null>>
+  ) => void;
 }
 
 const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
@@ -36,10 +39,12 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
       requireValidation,
       resetPasswordVisibility,
       placeholder,
+      passSetStateToParent,
     },
     ref
   ) => {
-    const { errorState, addError, clearError } = useError();
+    const { addError, clearError } = useError();
+    const [error, setError] = useState<CustomError | null>(null);
     const [focused, setFocused] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [touched, setTouched] = useState(false);
@@ -58,13 +63,22 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
     ];
 
     useEffect(() => {
+      // Pass the setter function to the parent
+      if (passSetStateToParent) passSetStateToParent(setError);
+    }, [passSetStateToParent]);
+
+    useEffect(() => {
       if (resetPasswordVisibility) {
         setShowPassword(false);
       }
     }, [resetPasswordVisibility]);
 
     useEffect(() => {
-      setTouched(false);
+      if (value) {
+        setTouched(true);
+      } else {
+        setTouched(false);
+      }
     }, [label]);
 
     return (
@@ -96,6 +110,7 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
             onChange={e => {
               onChange(e);
               setTouched(true);
+              setError(null);
             }}
             onFocus={() => setFocused(true)}
             onBlur={() => {
@@ -106,6 +121,7 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
                   values,
                   addError,
                   clearError,
+                  setError,
                 });
               }
             }}
@@ -126,12 +142,11 @@ const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
 
         <div
           className={`text-red-500 text-xs md:text-sm flex flex-row items-center gap-0.5 max-w-64 md:max-w-96 ${
-            (!errorState.error || !touched) && 'hidden'
+            (!error || !touched) && 'hidden'
           }`}
         >
           <PiWarningCircle />
-          {errorState.error?.displayType === 'inline' &&
-            errorState.error.message}
+          {error && error.message}
         </div>
 
         {(label?.toLowerCase() === 'password' || id === 'password') &&

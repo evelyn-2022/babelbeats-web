@@ -6,6 +6,7 @@ import { InputField, Button } from '../components';
 import { resetPassword } from '../services';
 import { useError } from '../context';
 import { validateField } from '../utils';
+import { CustomError } from '../types';
 
 const ResetPasswordPage: React.FC = () => {
   const navigate = useNavigate();
@@ -16,14 +17,26 @@ const ResetPasswordPage: React.FC = () => {
   const [password, setPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const [inputErrorSetter, setInputErrorSetter] = useState<React.Dispatch<
+    React.SetStateAction<CustomError | null>
+  > | null>(null);
+
+  const handleSetStateFromChild = (
+    setter: React.Dispatch<React.SetStateAction<CustomError | null>>
+  ) => {
+    setInputErrorSetter(() => setter); // Store the setter function
+  };
 
   const handlePasswordSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!inputErrorSetter) return;
+
     const isValid = validateField({
       id: 'password',
       values: { password },
       addError,
       clearError,
+      setError: inputErrorSetter,
     });
     if (!isValid || errorState.error || isSubmitting) return;
     setIsSubmitting(true);
@@ -87,6 +100,7 @@ const ResetPasswordPage: React.FC = () => {
           }}
           requireValidation={true}
           ref={inputRef}
+          passSetStateToParent={handleSetStateFromChild}
         />
         <Button width='w-96' type='submit' variant='filled'>
           Submit

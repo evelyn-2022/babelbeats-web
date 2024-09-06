@@ -3,6 +3,7 @@ import { Modal, InputField, Button } from '../../components';
 import { useError, useAuth, useTheme } from '../../context';
 import { showToast, validateField, getTokens } from '../../utils';
 import { changePassword } from '../../services';
+import { CustomError } from '../../types';
 
 interface NewPasswordModalProps {
   isNewPasswordModalOpen: boolean;
@@ -24,6 +25,15 @@ const NewPasswordModal: React.FC<NewPasswordModalProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const { errorState, addError, clearError } = useError();
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const [inputErrorSetter, setInputErrorSetter] = useState<React.Dispatch<
+    React.SetStateAction<CustomError | null>
+  > | null>(null);
+
+  const handleSetStateFromChild = (
+    setter: React.Dispatch<React.SetStateAction<CustomError | null>>
+  ) => {
+    setInputErrorSetter(() => setter); // Store the setter function
+  };
 
   const handleNewPasswordSubmit = async (
     e: React.FormEvent<HTMLFormElement>
@@ -32,11 +42,13 @@ const NewPasswordModal: React.FC<NewPasswordModalProps> = ({
     setIsLoading(true);
 
     // Check if password is valid
+    if (!inputErrorSetter) return;
     const isValidPassword = validateField({
       id: 'password',
       values: { password: newPassword },
       addError,
       clearError,
+      setError: inputErrorSetter,
     });
     if (!isValidPassword || errorState.error) {
       setIsLoading(false);
@@ -96,6 +108,7 @@ const NewPasswordModal: React.FC<NewPasswordModalProps> = ({
           requireValidation={true}
           width='w-30'
           ref={inputRef}
+          passSetStateToParent={handleSetStateFromChild}
         />
         <Button variant='filled' type='submit'>
           {isLoading ? (

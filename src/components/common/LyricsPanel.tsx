@@ -110,24 +110,27 @@ const LyricsPanel: React.FC = () => {
             <span>Go back</span>
           </div>
           <InputField
-            key='title'
-            id='title'
+            id='songTitle'
             type='text'
             label='Song Title'
             width='w-full'
             value={songTitle}
+            values={{ songTitle, artist, album, year }}
             ref={inputRef}
             onChange={e => setSongTitle(e.target.value)}
             bgColor='bg-black'
             requireValidation={true}
           />
           <InputField
+            id='artist'
             type='text'
             label='Artist'
             width='w-full'
             value={artist}
+            values={{ songTitle, artist, album, year }}
             onChange={e => setArtist(e.target.value)}
             bgColor='bg-black'
+            requireValidation={true}
           />
 
           {advancedSearch && (
@@ -138,6 +141,7 @@ const LyricsPanel: React.FC = () => {
               label='Album'
               width='w-full'
               value={album}
+              values={{ songTitle, artist, album, year }}
               onChange={e => setAlbum(e.target.value)}
               bgColor='bg-black'
             />
@@ -149,6 +153,7 @@ const LyricsPanel: React.FC = () => {
               label='Release Year'
               width='w-full'
               value={year}
+              values={{ songTitle, artist, album, year }}
               onChange={e => setYear(e.target.value)}
               bgColor='bg-black'
             />

@@ -1,6 +1,6 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { SignupField } from './SignupField';
-import { ValidatedFields } from '../../types';
+import { CustomError, ValidatedFields } from '../../types';
 import { InputField, Button, SocialSignInGroup } from '../../components';
 import { useError } from '../../context';
 import { validateField } from '../../utils';
@@ -24,15 +24,29 @@ const Card: React.FC<CardProps> = ({
 }) => {
   const { errorState, addError, clearError } = useError();
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const [inputErrorSetter, setInputErrorSetter] = useState<React.Dispatch<
+    React.SetStateAction<CustomError | null>
+  > | null>(null);
 
-  const handleNext = (e: React.FormEvent) => {
+  // Handler to pass to the child component to receive its setState method
+  const handleSetStateFromChild = (
+    setter: React.Dispatch<React.SetStateAction<CustomError | null>>
+  ) => {
+    setInputErrorSetter(() => setter); // Store the setter function
+  };
+
+  const handleNext = async (e: React.FormEvent) => {
     e.preventDefault();
-    const isValid = validateField({
+    if (!inputErrorSetter) return;
+
+    const isValid = await validateField({
       id: field.id,
       values,
       addError,
       clearError,
+      setError: inputErrorSetter,
     });
+
     if (!isValid || errorState.error) return;
     handleSubmit(e);
   };
@@ -66,6 +80,7 @@ const Card: React.FC<CardProps> = ({
         requireValidation={true}
         resetPasswordVisibility={resetPasswordVisibility}
         ref={inputRef}
+        passSetStateToParent={handleSetStateFromChild}
       />
 
       <Button type='submit' variant='filled'>

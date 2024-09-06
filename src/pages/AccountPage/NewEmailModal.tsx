@@ -3,6 +3,7 @@ import { Modal, InputField, Button } from '../../components';
 import { useError, useAuth, useTheme } from '../../context';
 import { showToast, validateField } from '../../utils';
 import { checkEmailRegistered, updateCognitoUserEmail } from '../../services';
+import { CustomError } from '../../types';
 
 interface NewEmailModalProps {
   isNewEmailModalOpen: boolean;
@@ -26,6 +27,15 @@ const NewEmailModal: React.FC<NewEmailModalProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const { errorState, addError, clearError } = useError();
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const [inputErrorSetter, setInputErrorSetter] = useState<React.Dispatch<
+    React.SetStateAction<CustomError | null>
+  > | null>(null);
+
+  const handleSetStateFromChild = (
+    setter: React.Dispatch<React.SetStateAction<CustomError | null>>
+  ) => {
+    setInputErrorSetter(() => setter); // Store the setter function
+  };
 
   const handleEmailSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -53,11 +63,13 @@ const NewEmailModal: React.FC<NewEmailModalProps> = ({
     }
 
     // Check if email is valid
+    if (!inputErrorSetter) return;
     const isValidEmail = validateField({
       id: 'email',
       values: { email: newEmail },
       addError,
       clearError,
+      setError: inputErrorSetter,
     });
     if (!isValidEmail || errorState.error) {
       setIsLoading(false);
@@ -128,6 +140,7 @@ const NewEmailModal: React.FC<NewEmailModalProps> = ({
           requireValidation={true}
           width='w-30'
           ref={inputRef}
+          passSetStateToParent={handleSetStateFromChild}
         />
         <Button variant='filled' type='submit'>
           {isLoading ? (
