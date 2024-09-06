@@ -82,10 +82,10 @@ const OldPasswordModal: React.FC<OldPasswordModalProps> = ({
             setOldPassword(e.target.value);
             clearError();
           }}
-          width='w-30'
+          width='w-full'
           ref={inputRef}
         />
-        <Button variant='filled' type='submit'>
+        <Button variant='filled' type='submit' width='w-full'>
           {isLoading ? (
             <>
               <div className='w-4 h-4 border-2 border-white border-solid border-t-transparent rounded-full animate-spin mr-2'></div>

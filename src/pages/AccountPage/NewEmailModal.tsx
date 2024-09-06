@@ -138,11 +138,11 @@ const NewEmailModal: React.FC<NewEmailModalProps> = ({
             clearError();
           }}
           requireValidation={true}
-          width='w-30'
+          width='w-full'
           ref={inputRef}
           passSetStateToParent={handleSetStateFromChild}
         />
-        <Button variant='filled' type='submit'>
+        <Button variant='filled' type='submit' width='w-full'>
           {isLoading ? (
             <>
               <div className='w-4 h-4 border-2 border-white border-solid border-t-transparent rounded-full animate-spin mr-2'></div>

@@ -24,7 +24,7 @@ const ResetPasswordPage: React.FC = () => {
   const handleSetStateFromChild = (
     setter: React.Dispatch<React.SetStateAction<CustomError | null>>
   ) => {
-    setInputErrorSetter(() => setter); // Store the setter function
+    setInputErrorSetter(() => setter);
   };
 
   const handlePasswordSubmit = async (e: React.FormEvent) => {
