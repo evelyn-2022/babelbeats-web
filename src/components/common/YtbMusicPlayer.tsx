@@ -297,7 +297,7 @@ const YtbMusicPlayer: React.FC<{ videoId: string }> = ({ videoId }) => {
           <MusicQueue
             playQueue={playQueue}
             maxHeight={
-              showVideo ? 'calc(100vh - 518px)' : 'calc(100vh - 150px)'
+              showVideo ? 'calc(100vh - 528px)' : 'calc(100vh - 160px)'
             }
           />
         </div>

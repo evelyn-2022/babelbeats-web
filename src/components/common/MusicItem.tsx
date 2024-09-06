@@ -51,11 +51,11 @@ const MusicItem: React.FC<MusicItemProps> = ({
         <div className='flex flex-col '>
           <span className='font-bold text-nowrap'>
             {data.title.length > maxTitleLength
-              ? data.title.slice(0, maxTitleLength) + '...'
+              ? data.title?.slice(0, maxTitleLength) + '...'
               : data.title}
           </span>
           <span className='text-customWhite/70'>
-            {data.channelTitle.split('-')[0].trim()}
+            {data.channelTitle?.split('-')[0].trim()}
           </span>
         </div>
       </div>

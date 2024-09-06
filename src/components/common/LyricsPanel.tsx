@@ -187,9 +187,12 @@ const LyricsPanel: React.FC = () => {
 
       {lyric && (
         <div className='w-full h-full flex flex-col items-center justify-center gap-4'>
-          <div className='text-customWhite/70'>
+          <div
+            className='text-customWhite/70'
+            style={{ maxHeight: 'calc(100vh - 200px)' }}
+          >
             <p
-              className='lyrics max-h-[560px] overflow-y-auto'
+              className='lyrics h-full overflow-y-auto'
               dangerouslySetInnerHTML={{ __html: lyric }}
             />
           </div>

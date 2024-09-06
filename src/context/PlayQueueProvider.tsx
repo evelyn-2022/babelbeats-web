@@ -55,20 +55,32 @@ export const PlayQueueProvider: React.FC<{ children: React.ReactNode }> = ({
   const { authState } = useAuth();
   const userId = authState.user?.id;
 
-  const [playQueue, setPlayQueue] = useState<YouTubeVideo[]>(() =>
-    getInitialPlayQueue(userId)
-  );
-  const [currentVideoIndex, setCurrentVideoIndex] = useState<number>(() =>
-    getInitialCurrentVideoIndex(userId)
-  );
+  const [isLoaded, setIsLoaded] = useState<boolean>(false);
+  const [playQueue, setPlayQueue] = useState<YouTubeVideo[]>([]);
+  const [currentVideoIndex, setCurrentVideoIndex] = useState<number>(0);
   const [autoplay, setAutoplay] = useState<boolean>(false);
   const [showPlayer, setShowPlayer] = useState<boolean>(false);
   const [playlistId, setPlaylistId] = useState<string>('');
   const [nextPageToken, setNextPageToken] = useState<string | null>(null);
 
+  // Load play queue and current video index when userId is available
   useEffect(() => {
-    saveQueueToLocal();
-  }, [playQueue, currentVideoIndex]);
+    if (userId) {
+      // Load the play queue and current index when the user logs in
+      setPlayQueue(getInitialPlayQueue(userId));
+      setCurrentVideoIndex(getInitialCurrentVideoIndex(userId));
+      setIsLoaded(true); // Set loading to true after data is loaded
+    } else {
+      setIsLoaded(true); // If no user, still set as loaded to render children
+    }
+  }, [userId]);
+
+  // Save queue to local storage whenever playQueue or currentVideoIndex changes
+  useEffect(() => {
+    if (isLoaded) {
+      saveQueueToLocal();
+    }
+  }, [playQueue, currentVideoIndex, isLoaded]);
 
   const saveQueueToLocal = () => {
     if (!userId) return;
@@ -102,7 +114,6 @@ export const PlayQueueProvider: React.FC<{ children: React.ReactNode }> = ({
       ...prevQueue.slice(currentVideoIndex + 1),
     ]);
     setCurrentVideoIndex(prevIndex => prevIndex + 1);
-    console.log(playQueue, currentVideoIndex);
   };
 
   const removeVideoFromQueue = (videoId: string) => {
@@ -113,6 +124,11 @@ export const PlayQueueProvider: React.FC<{ children: React.ReactNode }> = ({
     setPlayQueue([]);
     setCurrentVideoIndex(0);
   };
+
+  // Show loading state or render the provider if loaded
+  if (!isLoaded) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <PlayQueueContext.Provider
