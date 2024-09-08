@@ -121,6 +121,7 @@ export const searchGeniusLyricsApi = async (id: number | undefined) => {
   if (!id) return null;
 
   const response = await apiClient.get(`songs/${id}`);
+  console.log(response.data);
 
   return response.data;
 };
@@ -136,10 +137,31 @@ export const processTextWithBreaks = (text: string): string => {
   }
 
   // Step 2: Replace multiple <br> tags with two newlines (paragraph separator)
-  text = text.replace(/(<br>\s*){2,}/g, '\n\n');
+  text = text.replace(/(<br>\s*){2,}/g, '\n\n\n');
 
   // Step 3: Replace single <br> tags with a single newline
   text = text.replace(/<br>/g, '\n');
 
   return text;
+};
+
+export const getLyricsApi = async (id: string): Promise<string | null> => {
+  try {
+    const response = await apiClient.get(`music/by-ytb/${id}`);
+    return response.data;
+  } catch (error) {
+    if (error.response?.status === 404) {
+      return null;
+    } else {
+      throw error;
+    }
+  }
+};
+
+export const postLyricsApi = async (
+  ytbId: string,
+  lyrics: string
+): Promise<void> => {
+  console.log('Posting lyrics:', ytbId, lyrics);
+  await apiClient.post('music', { ytbId, lyrics }, createAuthConfig());
 };

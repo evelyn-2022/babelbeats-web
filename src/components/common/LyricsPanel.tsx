@@ -3,7 +3,11 @@ import { FaAngleLeft } from 'react-icons/fa6';
 import { useApiService } from '../../hooks';
 import { usePlayQueue } from '../../context';
 import { InputField, Button } from '../../components';
-import { processTextWithBreaks } from '../../services';
+import {
+  processTextWithBreaks,
+  getLyricsApi,
+  postLyricsApi,
+} from '../../services';
 
 const LyricsPanel: React.FC = () => {
   const { playQueue, currentVideoIndex } = usePlayQueue();
@@ -22,6 +26,31 @@ const LyricsPanel: React.FC = () => {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [lyric, setLyric] = useState<string>('');
   const [error, setError] = useState<string>('');
+  const [isLyricsSaved, setIsLyricsSaved] = useState<boolean>(false);
+
+  useEffect(() => {
+    const fetchLyrics = async () => {
+      const id = playQueue[currentVideoIndex]?.id;
+      if (!id) return;
+
+      try {
+        const data = await getLyricsApi(id);
+        if (!data) return;
+
+        setLyric(data.lyrics);
+        console.log(data.lyrics);
+        setIsLyricsSaved(true);
+      } catch (error) {
+        console.error('Error fetching lyrics:', error);
+      }
+    };
+
+    fetchLyrics();
+  }, [currentVideoIndex, playQueue]);
+
+  useEffect(() => {
+    setIsLyricsSaved(false);
+  }, [currentVideoIndex, playQueue]);
 
   useEffect(() => {
     if (inputRef.current) {
@@ -39,6 +68,13 @@ const LyricsPanel: React.FC = () => {
       setSearchInitiated(false);
     }
   }, [currentVideoIndex, playQueue]);
+
+  const textToHtml = (text: string) => {
+    return text
+      .split('\n\n\n') // Paragraphs
+      .map(paragraph => paragraph.split('\n').join('<br />')) // Line breaks within paragraphs
+      .join('</p><br /><p classMame="text-md">');
+  };
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -66,11 +102,8 @@ const LyricsPanel: React.FC = () => {
       const processedData = processTextWithBreaks(data);
       console.log(processedData);
 
-      const htmlContent = processedData
-        .split('\n\n') // Paragraphs (2 newlines)
-        .map(paragraph => paragraph.split('\n').join('<br />')) // Line breaks within paragraphs
-        .join('</p><p classMame="text-md">');
-      setLyric(htmlContent);
+      // const htmlContent = textToHtml(processedData);
+      setLyric(processedData);
     } catch (error) {
       console.error('Error searching for lyrics:', error);
     } finally {
@@ -80,7 +113,7 @@ const LyricsPanel: React.FC = () => {
 
   return (
     <div className='w-full h-full'>
-      {!searchInitiated && (
+      {!searchInitiated && !lyric && (
         <div className='w-full h-full flex flex-col items-center justify-center gap-4'>
           <div className='text-xl font-bold'>No lyrics found</div>
           <div
@@ -188,14 +221,25 @@ const LyricsPanel: React.FC = () => {
       {lyric && (
         <div className='w-full h-full flex flex-col items-center justify-center gap-4'>
           <div
-            className='text-customWhite/70'
+            className='text-customWhite/70 overflow-y-auto'
             style={{ maxHeight: 'calc(100vh - 200px)' }}
           >
             <p
-              className='lyrics h-full overflow-y-auto'
-              dangerouslySetInnerHTML={{ __html: lyric }}
+              className='lyrics h-full'
+              dangerouslySetInnerHTML={{ __html: textToHtml(lyric) }}
             />
           </div>
+          {!isLyricsSaved && (
+            <div
+              className='cursor-pointer text-costomWhite/70 link text-customWhite/70 -mt-4 self-start ml-40'
+              onClick={() => {
+                postLyricsApi(playQueue[currentVideoIndex].id, lyric);
+                setIsLyricsSaved(true);
+              }}
+            >
+              Contribute
+            </div>
+          )}
         </div>
       )}
     </div>
