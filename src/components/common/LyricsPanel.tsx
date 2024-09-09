@@ -85,7 +85,9 @@ const LyricsPanel: React.FC = () => {
   useEffect(() => {
     if (playQueue.length > 0 && currentVideoIndex !== -1) {
       setSongTitle(playQueue[currentVideoIndex]?.title || '');
-      setArtist(playQueue[currentVideoIndex]?.channelTitle || '');
+      setArtist(
+        playQueue[currentVideoIndex]?.channelTitle?.split('-')[0] || ''
+      );
       setAlbum('');
       setYear('');
       setLyric('');
@@ -179,13 +181,13 @@ const LyricsPanel: React.FC = () => {
           onSubmit={handleSearch}
         >
           <div
-            className='self-start flex flex-row items-center gap-1 cursor-pointer'
+            className='self-start flex flex-row items-center gap-1 cursor-pointer group'
             onClick={() => {
               setSearchInitiated(false);
               setIsLoading(false);
             }}
           >
-            <FaAngleLeft className='hover:-translate-x-1 transition-all duration-300' />
+            <FaAngleLeft className='group-hover:-translate-x-1 transition-all duration-300' />
             <span>Go back</span>
           </div>
           <InputField
@@ -269,16 +271,21 @@ const LyricsPanel: React.FC = () => {
       )}
 
       {lyric && (
-        <div className='w-full h-full flex flex-col items-center justify-center gap-4'>
-          <div
-            ref={scrollRef}
-            className={`relative group/item text-customWhite/70 overflow-y-auto overflow-x-hidden w-full flex items-center justify-center scrollbar-custom ${
-              isScrolling ? '' : 'scrollbar-hidden'
-            }`}
-            style={{ maxHeight: 'calc(100vh - 200px)' }}
-          >
-            {!isLyricsSaved && (
-              <div className='group fixed top-24 right-16 cursor-pointer hidden group-hover/item:block'>
+        <div className='relative w-full h-full flex flex-col text-customWhite/70 items-center justify-center gap-4 group/container'>
+          {!isLyricsSaved && (
+            <div className='flex-row justify-between absolute w-full top-0 right-0 px-12 cursor-pointer hidden group-hover/container:flex'>
+              <div
+                className='flex flex-row items-center gap-1 cursor-pointer group'
+                onClick={() => {
+                  setSearchInitiated(false);
+                  setIsLoading(false);
+                  setLyric('');
+                }}
+              >
+                <FaAngleLeft className='group-hover:-translate-x-1 transition-all duration-300' />
+                <span>Go back</span>
+              </div>
+              <div className='group relative'>
                 <MdOutlinePostAdd
                   className='text-costomWhite/70 text-xl'
                   onClick={handlePostLyrics}
@@ -286,7 +293,15 @@ const LyricsPanel: React.FC = () => {
 
                 <Tooltip label='Save lyrics' position='bottom' />
               </div>
-            )}
+            </div>
+          )}
+          <div
+            ref={scrollRef}
+            className={`overflow-y-auto overflow-x-hidden w-full px-12 flex items-center justify-center scrollbar-custom ${
+              isScrolling ? '' : 'scrollbar-hidden'
+            }`}
+            style={{ maxHeight: 'calc(100vh - 200px)' }}
+          >
             <p
               className='lyrics h-full'
               dangerouslySetInnerHTML={{ __html: textToHtml(lyric) }}
