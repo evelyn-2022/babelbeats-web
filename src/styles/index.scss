@@ -207,16 +207,6 @@
       0 1 / calc(50% - 4px / 2) 100vw/0 100vw;
   }
 
-  /* Custom class to hide scrollbar but allow scrolling */
-  .scrollbar-hidden {
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* Internet Explorer 10+ */
-
-    &::-webkit-scrollbar {
-      display: none; /* Safari and Chrome */
-    }
-  }
-
   /* Custom scrollbar styles */
   .scrollbar-custom {
     /* Common settings for all browsers */
@@ -231,21 +221,15 @@
     &::-webkit-scrollbar-thumb {
       background-color: #555; /* Thumb color */
       border-radius: 4px;
+      transition: background-color 0.3s ease;
     }
 
     &::-webkit-scrollbar-track {
       background: transparent; /* Track color */
     }
+  }
 
-    /* Hide scrollbar when not scrolling */
-    &.scrollbar-hidden::-webkit-scrollbar-thumb {
-      background: transparent; /* Thumb color when hidden */
-    }
-
-    /* Smooth appearance on hover/scrolling */
-    &:hover::-webkit-scrollbar-thumb,
-    &:active::-webkit-scrollbar-thumb {
-      background: #555; /* Visible thumb color on hover or active */
-    }
+  .scrollbar-hidden {
+    scrollbar-color: transparent transparent; /* Firefox (thumb and track) */
   }
 }

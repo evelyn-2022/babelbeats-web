@@ -260,7 +260,7 @@ const YtbMusicPlayer: React.FC<{ videoId: string }> = ({ videoId }) => {
 
   return (
     <div
-      className={`relative flex flex-col justify-between  transition-all duration-300 ${
+      className={`relative flex flex-col justify-between transition-all duration-300 ${
         showPlayer
           ? 'h-screen bg-black'
           : 'h-[80px] bg-customBlack/50 backdrop-blur-lg'
@@ -404,7 +404,7 @@ const YtbMusicPlayer: React.FC<{ videoId: string }> = ({ videoId }) => {
             <span
               className={`${
                 loop === 2
-                  ? 'text-xs absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'
+                  ? 'text-xs absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 cursor-pointer'
                   : 'hidden'
               }`}
             >

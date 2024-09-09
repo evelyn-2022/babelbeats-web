@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
 import config from '../config';
-import { CognitoToken, ConnectionToken, User } from '../types';
+import { CognitoToken, ConnectionToken, User, Music } from '../types';
 import { updateCognitoUserIdAttribute } from './authService';
 import { getTokens } from '../utils';
 
@@ -145,20 +145,21 @@ export const processTextWithBreaks = (text: string): string => {
   return text;
 };
 
-export const getLyricsApi = async (id: string): Promise<string | null> => {
+export const getLyricsFromDBApi = async (id: string): Promise<Music | null> => {
   try {
     const response = await apiClient.get(`music/by-ytb/${id}`);
     return response.data;
   } catch (error) {
-    if (error.response?.status === 404) {
-      return null;
-    } else {
-      throw error;
+    if (axios.isAxiosError(error) && error.response) {
+      if (error.response.status === 404) {
+        return null;
+      }
     }
+    throw error;
   }
 };
 
-export const postLyricsApi = async (
+export const postLyricsToDBApi = async (
   ytbId: string,
   lyrics: string
 ): Promise<void> => {

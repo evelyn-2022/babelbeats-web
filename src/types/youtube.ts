@@ -19,3 +19,9 @@ export interface SearchResult {
   playlist?: YouTubePlaylist;
   music?: YouTubeVideo;
 }
+
+export interface Music {
+  id: number;
+  ytbId: string;
+  lyrics: string;
+}

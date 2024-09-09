@@ -1,17 +1,22 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FaAngleLeft } from 'react-icons/fa6';
+import { MdOutlinePostAdd } from 'react-icons/md';
 import { useApiService } from '../../hooks';
-import { usePlayQueue } from '../../context';
-import { InputField, Button } from '../../components';
-import {
-  processTextWithBreaks,
-  getLyricsApi,
-  postLyricsApi,
-} from '../../services';
+import { usePlayQueue, useError, useTheme } from '../../context';
+import { InputField, Button, Tooltip } from '../../components';
+import { processTextWithBreaks } from '../../services';
+import { showToast } from '../../utils';
 
 const LyricsPanel: React.FC = () => {
   const { playQueue, currentVideoIndex } = usePlayQueue();
-  const { searchGeniusSongs, searchGeniusLyrics } = useApiService();
+  const { errorState, addError } = useError();
+  const { theme } = useTheme();
+  const {
+    searchGeniusSongs,
+    searchGeniusLyrics,
+    getLyricsFromDB,
+    postLyricsToDB,
+  } = useApiService();
   const [songTitle, setSongTitle] = useState<string>(
     playQueue.length === 0 ? '' : playQueue[currentVideoIndex]?.title
   );
@@ -25,7 +30,6 @@ const LyricsPanel: React.FC = () => {
   const [advancedSearch, setAdvancedSearch] = useState<boolean>(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [lyric, setLyric] = useState<string>('');
-  const [error, setError] = useState<string>('');
   const [isLyricsSaved, setIsLyricsSaved] = useState<boolean>(false);
   const [isScrolling, setIsScrolling] = useState(false);
   const scrollRef = useRef<HTMLDivElement | null>(null);
@@ -38,7 +42,7 @@ const LyricsPanel: React.FC = () => {
       // Hide scrollbar after scrolling stops
       const timeout = setTimeout(() => {
         setIsScrolling(false);
-      }, 1000);
+      }, 2000);
       return () => clearTimeout(timeout);
     };
 
@@ -58,16 +62,11 @@ const LyricsPanel: React.FC = () => {
       const id = playQueue[currentVideoIndex]?.id;
       if (!id) return;
 
-      try {
-        const data = await getLyricsApi(id);
-        if (!data) return;
+      const data = await getLyricsFromDB(id);
+      if (!data) return;
 
-        setLyric(data.lyrics);
-
-        setIsLyricsSaved(true);
-      } catch (error) {
-        console.error('Error fetching lyrics:', error);
-      }
+      setLyric(data.lyrics);
+      setIsLyricsSaved(true);
     };
 
     fetchLyrics();
@@ -106,13 +105,20 @@ const LyricsPanel: React.FC = () => {
 
     if (!songTitle || !artist) return;
 
+    if (errorState.error) return;
+
     setIsLoading(true);
 
     try {
       const response = await searchGeniusSongs(songTitle, artist);
 
       if (response.response.hits.length === 0) {
-        setError('No matching songs found. Please check your input.');
+        addError({
+          message: 'No matching songs found. Please check your input.',
+          displayType: 'inline',
+          category: 'search',
+        });
+
         return;
       }
       const song = response.response.hits[0]?.result;
@@ -120,7 +126,12 @@ const LyricsPanel: React.FC = () => {
       const data = await searchGeniusLyrics(song?.id);
 
       if (!data) {
-        setError('No lyrics found.');
+        addError({
+          message: 'No lyrics found.',
+          displayType: 'inline',
+          category: 'search',
+        });
+
         return;
       }
 
@@ -131,6 +142,18 @@ const LyricsPanel: React.FC = () => {
       console.error('Error searching for lyrics:', error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handlePostLyrics = async () => {
+    if (!lyric) return;
+
+    try {
+      await postLyricsToDB(playQueue[currentVideoIndex].id, lyric);
+      setIsLyricsSaved(true);
+      showToast('Lyrics saved successfully', 'success', theme);
+    } catch (error) {
+      return;
     }
   };
 
@@ -220,7 +243,11 @@ const LyricsPanel: React.FC = () => {
           >
             {advancedSearch ? 'Less info' : 'More info'}
           </div>
-          {error && <div className='text-red-500'>{error}</div>}
+          {errorState &&
+            errorState.error?.displayType === 'inline' &&
+            errorState.error.category === 'search' && (
+              <div className='text-red-500'>{errorState.error.message}</div>
+            )}
           <div className='flex flex-row justify-between items-center w-full'>
             <Button
               type='submit'
@@ -245,29 +272,26 @@ const LyricsPanel: React.FC = () => {
         <div className='w-full h-full flex flex-col items-center justify-center gap-4'>
           <div
             ref={scrollRef}
-            className={`text-customWhite/70 overflow-y-auto overflow-x-hidden w-full flex items-center justify-center ${
-              isScrolling ? 'scrollbar-custom' : 'scrollbar-hidden'
+            className={`relative group/item text-customWhite/70 overflow-y-auto overflow-x-hidden w-full flex items-center justify-center scrollbar-custom ${
+              isScrolling ? '' : 'scrollbar-hidden'
             }`}
             style={{ maxHeight: 'calc(100vh - 200px)' }}
           >
-            <div>
-              <p
-                className='lyrics h-full'
-                dangerouslySetInnerHTML={{ __html: textToHtml(lyric) }}
-              />
-            </div>
+            {!isLyricsSaved && (
+              <div className='group fixed top-24 right-16 cursor-pointer hidden group-hover/item:block'>
+                <MdOutlinePostAdd
+                  className='text-costomWhite/70 text-xl'
+                  onClick={handlePostLyrics}
+                />
+
+                <Tooltip label='Save lyrics' position='bottom' />
+              </div>
+            )}
+            <p
+              className='lyrics h-full'
+              dangerouslySetInnerHTML={{ __html: textToHtml(lyric) }}
+            />
           </div>
-          {!isLyricsSaved && (
-            <div
-              className='cursor-pointer text-costomWhite/70 link text-customWhite/70 -mt-4 self-start ml-40'
-              onClick={() => {
-                postLyricsApi(playQueue[currentVideoIndex].id, lyric);
-                setIsLyricsSaved(true);
-              }}
-            >
-              Contribute
-            </div>
-          )}
         </div>
       )}
     </div>

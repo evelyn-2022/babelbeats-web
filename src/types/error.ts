@@ -1,7 +1,7 @@
 export interface CustomError {
   message: string;
-  displayType: 'inline' | 'toast';
-  category: 'auth' | 'validation' | 'general';
+  displayType: 'inline' | 'toast' | 'none';
+  category: 'auth' | 'validation' | 'general' | 'server' | 'network' | 'search';
 }
 
 export interface ErrorState {

@@ -84,8 +84,12 @@ export const fetchVideoDetails = async (
     const info = response.data.items[0].snippet;
 
     const title =
-      info.title.length > 25 ? info.title.slice(0, 25) + '...' : info.title;
-    const channelTitle = info.channelTitle.split('-')[0].trim();
+      info.title.length > 22 ? info.title.slice(0, 22) + '...' : info.title;
+    let channelTitle = info.channelTitle.split('-')[0].trim();
+    channelTitle =
+      channelTitle.length > 22
+        ? channelTitle.slice(0, 22) + '...'
+        : channelTitle;
     const thumbnail = info.thumbnails.medium
       ? info.thumbnails.medium.url
       : info.thumbnails.default.url;
