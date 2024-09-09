@@ -162,6 +162,5 @@ export const postLyricsApi = async (
   ytbId: string,
   lyrics: string
 ): Promise<void> => {
-  console.log('Posting lyrics:', ytbId, lyrics);
   await apiClient.post('music', { ytbId, lyrics }, createAuthConfig());
 };

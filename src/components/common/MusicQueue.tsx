@@ -19,7 +19,8 @@ const MusicQueue: React.FC<{
   } = usePlayQueue();
   const { addError } = useError();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-
+  const [isScrolling, setIsScrolling] = useState(false);
+  const scrollRef = useRef<HTMLDivElement | null>(null);
   const currentItemRef = useRef<HTMLDivElement | null>(null);
 
   // Fetch playlist items when scrolling to the bottom
@@ -44,6 +45,28 @@ const MusicQueue: React.FC<{
       setIsLoading(false);
     }
   };
+
+  // Event listener to toggle scrollbar visibility during scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolling(true);
+      // Hide scrollbar after scrolling stops
+      const timeout = setTimeout(() => {
+        setIsScrolling(false);
+      }, 1000);
+      return () => clearTimeout(timeout);
+    };
+
+    const currentRef = scrollRef.current;
+    if (currentRef) {
+      currentRef.addEventListener('scroll', handleScroll);
+    }
+    return () => {
+      if (currentRef) {
+        currentRef.removeEventListener('scroll', handleScroll);
+      }
+    };
+  }, []);
 
   // Handle scroll event to fetch more items
   useEffect(() => {
@@ -82,7 +105,10 @@ const MusicQueue: React.FC<{
     <div className='w-full flex flex-col gap-2'>
       <h2 className='font-bold text-2xl'>Now playing</h2>
       <div
-        className={`flex flex-col w-full overflow-y-auto`}
+        ref={scrollRef}
+        className={`flex flex-col w-full overflow-y-auto overflow-x-hidden ${
+          isScrolling ? 'scrollbar-custom' : 'scrollbar-hidden'
+        }`}
         style={{
           maxHeight: maxHeight,
         }}

@@ -27,6 +27,31 @@ const LyricsPanel: React.FC = () => {
   const [lyric, setLyric] = useState<string>('');
   const [error, setError] = useState<string>('');
   const [isLyricsSaved, setIsLyricsSaved] = useState<boolean>(false);
+  const [isScrolling, setIsScrolling] = useState(false);
+  const scrollRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!lyric || !scrollRef.current) return;
+
+    const handleScroll = () => {
+      setIsScrolling(true);
+      // Hide scrollbar after scrolling stops
+      const timeout = setTimeout(() => {
+        setIsScrolling(false);
+      }, 1000);
+      return () => clearTimeout(timeout);
+    };
+
+    const currentRef = scrollRef.current;
+    currentRef.addEventListener('scroll', handleScroll);
+
+    // Cleanup the event listener when the component unmounts
+    return () => {
+      if (currentRef) {
+        currentRef.removeEventListener('scroll', handleScroll);
+      }
+    };
+  }, [lyric, currentVideoIndex, playQueue]);
 
   useEffect(() => {
     const fetchLyrics = async () => {
@@ -38,7 +63,7 @@ const LyricsPanel: React.FC = () => {
         if (!data) return;
 
         setLyric(data.lyrics);
-        console.log(data.lyrics);
+
         setIsLyricsSaved(true);
       } catch (error) {
         console.error('Error fetching lyrics:', error);
@@ -100,9 +125,7 @@ const LyricsPanel: React.FC = () => {
       }
 
       const processedData = processTextWithBreaks(data);
-      console.log(processedData);
 
-      // const htmlContent = textToHtml(processedData);
       setLyric(processedData);
     } catch (error) {
       console.error('Error searching for lyrics:', error);
@@ -221,13 +244,18 @@ const LyricsPanel: React.FC = () => {
       {lyric && (
         <div className='w-full h-full flex flex-col items-center justify-center gap-4'>
           <div
-            className='text-customWhite/70 overflow-y-auto'
+            ref={scrollRef}
+            className={`text-customWhite/70 overflow-y-auto overflow-x-hidden w-full flex items-center justify-center ${
+              isScrolling ? 'scrollbar-custom' : 'scrollbar-hidden'
+            }`}
             style={{ maxHeight: 'calc(100vh - 200px)' }}
           >
-            <p
-              className='lyrics h-full'
-              dangerouslySetInnerHTML={{ __html: textToHtml(lyric) }}
-            />
+            <div>
+              <p
+                className='lyrics h-full'
+                dangerouslySetInnerHTML={{ __html: textToHtml(lyric) }}
+              />
+            </div>
           </div>
           {!isLyricsSaved && (
             <div
