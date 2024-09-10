@@ -3,10 +3,15 @@ import { TbPlayerSkipForward, TbPlayerSkipBack } from 'react-icons/tb';
 import { AiOutlinePlayCircle, AiOutlinePauseCircle } from 'react-icons/ai';
 import { FaCaretDown, FaCaretUp } from 'react-icons/fa6';
 import { RxShuffle, RxLoop } from 'react-icons/rx';
+import { LuLayoutDashboard } from 'react-icons/lu';
+import { RiPlayListAddLine } from 'react-icons/ri';
+import { PiVideo } from 'react-icons/pi';
+import { MdOutlineLyrics } from 'react-icons/md';
+import { HiOutlineQueueList } from 'react-icons/hi2';
 import { YouTubeVideo } from '../../types';
 import { fetchVideoDetails } from '../../services';
 import { usePlayQueue } from '../../context';
-import { MusicQueue, LyricsPanel } from '../../components';
+import { MusicQueue, LyricsPanel, Tooltip } from '../../components';
 
 declare global {
   interface Window {
@@ -24,6 +29,7 @@ const YtbMusicPlayer: React.FC<{ videoId: string }> = ({ videoId }) => {
   const [isPlayerReady, setIsPlayerReady] = useState<boolean>(false);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [showVideo, setShowVideo] = useState<boolean>(true);
+  const [showQueue, setShowQueue] = useState<boolean>(true);
 
   const {
     playQueue,
@@ -272,34 +278,40 @@ const YtbMusicPlayer: React.FC<{ videoId: string }> = ({ videoId }) => {
           showPlayer ? 'h-full' : 'hidden'
         }`}
       >
-        <div className='w-7/12 h-full flex flex-col items-center'>
+        <div
+          className={`w-7/12 h-full flex flex-col items-center ${
+            !showQueue && 'justify-center'
+          }`}
+        >
           <div
-            className={`w-full ${
+            className={`w-full flex items-center justify-center ${
               showVideo ? 'h-fit mb-4' : 'h-0 mb-2'
             } transition-all duration-300 overflow-hidden`}
           >
             <div id='player' className='w-full' />
           </div>
-          <div className='w-full relative'>
-            <div
-              className='absolute top-2 right-1 cursor-pointer text-customWhite/40 hover:text-customWhite'
-              onClick={() => {
-                setShowVideo(!showVideo);
-              }}
-            >
-              {showVideo ? (
-                <FaCaretUp className='w-4 h-4' />
-              ) : (
-                <FaCaretDown className='w-4 h-4' />
-              )}
+          <div className={`${!showQueue && 'hidden'}`}>
+            <div className='w-full relative'>
+              <div
+                className='absolute top-2 right-1 cursor-pointer text-customWhite/40 hover:text-customWhite'
+                onClick={() => {
+                  setShowVideo(!showVideo);
+                }}
+              >
+                {showVideo ? (
+                  <FaCaretUp className='w-4 h-4' />
+                ) : (
+                  <FaCaretDown className='w-4 h-4' />
+                )}
+              </div>
             </div>
+            <MusicQueue
+              playQueue={playQueue}
+              maxHeight={
+                showVideo ? 'calc(100vh - 528px)' : 'calc(100vh - 160px)'
+              }
+            />
           </div>
-          <MusicQueue
-            playQueue={playQueue}
-            maxHeight={
-              showVideo ? 'calc(100vh - 528px)' : 'calc(100vh - 160px)'
-            }
-          />
         </div>
 
         <div className='w-5/12'>
@@ -330,9 +342,15 @@ const YtbMusicPlayer: React.FC<{ videoId: string }> = ({ videoId }) => {
           </div>
         </div>
 
-        <div className='flex flew-row items-center gap-6'>
+        <div className='flex flew-row items-center gap-4'>
+          <RxShuffle
+            className={`w-5 h-5 cursor-pointer ${
+              shuffle ? 'text-customWhite' : 'text-customWhite/40'
+            }`}
+            onClick={() => setShuffle(prev => !prev)}
+          />
           <TbPlayerSkipBack
-            className={`w-6 h-6 ${
+            className={`w-5 h-5 ${
               currentVideoIndex === 0
                 ? 'text-customWhite/20 pointer-events-none'
                 : 'cursor-pointer'
@@ -358,7 +376,7 @@ const YtbMusicPlayer: React.FC<{ videoId: string }> = ({ videoId }) => {
           </button>
 
           <TbPlayerSkipForward
-            className={`w-6 h-6 ${
+            className={`w-5 h-5 ${
               currentVideoIndex === playQueue.length - 1 ||
               playQueue.length === 0
                 ? 'text-customWhite/20 pointer-events-none'
@@ -366,6 +384,25 @@ const YtbMusicPlayer: React.FC<{ videoId: string }> = ({ videoId }) => {
             }`}
             onClick={playNextSong}
           />
+          <div className='relative'>
+            <RxLoop
+              className={`w-5 h-5 cursor-pointer ${
+                loop === 0 ? 'text-customWhite/40' : `text-customWhite`
+              }`}
+              onClick={() => {
+                loop === 2 ? setLoop(0) : setLoop(loop + 1);
+              }}
+            />
+            <span
+              className={`${
+                loop === 2
+                  ? 'text-[8px] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 cursor-pointer'
+                  : 'hidden'
+              }`}
+            >
+              1
+            </span>
+          </div>
         </div>
 
         <div className='flex items-center h-5 grow gap-2'>
@@ -385,31 +422,60 @@ const YtbMusicPlayer: React.FC<{ videoId: string }> = ({ videoId }) => {
           <span>{videoInfo ? numberToTime(durationRef.current) : '0:00'}</span>
         </div>
 
-        <div className='flex flew-row items-center gap-6'>
-          <RxShuffle
-            className={`w-6 h-6 cursor-pointer ${
-              shuffle ? 'text-customWhite' : 'text-customWhite/40'
-            }`}
-            onClick={() => setShuffle(prev => !prev)}
-          />
-          <div className='relative'>
-            <RxLoop
-              className={`w-6 h-6 cursor-pointer ${
-                loop === 0 ? 'text-customWhite/40' : `text-customWhite`
+        <div className='flex flew-row items-center gap-4'>
+          <RiPlayListAddLine className='w-5 h-5' />
+          <div className='group/controller relative'>
+            <LuLayoutDashboard
+              className={`w-5 h-5 transition-all duration-300 ${
+                showPlayer
+                  ? 'text-customWhite cursor-pointer'
+                  : 'text-customWhite/40'
               }`}
-              onClick={() => {
-                loop === 2 ? setLoop(0) : setLoop(loop + 1);
-              }}
             />
-            <span
-              className={`${
-                loop === 2
-                  ? 'text-xs absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 cursor-pointer'
-                  : 'hidden'
+            <div
+              className={`absolute -top-[102px] left-1/2 -translate-x-1/2 dark:bg-customBlack-light flex flex-col gap-2 p-2 rounded opacity-0 group-hover/controller:opacity-100 transition-all duration-300 ${
+                !showPlayer && 'hidden'
               }`}
             >
-              1
-            </span>
+              <div
+                className='group relative transition-all duration-300'
+                onClick={() => {
+                  setShowVideo(!showVideo);
+                }}
+              >
+                <PiVideo
+                  className={`w-5 h-5 cursor-pointer ${
+                    showVideo ? 'text-customWhite' : 'text-customWhite/40'
+                  }`}
+                />
+                <Tooltip
+                  label={`${showVideo ? 'Hide video' : 'Show video'}`}
+                  position='left-tight'
+                />
+              </div>
+
+              <div className='group relative transition-all duration-300'>
+                <MdOutlineLyrics className={`w-5 h-5 cursor-pointer `} />
+                <Tooltip label={`Hide lyrics`} position='left-tight' />
+              </div>
+
+              <div
+                className='group relative transition-all duration-300'
+                onClick={() => {
+                  setShowQueue(!showQueue);
+                }}
+              >
+                <HiOutlineQueueList
+                  className={`w-5 h-5 cursor-pointer ${
+                    showQueue ? 'text-customWhite' : 'text-customWhite/40'
+                  }`}
+                />
+                <Tooltip
+                  label={`${showQueue ? 'Hide queue' : 'Show queue'}`}
+                  position='left-tight'
+                />
+              </div>
+            </div>
           </div>
 
           <div
@@ -421,9 +487,9 @@ const YtbMusicPlayer: React.FC<{ videoId: string }> = ({ videoId }) => {
             onClick={() => setShowPlayer(!showPlayer)}
           >
             {showPlayer ? (
-              <FaCaretDown className='w-6 h-6' />
+              <FaCaretDown className='w-5 h-5' />
             ) : (
-              <FaCaretUp className='w-6 h-6' />
+              <FaCaretUp className='w-5 h-5' />
             )}
           </div>
         </div>

@@ -2,26 +2,35 @@ import React from 'react';
 
 interface TooltipProps {
   label: string;
-  position?: 'top' | 'bottom' | 'left' | 'right' | 'right-tight' | 'hidden';
+  position?:
+    | 'top'
+    | 'bottom'
+    | 'left'
+    | 'right'
+    | 'right-tight'
+    | 'left-tight'
+    | 'hidden';
 }
 
 const Tooltip: React.FC<TooltipProps> = ({ label, position }) => {
   return (
     <div
-      className={`opacity-0 group-hover:opacity-100 z-50 w-fit absolute ${
+      className={`opacity-0 group-hover:opacity-100 z-50 w-fit absolute transition-all duration-300 ${
         position === 'right'
           ? 'left-11 -top-1.5'
           : position === 'bottom'
           ? 'left-1/2 top-full translate-y-3 -translate-x-1/2'
           : position === 'right-tight'
           ? 'left-6 -top-1.5'
+          : position === 'left-tight'
+          ? '-top-1.5 right-8'
           : position === 'hidden'
           ? 'hidden'
           : ''
       }`}
     >
       <div
-        className={`whitespace-nowrap dark:bg-customBlack-lighter text-customWhite text-xs p-2 rounded relative`}
+        className={`whitespace-nowrap dark:bg-customBlack-lighter dark:text-customWhite text-xs p-2 rounded relative transition-all duration-300`}
       >
         {label}
         <div
@@ -30,6 +39,8 @@ const Tooltip: React.FC<TooltipProps> = ({ label, position }) => {
               ? '-top-1 left-1/2 -translate-x-1/2'
               : position === 'right' || position === 'right-tight'
               ? 'top-1/2 -translate-y-1/2 -left-[2px] -rotate-90'
+              : position === 'left-tight'
+              ? 'top-1/2 -translate-y-1/2 -right-[10px] rotate-90'
               : position === 'hidden'
               ? 'hidden'
               : ''
