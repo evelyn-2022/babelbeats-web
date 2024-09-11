@@ -76,37 +76,6 @@ export const getDBUserByIdApi = async (userId: string): Promise<User> => {
   return response.data;
 };
 
-export const spotifySigninCallbackApi = async (
-  code: string,
-  userId: number
-): Promise<ConnectionToken> => {
-  const res = await apiClient.get(`spotify/callback?code=${code}&id=${userId}`);
-
-  return {
-    accessToken: res.data.access_token,
-    refreshToken: res.data.refresh_token,
-  };
-};
-
-export const refreshSpotifyAccessTokenApi = async (
-  id: string,
-  refreshToken: string
-): Promise<string> => {
-  const response = await axios.post(
-    `${API_URL}spotify/refresh-token?id=${id}`,
-    {
-      refreshToken,
-    },
-    {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    }
-  );
-
-  return response.data.access_token;
-};
-
 export const searchGeniusSongsApi = async (
   songTitle: string,
   artistName: string

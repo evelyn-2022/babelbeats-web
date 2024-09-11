@@ -66,10 +66,6 @@ const router = createBrowserRouter([
         path: '/oauth2/google/callback',
         element: <OAuthCallbackPage provider='google' />,
       },
-      {
-        path: '/oauth2/spotify/callback',
-        element: <OAuthCallbackPage provider='spotify' />,
-      },
     ],
   },
 ]);

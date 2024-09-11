@@ -7,7 +7,7 @@ import { useAuthService } from '../hooks';
 import { showToast } from '../utils';
 
 interface OAuthCallbackPageProps {
-  provider: 'google' | 'spotify';
+  provider: 'google';
 }
 
 const OAuthCallbackPage: React.FC<OAuthCallbackPageProps> = ({ provider }) => {
